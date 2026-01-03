@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 import StoreKit
 
 /// SubscriptionManager is the single source of truth for subscription state.
@@ -80,7 +81,7 @@ class SubscriptionManager: ObservableObject {
             if Self.proEntitlementProductIds.contains(transaction.productID) {
                 entitled.insert(transaction.productID)
 
-                if transaction.offerType == .introductory {
+                if transaction.offer?.type == .introductory {
                     newStatus = .trial
                 } else {
                     newStatus = .subscribed
@@ -124,7 +125,7 @@ class SubscriptionManager: ObservableObject {
             await transaction.finish()
             await updateEntitlementStatus()
 
-            let isTrial = transaction.offerType == .introductory
+            let isTrial = transaction.offer?.type == .introductory
             let planName = product.id.contains("annual") ? "annual" : "monthly"
 
             AnalyticsService.shared.track(.subscribeSuccess(

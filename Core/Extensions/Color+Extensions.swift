@@ -63,6 +63,40 @@ extension Color {
     static let accent = appTeal
 }
 
+// MARK: - ShapeStyle Extension for foregroundStyle() support
+
+extension ShapeStyle where Self == Color {
+    static var appTeal: Color { Color.appTeal }
+    static var appCoral: Color { Color.appCoral }
+    static var appBlack: Color { Color.appBlack }
+    static var appBackground: Color { Color.appBackground }
+
+    static var textPrimary: Color { Color.textPrimary }
+    static var textSecondary: Color { Color.textSecondary }
+    static var textTertiary: Color { Color.textTertiary }
+    static var textOnDark: Color { Color.textOnDark }
+
+    static var cardBackground: Color { Color.cardBackground }
+    static var cardSelected: Color { Color.cardSelected }
+
+    static var buttonPrimary: Color { Color.buttonPrimary }
+    static var buttonEnabled: Color { Color.buttonEnabled }
+    static var buttonDisabled: Color { Color.buttonDisabled }
+
+    static var success: Color { Color.success }
+    static var warning: Color { Color.warning }
+    static var streakFlame: Color { Color.streakFlame }
+
+    static var progressBackground: Color { Color.progressBackground }
+    static var progressFill: Color { Color.progressFill }
+    static var divider: Color { Color.divider }
+
+    static var brandPrimary: Color { Color.brandPrimary }
+    static var brandSecondary: Color { Color.brandSecondary }
+    static var secondaryBackground: Color { Color.secondaryBackground }
+    static var accent: Color { Color.accent }
+}
+
 // MARK: - Hex Color Initializer
 
 extension Color {
