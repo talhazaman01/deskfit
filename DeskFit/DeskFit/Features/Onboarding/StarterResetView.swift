@@ -41,93 +41,77 @@ struct StarterResetView: View {
     // MARK: - Active State
 
     private var activeState: some View {
-        VStack(spacing: Theme.Spacing.xxl) {
-            // Top bar with skip and progress
-            HStack {
-                Button {
-                    viewModel.stop()
-                    AnalyticsService.shared.track(.starterResetSkipped)
-                    onSkip()
-                } label: {
+        VStack(spacing: Theme.Spacing.md) {
+            // MARK: - Top Section (Fixed)
+            VStack(spacing: Theme.Spacing.sm) {
+                // Top bar with skip and progress
+                HStack {
+                    Button {
+                        viewModel.stop()
+                        AnalyticsService.shared.track(.starterResetSkipped)
+                        onSkip()
+                    } label: {
+                        Text("Skip")
+                            .font(Theme.Typography.subtitle)
+                            .foregroundStyle(.textSecondary)
+                    }
+
+                    Spacer()
+
+                    Text("Starter Reset")
+                        .font(Theme.Typography.headline)
+                        .foregroundStyle(.textPrimary)
+
+                    Spacer()
+
+                    // Invisible button for balance
                     Text("Skip")
                         .font(Theme.Typography.subtitle)
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(.clear)
                 }
-
-                Spacer()
-
-                Text("Starter Reset")
-                    .font(Theme.Typography.headline)
-                    .foregroundStyle(.textPrimary)
-
-                Spacer()
-
-                // Invisible button for balance
-                Text("Skip")
-                    .font(Theme.Typography.subtitle)
-                    .foregroundStyle(.clear)
-            }
-            .padding(.horizontal, Theme.Spacing.screenHorizontal)
-            .padding(.top, Theme.Spacing.md)
-
-            // Progress bar
-            ProgressView(value: viewModel.overallProgress)
-                .tint(.appTeal)
                 .padding(.horizontal, Theme.Spacing.screenHorizontal)
+                .padding(.top, Theme.Spacing.md)
 
-            Text("\(viewModel.currentExerciseIndex + 1) of \(viewModel.exercises.count)")
-                .font(Theme.Typography.caption)
-                .foregroundStyle(.textSecondary)
+                // Progress bar
+                ProgressView(value: viewModel.overallProgress)
+                    .tint(.appTeal)
+                    .padding(.horizontal, Theme.Spacing.screenHorizontal)
 
-            Spacer()
-
-            // Exercise display
-            if let exercise = viewModel.currentExercise {
-                exerciseDisplay(exercise)
+                Text("\(viewModel.currentExerciseIndex + 1) of \(viewModel.exercises.count)")
+                    .font(Theme.Typography.caption)
+                    .foregroundStyle(.textSecondary)
             }
 
-            Spacer()
-
-            // Timer
-            TimerView(
-                timeRemaining: viewModel.timeRemaining,
-                totalTime: viewModel.currentExercise?.durationSeconds ?? 0
-            )
-
-            // Pause button
-            Button {
-                viewModel.pause()
-            } label: {
-                Image(systemName: "pause.circle.fill")
-                    .font(.system(size: 60))
-                    .foregroundStyle(.appTeal)
+            // MARK: - Scrollable Content Area
+            // Uses shared component with full text display (no truncation)
+            // Scrolls only when content exceeds available space
+            ScrollView(.vertical, showsIndicators: false) {
+                if let exercise = viewModel.currentExercise {
+                    SessionExerciseContentView(
+                        exercise: exercise,
+                        isCompact: true
+                    )
+                    .padding(.vertical, Theme.Spacing.sm)
+                }
             }
-            .padding(.bottom, Theme.Spacing.xxl)
-        }
-    }
+            .frame(maxHeight: .infinity)
 
-    private func exerciseDisplay(_ exercise: Exercise) -> some View {
-        VStack(spacing: Theme.Spacing.xl) {
-            ZStack {
-                Circle()
-                    .fill(Color.appTeal.opacity(0.1))
-                    .frame(width: 180, height: 180)
+            // MARK: - Bottom Section (Fixed - Timer & Pause)
+            VStack(spacing: Theme.Spacing.lg) {
+                TimerView(
+                    timeRemaining: viewModel.timeRemaining,
+                    totalTime: viewModel.currentExercise?.durationSeconds ?? 0
+                )
 
-                Image(systemName: "figure.flexibility")
-                    .font(.system(size: 70))
-                    .foregroundStyle(.appTeal)
+                Button {
+                    viewModel.pause()
+                } label: {
+                    Image(systemName: "pause.circle.fill")
+                        .font(.system(size: 60))
+                        .foregroundStyle(.appTeal)
+                }
             }
-
-            Text(exercise.name)
-                .font(.system(size: 22, weight: .bold))
-                .foregroundStyle(.textPrimary)
-                .multilineTextAlignment(.center)
-
-            Text(exercise.cue)
-                .font(.system(size: 18, weight: .regular))
-                .foregroundStyle(.textSecondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, Theme.Spacing.screenHorizontal)
+            .padding(.bottom, Theme.Spacing.xl)
         }
     }
 
@@ -166,10 +150,37 @@ struct StarterResetView: View {
     }
 }
 
-#Preview {
+#Preview("Default") {
     StarterResetView(
         focusAreas: [.neck, .shoulders],
         onComplete: {},
         onSkip: {}
     )
+}
+
+#Preview("iPhone SE") {
+    StarterResetView(
+        focusAreas: [.neck, .shoulders, .back],
+        onComplete: {},
+        onSkip: {}
+    )
+    .previewDevice("iPhone SE (3rd generation)")
+}
+
+#Preview("iPhone 15 Pro") {
+    StarterResetView(
+        focusAreas: [.neck, .shoulders, .back],
+        onComplete: {},
+        onSkip: {}
+    )
+    .previewDevice("iPhone 15 Pro")
+}
+
+#Preview("iPhone 15 Pro Max") {
+    StarterResetView(
+        focusAreas: [.neck, .shoulders, .back],
+        onComplete: {},
+        onSkip: {}
+    )
+    .previewDevice("iPhone 15 Pro Max")
 }

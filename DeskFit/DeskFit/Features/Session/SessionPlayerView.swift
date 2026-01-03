@@ -53,39 +53,47 @@ struct SessionPlayerView: View {
                 }
                 .padding(.horizontal, Theme.Spacing.screenHorizontal)
             } else {
-                VStack(spacing: Theme.Spacing.xxl) {
-                    ProgressView(value: viewModel.overallProgress)
-                        .tint(.appTeal)
-                        .padding(.horizontal, Theme.Spacing.screenHorizontal)
+                VStack(spacing: Theme.Spacing.md) {
+                    // MARK: - Top Section (Fixed)
+                    VStack(spacing: Theme.Spacing.sm) {
+                        ProgressView(value: viewModel.overallProgress)
+                            .tint(.appTeal)
+                            .padding(.horizontal, Theme.Spacing.screenHorizontal)
 
-                    Text("\(viewModel.currentExerciseIndex + 1) of \(viewModel.exercises.count)")
-                        .font(Theme.Typography.caption)
-                        .foregroundStyle(.textSecondary)
+                        Text("\(viewModel.currentExerciseIndex + 1) of \(viewModel.exercises.count)")
+                            .font(Theme.Typography.caption)
+                            .foregroundStyle(.textSecondary)
+                    }
 
-                    Spacer()
+                    // MARK: - Scrollable Content Area
+                    // Scrolls only when content exceeds available space
+                    ScrollView(.vertical, showsIndicators: false) {
+                        if let exercise = viewModel.currentExercise {
+                            ExerciseDisplayView(
+                                exercise: exercise,
+                                timeRemaining: viewModel.timeRemaining
+                            )
+                            .padding(.vertical, Theme.Spacing.md)
+                        }
+                    }
+                    .frame(maxHeight: .infinity)
 
-                    if let exercise = viewModel.currentExercise {
-                        ExerciseDisplayView(
-                            exercise: exercise,
-                            timeRemaining: viewModel.timeRemaining
+                    // MARK: - Bottom Section (Fixed - Timer & Pause)
+                    VStack(spacing: Theme.Spacing.lg) {
+                        TimerView(
+                            timeRemaining: viewModel.timeRemaining,
+                            totalTime: viewModel.currentExercise?.durationSeconds ?? 0
                         )
+
+                        Button {
+                            viewModel.pause()
+                        } label: {
+                            Image(systemName: "pause.circle.fill")
+                                .font(.system(size: 60))
+                                .foregroundStyle(.appTeal)
+                        }
                     }
-
-                    Spacer()
-
-                    TimerView(
-                        timeRemaining: viewModel.timeRemaining,
-                        totalTime: viewModel.currentExercise?.durationSeconds ?? 0
-                    )
-
-                    Button {
-                        viewModel.pause()
-                    } label: {
-                        Image(systemName: "pause.circle.fill")
-                            .font(.system(size: 60))
-                            .foregroundStyle(.appTeal)
-                    }
-                    .padding(.bottom, Theme.Spacing.xxl)
+                    .padding(.bottom, Theme.Spacing.xl)
                 }
             }
         }
