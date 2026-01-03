@@ -2,6 +2,7 @@ import SwiftUI
 
 struct StarterResetView: View {
     let focusAreas: Set<FocusArea>
+    let stiffnessTime: StiffnessTime?
     let onComplete: () -> Void
     let onSkip: () -> Void
 
@@ -9,13 +10,18 @@ struct StarterResetView: View {
 
     init(
         focusAreas: Set<FocusArea>,
+        stiffnessTime: StiffnessTime? = nil,
         onComplete: @escaping () -> Void,
         onSkip: @escaping () -> Void
     ) {
         self.focusAreas = focusAreas
+        self.stiffnessTime = stiffnessTime
         self.onComplete = onComplete
         self.onSkip = onSkip
-        _viewModel = StateObject(wrappedValue: StarterResetViewModel(focusAreas: Array(focusAreas)))
+        _viewModel = StateObject(wrappedValue: StarterResetViewModel(
+            focusAreas: Array(focusAreas),
+            stiffnessTime: stiffnessTime
+        ))
     }
 
     var body: some View {
@@ -58,7 +64,7 @@ struct StarterResetView: View {
 
                     Spacer()
 
-                    Text("Starter Reset")
+                    Text(viewModel.sessionTitle)
                         .font(Theme.Typography.headline)
                         .foregroundStyle(.textPrimary)
 

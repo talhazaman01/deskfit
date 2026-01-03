@@ -2,7 +2,7 @@ import Foundation
 import Combine
 
 enum OnboardingPhase {
-    case questionnaire  // Steps 0-7: goal, focus, dob, gender, height/weight, time, hours, reminders
+    case questionnaire  // Steps 0-8: goal, focus, stiffness, dob, gender, height/weight, time, hours, reminders
     case summary        // "Your plan is ready" screen
     case safety         // Safety acknowledgment screen (before starter reset)
     case starterReset   // 60s starter session
@@ -17,14 +17,17 @@ class OnboardingViewModel: ObservableObject {
     // Step 1: Focus Areas
     @Published var selectedFocusAreas: Set<FocusArea> = []
 
-    // Step 2: Date of Birth
+    // Step 2: Stiffness Time
+    @Published var selectedStiffnessTime: StiffnessTime?
+
+    // Step 3: Date of Birth
     @Published var dateOfBirth: Date = Calendar.current.date(byAdding: .year, value: -25, to: Date()) ?? Date()
     @Published var hasSetDateOfBirth: Bool = false
 
-    // Step 3: Gender
+    // Step 4: Gender
     @Published var selectedGender: Gender?
 
-    // Step 4: Height & Weight
+    // Step 5: Height & Weight
     @Published var measurementUnit: MeasurementUnit = .imperial
     @Published var heightFeet: Int = 5
     @Published var heightInches: Int = 7
@@ -34,14 +37,14 @@ class OnboardingViewModel: ObservableObject {
     @Published var hasEnteredHeight: Bool = false
     @Published var hasEnteredWeight: Bool = false
 
-    // Step 5: Time Preference
+    // Step 6: Time Preference
     @Published var selectedDailyTime: Int = 5
 
-    // Step 6: Work Hours
+    // Step 7: Work Hours
     @Published var workStartMinutes: Int = 540   // 9:00 AM
     @Published var workEndMinutes: Int = 1020    // 5:00 PM
 
-    // Step 7: Reminder Frequency
+    // Step 8: Reminder Frequency
     @Published var reminderFrequency: ReminderFrequency = .every2Hours
 
     // Flow state

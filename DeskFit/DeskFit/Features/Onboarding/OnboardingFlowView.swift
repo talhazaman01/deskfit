@@ -10,8 +10,8 @@ struct OnboardingFlowView: View {
     @StateObject private var viewModel = OnboardingViewModel()
     @State private var currentStep = 0
 
-    // Updated to 8 steps: goal, focus, dob, gender, height/weight, time, work hours, reminders
-    private let totalSteps = 8
+    // Updated to 9 steps: goal, focus, stiffness, dob, gender, height/weight, time, work hours, reminders
+    private let totalSteps = 9
 
     private var profile: UserProfile? {
         profiles.first
@@ -56,18 +56,27 @@ struct OnboardingFlowView: View {
                 FocusAreasView(selectedAreas: $viewModel.selectedFocusAreas)
                     .tag(1)
 
-                // Step 2: Date of Birth
+                // Step 2: Stiffness Time (when stiffness hits)
+                StiffnessTimeView(
+                    selectedStiffnessTime: $viewModel.selectedStiffnessTime,
+                    onContinue: {
+                        withAnimation { currentStep += 1 }
+                    }
+                )
+                    .tag(2)
+
+                // Step 3: Date of Birth
                 DateOfBirthView(
                     dateOfBirth: $viewModel.dateOfBirth,
                     hasSetDateOfBirth: $viewModel.hasSetDateOfBirth
                 )
-                    .tag(2)
-
-                // Step 3: Gender
-                GenderSelectionView(selectedGender: $viewModel.selectedGender)
                     .tag(3)
 
-                // Step 4: Height & Weight
+                // Step 4: Gender
+                GenderSelectionView(selectedGender: $viewModel.selectedGender)
+                    .tag(4)
+
+                // Step 5: Height & Weight
                 HeightWeightView(
                     measurementUnit: $viewModel.measurementUnit,
                     heightFeet: $viewModel.heightFeet,
@@ -78,22 +87,22 @@ struct OnboardingFlowView: View {
                     hasEnteredHeight: $viewModel.hasEnteredHeight,
                     hasEnteredWeight: $viewModel.hasEnteredWeight
                 )
-                    .tag(4)
-
-                // Step 5: Time Preference
-                TimePreferenceView(selectedTime: $viewModel.selectedDailyTime)
                     .tag(5)
 
-                // Step 6: Work Hours
+                // Step 6: Time Preference
+                TimePreferenceView(selectedTime: $viewModel.selectedDailyTime)
+                    .tag(6)
+
+                // Step 7: Work Hours
                 WorkHoursView(
                     startMinutes: $viewModel.workStartMinutes,
                     endMinutes: $viewModel.workEndMinutes
                 )
-                    .tag(6)
-
-                // Step 7: Reminders
-                ReminderSetupView(selectedFrequency: $viewModel.reminderFrequency)
                     .tag(7)
+
+                // Step 8: Reminders
+                ReminderSetupView(selectedFrequency: $viewModel.reminderFrequency)
+                    .tag(8)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             .animation(.easeInOut(duration: 0.3), value: currentStep)
@@ -144,6 +153,7 @@ struct OnboardingFlowView: View {
     private var starterResetPhase: some View {
         StarterResetView(
             focusAreas: viewModel.selectedFocusAreas,
+            stiffnessTime: viewModel.selectedStiffnessTime,
             onComplete: {
                 // Calculate approximate duration (60s target)
                 viewModel.starterResetDuration = 60
@@ -219,17 +229,19 @@ struct OnboardingFlowView: View {
             return viewModel.selectedGoal != nil
         case 1: // Focus Areas
             return !viewModel.selectedFocusAreas.isEmpty
-        case 2: // DOB - must be 13+ years old
+        case 2: // Stiffness Time - handled by one-tap continue, always valid
+            return viewModel.selectedStiffnessTime != nil
+        case 3: // DOB - must be 13+ years old
             return viewModel.isDateOfBirthValid
-        case 3: // Gender - always valid (optional, can continue without selection)
+        case 4: // Gender - always valid (optional, can continue without selection)
             return true
-        case 4: // Height/Weight - always valid (optional) but validate ranges if entered
+        case 5: // Height/Weight - always valid (optional) but validate ranges if entered
             return viewModel.isHeightValid && viewModel.isWeightValid
-        case 5: // Time Preference
+        case 6: // Time Preference
             return true
-        case 6: // Work Hours
+        case 7: // Work Hours
             return viewModel.workEndMinutes > viewModel.workStartMinutes
-        case 7: // Reminders
+        case 8: // Reminders
             return true
         default:
             return false
@@ -239,7 +251,7 @@ struct OnboardingFlowView: View {
     // MARK: - Actions
 
     private func handleContinue() {
-        let stepNames = ["goal", "focus_areas", "dob", "gender", "height_weight", "time", "work_hours", "reminders"]
+        let stepNames = ["goal", "focus_areas", "stiffness_time", "dob", "gender", "height_weight", "time", "work_hours", "reminders"]
         AnalyticsService.shared.track(.onboardingStepCompleted(step: stepNames[currentStep]))
 
         // Track additional properties for personalization steps
@@ -257,7 +269,11 @@ struct OnboardingFlowView: View {
 
     private func trackPersonalizationStep() {
         switch currentStep {
-        case 2: // DOB
+        case 2: // Stiffness Time
+            if let stiffnessTime = viewModel.selectedStiffnessTime {
+                AnalyticsService.shared.track(.onboardingStiffnessTime(stiffnessTime: stiffnessTime.rawValue))
+            }
+        case 3: // DOB
             let ageBand = AgeBand.from(age: viewModel.age)
             AnalyticsService.shared.track(.onboardingPersonalInfo(
                 step: "dob",
@@ -266,7 +282,7 @@ struct OnboardingFlowView: View {
                 hasHeight: nil,
                 hasWeight: nil
             ))
-        case 3: // Gender
+        case 4: // Gender
             let genderValue = viewModel.selectedGender != .preferNotToSay ? viewModel.selectedGender?.rawValue : nil
             AnalyticsService.shared.track(.onboardingPersonalInfo(
                 step: "gender",
@@ -275,7 +291,7 @@ struct OnboardingFlowView: View {
                 hasHeight: nil,
                 hasWeight: nil
             ))
-        case 4: // Height/Weight
+        case 5: // Height/Weight
             AnalyticsService.shared.track(.onboardingPersonalInfo(
                 step: "height_weight",
                 ageBand: nil,
@@ -298,6 +314,7 @@ struct OnboardingFlowView: View {
         profile.workStartMinutes = viewModel.workStartMinutes
         profile.workEndMinutes = viewModel.workEndMinutes
         profile.reminderFrequency = viewModel.reminderFrequency.rawValue
+        profile.stiffnessTime = viewModel.selectedStiffnessTime?.rawValue
 
         // Save personal info (for personalization)
         if viewModel.hasSetDateOfBirth {
@@ -328,7 +345,8 @@ struct OnboardingFlowView: View {
             durationSeconds: duration,
             goal: profile.goal,
             focusAreas: profile.focusAreas,
-            dailyMinutes: profile.dailyTimeMinutes
+            dailyMinutes: profile.dailyTimeMinutes,
+            stiffnessTime: profile.stiffnessTime
         ))
 
         // Schedule notifications if enabled

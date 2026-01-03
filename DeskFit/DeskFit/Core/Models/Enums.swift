@@ -125,6 +125,58 @@ enum SubscriptionStatus: String {
     case unknown
 }
 
+// MARK: - Stiffness Time (When user typically feels stiff)
+
+enum StiffnessTime: String, CaseIterable, Identifiable {
+    case morning
+    case midday
+    case evening
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .morning: return "Morning"
+        case .midday: return "Midday"
+        case .evening: return "Evening"
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .morning: return "Right after I start work"
+        case .midday: return "After a few hours at my desk"
+        case .evening: return "Toward the end of the day"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .morning: return "sunrise.fill"
+        case .midday: return "sun.max.fill"
+        case .evening: return "sunset.fill"
+        }
+    }
+
+    /// Suggested first session type based on when user feels stiff
+    var preferredFirstSession: SessionType {
+        switch self {
+        case .morning: return .morning
+        case .midday: return .midday
+        case .evening: return .afternoon
+        }
+    }
+
+    /// Adjusted reminder offset from work start based on stiffness time
+    var reminderOffsetMinutes: Int {
+        switch self {
+        case .morning: return 30      // First reminder 30 min after work start
+        case .midday: return 120      // First reminder 2 hours after work start
+        case .evening: return 240     // First reminder 4 hours after work start
+        }
+    }
+}
+
 // MARK: - Gender
 
 enum Gender: String, CaseIterable, Identifiable {

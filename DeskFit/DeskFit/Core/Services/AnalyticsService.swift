@@ -13,7 +13,8 @@ final class AnalyticsService: @unchecked Sendable {
         case onboardingStarted
         case onboardingStepCompleted(step: String)
         case onboardingPersonalInfo(step: String, ageBand: String?, gender: String?, hasHeight: Bool?, hasWeight: Bool?)
-        case onboardingCompleted(durationSeconds: Int, goal: String, focusAreas: [String], dailyMinutes: Int)
+        case onboardingStiffnessTime(stiffnessTime: String)
+        case onboardingCompleted(durationSeconds: Int, goal: String, focusAreas: [String], dailyMinutes: Int, stiffnessTime: String?)
         case onboardingSummaryViewed
         case onboardingSafetyAcknowledged(action: String)
         case starterResetStarted
@@ -79,13 +80,20 @@ final class AnalyticsService: @unchecked Sendable {
             if let hasWeight = hasWeight { props["has_weight"] = hasWeight }
             return ("onboarding_personal_info", props)
 
-        case .onboardingCompleted(let duration, let goal, let focusAreas, let dailyMinutes):
-            return ("onboarding_completed", [
+        case .onboardingStiffnessTime(let stiffnessTime):
+            return ("onboarding_stiffness_time", ["stiffness_time": stiffnessTime])
+
+        case .onboardingCompleted(let duration, let goal, let focusAreas, let dailyMinutes, let stiffnessTime):
+            var props: [String: Any] = [
                 "duration_seconds": duration,
                 "goal": goal,
                 "focus_areas": focusAreas,
                 "daily_minutes": dailyMinutes
-            ])
+            ]
+            if let stiffnessTime = stiffnessTime {
+                props["stiffness_time"] = stiffnessTime
+            }
+            return ("onboarding_completed", props)
 
         case .onboardingSummaryViewed:
             return ("onboarding_summary_viewed", [:])

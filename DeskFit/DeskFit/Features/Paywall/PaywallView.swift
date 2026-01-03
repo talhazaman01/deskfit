@@ -85,73 +85,91 @@ struct PaywallView: View {
         )
     }
 
-    // MARK: - Plans (Prices from StoreKit)
+    // MARK: - Plans Section
 
+    @ViewBuilder
     private var plansSection: some View {
-        VStack(spacing: Theme.Spacing.md) {
-            // Annual plan - with 7-day trial
-            if let annual = subscriptionManager.annualProduct {
-                PlanCard(
-                    title: "Annual",
-                    priceText: annual.displayPrice,
-                    periodText: periodText(for: annual),
-                    savingsText: calculateSavings(),
-                    trialText: trialText(for: annual),
-                    isSelected: viewModel.selectedPlan == .annual,
-                    isBestValue: true
-                ) {
-                    viewModel.selectedPlan = .annual
-                    AnalyticsService.shared.track(.planSelected(plan: "annual"))
-                }
+        switch subscriptionManager.productLoadState {
+        case .idle, .loading:
+            // Skeleton loading state
+            VStack(spacing: Theme.Spacing.md) {
+                SkeletonPlanCard(isBestValue: true)
+                SkeletonPlanCard(isBestValue: false)
             }
 
-            // Monthly plan
-            if let monthly = subscriptionManager.monthlyProduct {
-                PlanCard(
-                    title: "Monthly",
-                    priceText: monthly.displayPrice,
-                    periodText: periodText(for: monthly),
-                    savingsText: nil,
-                    trialText: nil,
-                    isSelected: viewModel.selectedPlan == .monthly,
-                    isBestValue: false
-                ) {
-                    viewModel.selectedPlan = .monthly
-                    AnalyticsService.shared.track(.planSelected(plan: "monthly"))
-                }
-            }
-
-            // Loading state
-            if subscriptionManager.products.isEmpty && subscriptionManager.isLoading {
-                ProgressView("Loading plans...")
-                    .padding(Theme.Spacing.lg)
-            }
-
-            // Error state
-            if subscriptionManager.products.isEmpty && !subscriptionManager.isLoading {
-                VStack(spacing: Theme.Spacing.sm) {
-                    Text("Unable to load subscription options")
-                        .font(Theme.Typography.body)
-                        .foregroundStyle(.textSecondary)
-                    Button("Try Again") {
-                        Task { await subscriptionManager.loadProducts() }
+        case .loaded:
+            // Successfully loaded - show real plans
+            VStack(spacing: Theme.Spacing.md) {
+                // Annual plan - with 7-day trial
+                if let annual = subscriptionManager.annualProduct {
+                    PlanCard(
+                        title: "Annual",
+                        priceText: annual.displayPrice,
+                        periodText: periodText(for: annual),
+                        savingsText: calculateSavings(),
+                        trialText: trialText(for: annual),
+                        isSelected: viewModel.selectedPlan == .annual,
+                        isBestValue: true
+                    ) {
+                        viewModel.selectedPlan = .annual
+                        AnalyticsService.shared.track(.planSelected(plan: "annual"))
                     }
-                    .foregroundStyle(.appTeal)
                 }
-                .padding(Theme.Spacing.lg)
+
+                // Monthly plan
+                if let monthly = subscriptionManager.monthlyProduct {
+                    PlanCard(
+                        title: "Monthly",
+                        priceText: monthly.displayPrice,
+                        periodText: periodText(for: monthly),
+                        savingsText: nil,
+                        trialText: nil,
+                        isSelected: viewModel.selectedPlan == .monthly,
+                        isBestValue: false
+                    ) {
+                        viewModel.selectedPlan = .monthly
+                        AnalyticsService.shared.track(.planSelected(plan: "monthly"))
+                    }
+                }
             }
+
+        case .timeout, .failed:
+            // Error/Timeout state - show friendly fallback
+            StoreUnavailableView(
+                loadState: subscriptionManager.productLoadState,
+                isSimulator: subscriptionManager.isRunningOnSimulator,
+                onTryAgain: {
+                    Task { await subscriptionManager.loadProducts() }
+                },
+                onContinueFree: {
+                    AnalyticsService.shared.track(.paywallDismissed(source: source, selectedPlan: nil))
+                    dismiss()
+                },
+                onRestorePurchases: {
+                    Task {
+                        await subscriptionManager.restorePurchases()
+                        if subscriptionManager.isProUser {
+                            dismiss()
+                        }
+                    }
+                }
+            )
         }
     }
 
     // MARK: - Subscribe Button
 
+    @ViewBuilder
     private var subscribeButton: some View {
-        PrimaryButton(
-            title: subscribeButtonTitle,
-            isEnabled: !subscriptionManager.products.isEmpty,
-            isLoading: subscriptionManager.isLoading
-        ) {
-            handlePurchase()
+        // Only show when products are loaded
+        if subscriptionManager.productLoadState == .loaded {
+            PrimaryButton(
+                title: subscribeButtonTitle,
+                isEnabled: !subscriptionManager.products.isEmpty,
+                isLoading: viewModel.isPurchasing
+            ) {
+                handlePurchase()
+            }
         }
     }
 
@@ -168,37 +186,49 @@ struct PaywallView: View {
     // MARK: - Legal
 
     private var legalText: some View {
-        Text("Cancel anytime. Subscription auto-renews unless cancelled at least 24 hours before the end of the current period.")
-            .font(Theme.Typography.caption)
-            .foregroundStyle(.textTertiary)
-            .multilineTextAlignment(.center)
+        Group {
+            if subscriptionManager.productLoadState == .loaded {
+                Text("Cancel anytime. Subscription auto-renews unless cancelled at least 24 hours before the end of the current period.")
+                    .font(Theme.Typography.caption)
+                    .foregroundStyle(.textTertiary)
+                    .multilineTextAlignment(.center)
+            }
+        }
     }
 
     // MARK: - Restore
 
+    @ViewBuilder
     private var restoreButton: some View {
-        Button("Restore Purchases") {
-            Task {
-                await subscriptionManager.restorePurchases()
-                if subscriptionManager.isProUser {
-                    dismiss()
+        // Only show when products are loaded
+        if subscriptionManager.productLoadState == .loaded {
+            Button("Restore Purchases") {
+                Task {
+                    await subscriptionManager.restorePurchases()
+                    if subscriptionManager.isProUser {
+                        dismiss()
+                    }
                 }
             }
+            .font(Theme.Typography.subtitle)
+            .foregroundStyle(.textSecondary)
         }
-        .font(Theme.Typography.subtitle)
-        .foregroundStyle(.textSecondary)
     }
 
     // MARK: - Skip
 
     private var skipButton: some View {
-        Button("Continue with limited version") {
-            AnalyticsService.shared.track(.paywallDismissed(source: source, selectedPlan: nil))
-            dismiss()
+        Group {
+            if subscriptionManager.productLoadState == .loaded {
+                Button("Continue with limited version") {
+                    AnalyticsService.shared.track(.paywallDismissed(source: source, selectedPlan: nil))
+                    dismiss()
+                }
+                .font(Theme.Typography.subtitle)
+                .foregroundStyle(.textSecondary)
+                .padding(.bottom, Theme.Spacing.xxl)
+            }
         }
-        .font(Theme.Typography.subtitle)
-        .foregroundStyle(.textSecondary)
-        .padding(.bottom, Theme.Spacing.xxl)
     }
 
     // MARK: - Helpers
@@ -250,7 +280,11 @@ struct PaywallView: View {
     }
 
     private func handlePurchase() {
+        viewModel.isPurchasing = true
+
         Task {
+            defer { viewModel.isPurchasing = false }
+
             let product = viewModel.selectedPlan == .annual
                 ? subscriptionManager.annualProduct
                 : subscriptionManager.monthlyProduct
@@ -368,5 +402,185 @@ struct PlanCard: View {
             )
         }
         .buttonStyle(.plain)
+    }
+}
+
+struct SkeletonPlanCard: View {
+    let isBestValue: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            HStack {
+                VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+                    HStack(spacing: Theme.Spacing.sm) {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(Color.progressBackground)
+                            .frame(width: 60, height: 20)
+
+                        if isBestValue {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.progressBackground)
+                                .frame(width: 80, height: 16)
+                        }
+                    }
+
+                    HStack(spacing: Theme.Spacing.xs) {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(Color.progressBackground)
+                            .frame(width: 70, height: 24)
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(Color.progressBackground)
+                            .frame(width: 50, height: 14)
+                    }
+                }
+
+                Spacer()
+
+                Circle()
+                    .fill(Color.progressBackground)
+                    .frame(width: 28, height: 28)
+            }
+
+            if isBestValue {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.progressBackground)
+                    .frame(width: 100, height: 14)
+            }
+        }
+        .padding(Theme.Spacing.lg)
+        .background(
+            RoundedRectangle(cornerRadius: Theme.Radius.medium)
+                .fill(Color.cardBackground)
+        )
+        .shimmer()
+    }
+}
+
+struct StoreUnavailableView: View {
+    let loadState: SubscriptionManager.ProductLoadState
+    let isSimulator: Bool
+    let onTryAgain: () -> Void
+    let onContinueFree: () -> Void
+    let onRestorePurchases: () -> Void
+
+    var body: some View {
+        VStack(spacing: Theme.Spacing.lg) {
+            Image(systemName: "exclamationmark.icloud")
+                .font(.system(size: 40))
+                .foregroundStyle(.textSecondary)
+
+            Text("Store unavailable right now")
+                .font(Theme.Typography.headline)
+                .foregroundStyle(.textPrimary)
+
+            Text(messageText)
+                .font(Theme.Typography.caption)
+                .foregroundStyle(.textSecondary)
+                .multilineTextAlignment(.center)
+
+            // Debug hint for simulator
+            #if DEBUG
+            if case .failed(let reason) = loadState,
+               reason == .simulatorMissingConfig {
+                Text("Dev hint: Add StoreKit configuration file to test in-app purchases on Simulator")
+                    .font(Theme.Typography.caption)
+                    .foregroundStyle(.warning)
+                    .padding(Theme.Spacing.sm)
+                    .background(Color.warning.opacity(0.1))
+                    .cornerRadius(Theme.Radius.small)
+            }
+            #endif
+
+            VStack(spacing: Theme.Spacing.md) {
+                Button(action: onTryAgain) {
+                    Text("Try again")
+                        .font(Theme.Typography.button)
+                        .foregroundStyle(.textOnDark)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, Theme.Spacing.md)
+                        .background(Color.appTeal)
+                        .cornerRadius(Theme.Radius.medium)
+                }
+
+                Button(action: onContinueFree) {
+                    Text("Continue with Free")
+                        .font(Theme.Typography.button)
+                        .foregroundStyle(.textPrimary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, Theme.Spacing.md)
+                        .background(Color.cardBackground)
+                        .cornerRadius(Theme.Radius.medium)
+                }
+
+                Button(action: onRestorePurchases) {
+                    Text("Restore Purchases")
+                        .font(Theme.Typography.subtitle)
+                        .foregroundStyle(.textSecondary)
+                }
+            }
+        }
+        .padding(Theme.Spacing.lg)
+        .background(
+            RoundedRectangle(cornerRadius: Theme.Radius.large)
+                .fill(Color.cardBackground)
+        )
+    }
+
+    private var messageText: String {
+        switch loadState {
+        case .timeout:
+            return "The connection timed out. Please check your internet and try again."
+        case .failed(let reason):
+            switch reason {
+            case .networkError:
+                return "Unable to connect. Please check your internet connection."
+            case .simulatorMissingConfig:
+                return "StoreKit configuration not found."
+            default:
+                return "Something went wrong. Please try again later."
+            }
+        default:
+            return "Please try again."
+        }
+    }
+}
+
+// MARK: - Shimmer Effect
+
+extension View {
+    func shimmer() -> some View {
+        self.modifier(ShimmerModifier())
+    }
+}
+
+struct ShimmerModifier: ViewModifier {
+    @State private var phase: CGFloat = 0
+
+    func body(content: Content) -> some View {
+        content
+            .overlay(
+                GeometryReader { geometry in
+                    LinearGradient(
+                        colors: [
+                            Color.clear,
+                            Color.white.opacity(0.3),
+                            Color.clear
+                        ],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                    .frame(width: geometry.size.width * 0.6)
+                    .offset(x: phase * geometry.size.width * 1.6 - geometry.size.width * 0.3)
+                }
+            )
+            .clipped()
+            .onAppear {
+                withAnimation(
+                    Animation.linear(duration: 1.5)
+                        .repeatForever(autoreverses: false)
+                ) {
+                    phase = 1
+                }
+            }
     }
 }

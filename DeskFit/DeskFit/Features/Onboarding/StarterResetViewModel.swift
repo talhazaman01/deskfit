@@ -4,6 +4,7 @@ import Combine
 @MainActor
 class StarterResetViewModel: ObservableObject {
     let exercises: [Exercise]
+    let sessionTitle: String
     let targetDurationSeconds: Int = 60
 
     @Published var currentExerciseIndex = 0
@@ -34,13 +35,15 @@ class StarterResetViewModel: ObservableObject {
         exercises.reduce(0) { $0 + $1.durationSeconds }
     }
 
-    init(focusAreas: [FocusArea]) {
-        let focusAreaStrings = focusAreas.map { $0.rawValue }
-        self.exercises = Self.selectExercises(
-            forDuration: 60,
-            focusAreas: focusAreaStrings,
-            maxExercises: 3
+    init(focusAreas: [FocusArea], stiffnessTime: StiffnessTime? = nil) {
+        // Generate tailored starter reset using PlanGeneratorService
+        let starterReset = PlanGeneratorService.shared.generateStarterReset(
+            focusAreas: Set(focusAreas),
+            stiffnessTime: stiffnessTime,
+            targetDuration: 60
         )
+        self.sessionTitle = starterReset.title
+        self.exercises = starterReset.exercises
     }
 
     private static func selectExercises(

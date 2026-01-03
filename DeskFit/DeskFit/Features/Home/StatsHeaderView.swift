@@ -2,6 +2,7 @@ import SwiftUI
 
 struct StatsHeaderView: View {
     let profile: UserProfile
+    let todayMinutes: Int
 
     var body: some View {
         HStack(spacing: 0) {
@@ -45,11 +46,6 @@ struct StatsHeaderView: View {
             RoundedRectangle(cornerRadius: Theme.Radius.large)
                 .fill(Color.cardBackground)
         )
-    }
-
-    private var todayMinutes: Int {
-        // TODO: Calculate from today's completed sessions
-        0
     }
 }
 

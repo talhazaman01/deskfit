@@ -24,6 +24,9 @@ final class UserProfile {
 
     var reminderFrequency: String
 
+    // When stiffness typically hits (for personalization)
+    var stiffnessTime: String?  // StiffnessTime.rawValue
+
     // Preferences
     var soundEnabled: Bool
     var hapticsEnabled: Bool
@@ -55,6 +58,7 @@ final class UserProfile {
         self.workStartMinutes = 540  // 9:00 AM
         self.workEndMinutes = 1020   // 5:00 PM
         self.reminderFrequency = "every_2_hours"
+        self.stiffnessTime = nil
         self.soundEnabled = true
         self.hapticsEnabled = true
         self.currentStreak = 0
@@ -87,6 +91,12 @@ final class UserProfile {
     var genderEnum: Gender? {
         guard let genderString = gender else { return nil }
         return Gender(rawValue: genderString)
+    }
+
+    /// Stiffness time as typed enum
+    var stiffnessTimeEnum: StiffnessTime? {
+        guard let stiffnessTimeString = stiffnessTime else { return nil }
+        return StiffnessTime(rawValue: stiffnessTimeString)
     }
 
     /// Whether user has provided personal info for personalization
