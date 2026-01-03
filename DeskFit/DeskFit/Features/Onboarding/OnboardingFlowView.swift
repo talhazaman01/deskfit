@@ -24,6 +24,8 @@ struct OnboardingFlowView: View {
                 questionnairePhase
             case .summary:
                 summaryPhase
+            case .safety:
+                safetyPhase
             case .starterReset:
                 starterResetPhase
             case .completion:
@@ -113,6 +115,23 @@ struct OnboardingFlowView: View {
             workEndMinutes: viewModel.workEndMinutes,
             hasPersonalInfo: viewModel.hasSetDateOfBirth || viewModel.selectedGender != nil || viewModel.hasEnteredHeight || viewModel.hasEnteredWeight,
             onStartReset: {
+                withAnimation {
+                    viewModel.currentPhase = .safety
+                }
+            }
+        )
+    }
+
+    // MARK: - Safety Phase
+
+    private var safetyPhase: some View {
+        SafetyAcknowledgmentView(
+            onContinue: {
+                withAnimation {
+                    viewModel.currentPhase = .starterReset
+                }
+            },
+            onSkip: {
                 withAnimation {
                     viewModel.currentPhase = .starterReset
                 }

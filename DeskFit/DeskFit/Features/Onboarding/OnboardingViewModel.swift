@@ -4,6 +4,7 @@ import Combine
 enum OnboardingPhase {
     case questionnaire  // Steps 0-7: goal, focus, dob, gender, height/weight, time, hours, reminders
     case summary        // "Your plan is ready" screen
+    case safety         // Safety acknowledgment screen (before starter reset)
     case starterReset   // 60s starter session
     case completion     // Post-reset completion screen
 }

@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Displays exercise information including illustration, name, instructions, and safety disclaimer.
+/// Displays exercise information including illustration, name, and instructions.
 /// All text is shown in full without truncation - no "More/Less" buttons.
 /// This view is designed to be placed inside a ScrollView in the parent view
 /// to handle overflow on smaller devices.
@@ -40,48 +40,7 @@ struct ExerciseDisplayView: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, Theme.Spacing.screenHorizontal)
                 .accessibilityIdentifier("ExerciseDescription")
-
-            // Safety disclaimer - FULL TEXT, NO TRUNCATION
-            if !exercise.contraindication.isEmpty {
-                SafetyDisclaimerView(text: exercise.contraindication)
-                    .padding(.horizontal, Theme.Spacing.screenHorizontal)
-            }
         }
-    }
-}
-
-// MARK: - Safety Disclaimer View
-
-/// Displays safety/contraindication warnings with full text - no truncation or "More" button.
-/// Typography is optimized for readability with comfortable line spacing and breathing room.
-private struct SafetyDisclaimerView: View {
-    let text: String
-
-    var body: some View {
-        HStack(alignment: .top, spacing: Theme.Spacing.md) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(.warning)
-                .font(.system(size: 15, weight: .medium))
-                .padding(.top, 3)
-
-            // Full text display - no line limit, no truncation
-            // Improved typography: slightly larger font, comfortable line spacing
-            Text(text)
-                .font(.system(size: 14, weight: .regular))
-                .foregroundStyle(.textSecondary)
-                .multilineTextAlignment(.leading)
-                .lineSpacing(3)
-                .lineLimit(nil)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(.horizontal, Theme.Spacing.lg)
-        .padding(.vertical, Theme.Spacing.md)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                .fill(Color.warning.opacity(0.08))
-        )
-        .accessibilityIdentifier("SafetyDisclaimer")
     }
 }
 

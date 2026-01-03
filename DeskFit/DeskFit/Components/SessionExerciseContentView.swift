@@ -26,11 +26,6 @@ struct SessionExerciseContentView: View {
 
                 // Exercise instruction/cue - FULL TEXT, NO TRUNCATION
                 exerciseInstruction
-
-                // Safety disclaimer - FULL TEXT, NO TRUNCATION
-                if !exercise.contraindication.isEmpty {
-                    safetyDisclaimer
-                }
             }
             .padding(.vertical, Theme.Spacing.md)
         }
@@ -70,33 +65,6 @@ struct SessionExerciseContentView: View {
             .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, Theme.Spacing.screenHorizontal)
             .accessibilityIdentifier("ExerciseDescription")
-    }
-
-    private var safetyDisclaimer: some View {
-        HStack(alignment: .top, spacing: Theme.Spacing.md) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(.warning)
-                .font(.system(size: 15, weight: .medium))
-                .padding(.top, 3)
-
-            // Improved typography: slightly larger font, comfortable line spacing
-            Text(exercise.contraindication)
-                .font(.system(size: 14, weight: .regular))
-                .foregroundStyle(.textSecondary)
-                .multilineTextAlignment(.leading)
-                .lineSpacing(3)
-                .lineLimit(nil)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(.horizontal, Theme.Spacing.lg)
-        .padding(.vertical, Theme.Spacing.md)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                .fill(Color.warning.opacity(0.08))
-        )
-        .padding(.horizontal, Theme.Spacing.screenHorizontal)
-        .accessibilityIdentifier("SafetyDisclaimer")
     }
 }
 

@@ -15,6 +15,7 @@ final class AnalyticsService: @unchecked Sendable {
         case onboardingPersonalInfo(step: String, ageBand: String?, gender: String?, hasHeight: Bool?, hasWeight: Bool?)
         case onboardingCompleted(durationSeconds: Int, goal: String, focusAreas: [String], dailyMinutes: Int)
         case onboardingSummaryViewed
+        case onboardingSafetyAcknowledged(action: String)
         case starterResetStarted
         case starterResetCompleted(durationSeconds: Int, exerciseCount: Int)
         case starterResetSkipped
@@ -88,6 +89,9 @@ final class AnalyticsService: @unchecked Sendable {
 
         case .onboardingSummaryViewed:
             return ("onboarding_summary_viewed", [:])
+
+        case .onboardingSafetyAcknowledged(let action):
+            return ("onboarding_safety_acknowledged", ["action": action])
 
         case .starterResetStarted:
             return ("starter_reset_started", [:])

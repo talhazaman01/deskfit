@@ -127,6 +127,13 @@ struct SettingsView: View {
 
             // Support Section
             Section {
+                NavigationLink {
+                    SafetyDisclaimerView()
+                } label: {
+                    Label("Safety & Disclaimer", systemImage: "heart.text.square")
+                        .foregroundStyle(.primary)
+                }
+
                 Link(destination: URL(string: "mailto:support@deskfit.app")!) {
                     Label("Contact Support", systemImage: "envelope")
                         .foregroundStyle(.primary)
