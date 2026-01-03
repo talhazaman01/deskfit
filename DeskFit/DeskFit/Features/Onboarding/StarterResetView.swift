@@ -160,7 +160,7 @@ struct StarterResetView: View {
 
 #Preview("iPhone SE") {
     StarterResetView(
-        focusAreas: [.neck, .shoulders, .back],
+        focusAreas: [.neck, .shoulders, .upperBack],
         onComplete: {},
         onSkip: {}
     )
@@ -169,7 +169,7 @@ struct StarterResetView: View {
 
 #Preview("iPhone 15 Pro") {
     StarterResetView(
-        focusAreas: [.neck, .shoulders, .back],
+        focusAreas: [.neck, .shoulders, .upperBack],
         onComplete: {},
         onSkip: {}
     )
@@ -178,7 +178,7 @@ struct StarterResetView: View {
 
 #Preview("iPhone 15 Pro Max") {
     StarterResetView(
-        focusAreas: [.neck, .shoulders, .back],
+        focusAreas: [.neck, .shoulders, .upperBack],
         onComplete: {},
         onSkip: {}
     )
