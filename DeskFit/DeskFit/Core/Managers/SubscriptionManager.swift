@@ -36,6 +36,9 @@ class SubscriptionManager: ObservableObject {
 
     // Configuration
     static let productLoadTimeout: TimeInterval = 10.0
+    static let loadCooldownSeconds: TimeInterval = 3.0  // Minimum time between load attempts
+    static let simulatorRetryDelay: TimeInterval = 1.0  // Delay before retry on Simulator empty products
+    static let maxSimulatorRetries: Int = 2             // Max automatic retries for Simulator
 
     // Published state
     @Published private(set) var products: [Product] = []
@@ -46,6 +49,10 @@ class SubscriptionManager: ObservableObject {
     // Loading states for UI - this is the single source of truth for product load status
     @Published private(set) var productLoadState: ProductLoadState = .idle
     @Published private(set) var lastStoreKitError: StoreKitError?
+
+    // Deduplication & backoff state
+    private var lastLoadAttempt: Date?
+    private var simulatorRetryCount: Int = 0
 
     enum ProductLoadState: Equatable {
         case idle
@@ -97,6 +104,20 @@ class SubscriptionManager: ObservableObject {
         #else
         return false
         #endif
+    }
+
+    /// Whether a new load attempt is allowed (not loading, not on cooldown)
+    var canAttemptLoadProducts: Bool {
+        guard productLoadState != .loading else { return false }
+        guard let lastAttempt = lastLoadAttempt else { return true }
+        return Date().timeIntervalSince(lastAttempt) >= Self.loadCooldownSeconds
+    }
+
+    /// Time remaining until next load attempt is allowed (for UI feedback)
+    var cooldownRemaining: TimeInterval {
+        guard let lastAttempt = lastLoadAttempt else { return 0 }
+        let elapsed = Date().timeIntervalSince(lastAttempt)
+        return max(0, Self.loadCooldownSeconds - elapsed)
     }
 
     /// User-facing error message derived from productLoadState
@@ -159,6 +180,14 @@ class SubscriptionManager: ObservableObject {
 
     // MARK: - Product Loading with Deduplication
 
+    /// Force reloads products, resetting all retry/cooldown state.
+    /// Use this for user-initiated "Try Again" actions.
+    func forceReloadProducts() async {
+        simulatorRetryCount = 0
+        lastLoadAttempt = nil
+        await loadProducts(force: true)
+    }
+
     /// Loads products from the App Store or StoreKit configuration.
     /// - Parameter force: If true, reloads even if products are already loaded.
     ///                    Use for "Try Again" buttons after failures.
@@ -175,12 +204,22 @@ class SubscriptionManager: ObservableObject {
             return
         }
 
+        // Cooldown guard: prevent rapid consecutive calls (unless forced)
+        if !force, let lastAttempt = lastLoadAttempt {
+            let elapsed = Date().timeIntervalSince(lastAttempt)
+            if elapsed < Self.loadCooldownSeconds {
+                logDebug("loadProducts() skipped - cooldown active (\(String(format: "%.1f", elapsed))s < \(Self.loadCooldownSeconds)s)")
+                return
+            }
+        }
+
         // Cancel any existing load task
         loadProductsTask?.cancel()
 
         isLoading = true
         productLoadState = .loading
         lastStoreKitError = nil
+        lastLoadAttempt = Date()
 
         let productIds = [Self.monthlyProductId, Self.annualProductId]
         let environment = isRunningOnSimulator ? "Simulator" : "Device"
@@ -214,19 +253,36 @@ class SubscriptionManager: ObservableObject {
                 logStoreKitError(
                     code: "EMPTY_PRODUCTS",
                     description: "No products returned from App Store",
-                    context: "Environment: \(environment), Requested IDs: \(productIds)"
+                    context: "Environment: \(environment), Requested IDs: \(productIds), Retry: \(simulatorRetryCount)/\(Self.maxSimulatorRetries)"
                 )
 
                 // Detect simulator vs device for appropriate error
                 if isRunningOnSimulator {
+                    // On Simulator, try automatic retry (StoreKit config sometimes needs a moment)
+                    if simulatorRetryCount < Self.maxSimulatorRetries {
+                        simulatorRetryCount += 1
+                        logDebug("🔄 Simulator empty products - auto-retry \(simulatorRetryCount)/\(Self.maxSimulatorRetries) in \(Self.simulatorRetryDelay)s")
+
+                        // Reset state for retry
+                        isLoading = false
+                        productLoadState = .idle
+
+                        try? await Task.sleep(nanoseconds: UInt64(Self.simulatorRetryDelay * 1_000_000_000))
+                        await loadProducts(force: true)
+                        return
+                    }
+
                     productLoadState = .failed(reason: .simulatorMissingConfig)
-                    logDebug("❌ Simulator detected with no products - ensure DeskFit.storekit is attached to Run Scheme")
+                    logDebug("❌ Simulator detected with no products after \(Self.maxSimulatorRetries) retries - ensure DeskFit.storekit is attached to Run Scheme")
                 } else {
                     productLoadState = .failed(reason: .noProductsFound)
                     logDebug("❌ Device: No products found - check App Store Connect: products cleared for sale, sandbox account signed in, agreements accepted")
                 }
                 return
             }
+
+            // Reset retry count on success
+            simulatorRetryCount = 0
 
             // Sort by price (monthly first, then annual)
             products = storeProducts.sorted { $0.price < $1.price }

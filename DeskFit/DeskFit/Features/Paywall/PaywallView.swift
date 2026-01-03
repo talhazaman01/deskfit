@@ -140,6 +140,11 @@ struct PaywallView: View {
                         AnalyticsService.shared.track(.planSelected(plan: "monthly"))
                     }
                 }
+
+                // DEBUG: Reload button for testing
+                #if DEBUG
+                debugReloadButton
+                #endif
             }
 
         case .timeout, .failed:
@@ -149,7 +154,7 @@ struct PaywallView: View {
                 isSimulator: subscriptionManager.isRunningOnSimulator,
                 errorMessage: subscriptionManager.userFacingErrorMessage,
                 onTryAgain: {
-                    Task { await subscriptionManager.loadProducts(force: true) }
+                    Task { await subscriptionManager.forceReloadProducts() }
                 },
                 onContinueFree: {
                     AnalyticsService.shared.track(.paywallDismissed(source: source, selectedPlan: nil))
@@ -240,6 +245,25 @@ struct PaywallView: View {
             }
         }
     }
+
+    // MARK: - Debug
+
+    #if DEBUG
+    private var debugReloadButton: some View {
+        Button {
+            Task { await subscriptionManager.forceReloadProducts() }
+        } label: {
+            HStack(spacing: Theme.Spacing.xs) {
+                Image(systemName: "arrow.clockwise")
+                Text("Reload Products")
+            }
+            .font(Theme.Typography.caption)
+            .foregroundStyle(.textTertiary)
+        }
+        .disabled(!subscriptionManager.canAttemptLoadProducts)
+        .opacity(subscriptionManager.canAttemptLoadProducts ? 1.0 : 0.5)
+    }
+    #endif
 
     // MARK: - Helpers
 
