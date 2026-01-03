@@ -17,6 +17,28 @@ struct OnboardingFlowView: View {
     }
 
     var body: some View {
+        Group {
+            switch viewModel.currentPhase {
+            case .questionnaire:
+                questionnairePhase
+            case .summary:
+                summaryPhase
+            case .starterReset:
+                starterResetPhase
+            case .completion:
+                completionPhase
+            }
+        }
+        .background(Color.appBackground)
+        .onAppear {
+            AnalyticsService.shared.track(.onboardingStarted)
+            viewModel.startTime = Date()
+        }
+    }
+
+    // MARK: - Questionnaire Phase (Steps 0-4)
+
+    private var questionnairePhase: some View {
         VStack(spacing: 0) {
             // Navigation bar with back and progress
             navigationBar
@@ -47,11 +69,59 @@ struct OnboardingFlowView: View {
             // Bottom button area
             bottomArea
         }
-        .background(Color.appBackground)
-        .onAppear {
-            AnalyticsService.shared.track(.onboardingStarted)
-            viewModel.startTime = Date()
-        }
+    }
+
+    // MARK: - Summary Phase
+
+    private var summaryPhase: some View {
+        OnboardingSummaryView(
+            goal: viewModel.selectedGoal,
+            focusAreas: viewModel.selectedFocusAreas,
+            dailyTimeMinutes: viewModel.selectedDailyTime,
+            reminderFrequency: viewModel.reminderFrequency,
+            workStartMinutes: viewModel.workStartMinutes,
+            workEndMinutes: viewModel.workEndMinutes,
+            onStartReset: {
+                withAnimation {
+                    viewModel.currentPhase = .starterReset
+                }
+            }
+        )
+    }
+
+    // MARK: - Starter Reset Phase
+
+    private var starterResetPhase: some View {
+        StarterResetView(
+            focusAreas: viewModel.selectedFocusAreas,
+            onComplete: {
+                // Calculate approximate duration (60s target)
+                viewModel.starterResetDuration = 60
+                withAnimation {
+                    viewModel.currentPhase = .completion
+                }
+            },
+            onSkip: {
+                // User skipped - finalize and show paywall
+                finalizeOnboarding(completedStarterReset: false)
+                appState.presentPaywall(source: "post_starter_reset")
+            }
+        )
+    }
+
+    // MARK: - Completion Phase
+
+    private var completionPhase: some View {
+        StarterResetCompletionView(
+            durationSeconds: viewModel.starterResetDuration,
+            onUnlockPlans: {
+                finalizeOnboarding(completedStarterReset: true)
+                appState.presentPaywall(source: "post_starter_reset")
+            },
+            onContinueFree: {
+                finalizeOnboarding(completedStarterReset: true)
+            }
+        )
     }
 
     // MARK: - Navigation Bar
@@ -113,13 +183,17 @@ struct OnboardingFlowView: View {
         if currentStep < totalSteps - 1 {
             withAnimation { currentStep += 1 }
         } else {
-            completeOnboarding()
+            // Move to summary phase instead of completing
+            withAnimation {
+                viewModel.currentPhase = .summary
+            }
         }
     }
 
-    private func completeOnboarding() {
+    private func finalizeOnboarding(completedStarterReset: Bool) {
         guard let profile = profile else { return }
 
+        // Save user preferences
         profile.goal = viewModel.selectedGoal?.rawValue ?? ""
         profile.focusAreas = viewModel.selectedFocusAreas.map { $0.rawValue }
         profile.dailyTimeMinutes = viewModel.selectedDailyTime
@@ -128,8 +202,18 @@ struct OnboardingFlowView: View {
         profile.reminderFrequency = viewModel.reminderFrequency.rawValue
         profile.onboardingCompleted = true
 
+        // If user completed the starter reset, initialize their streak
+        if completedStarterReset {
+            profile.currentStreak = 1
+            profile.longestStreak = 1
+            profile.lastSessionDate = Date()
+            profile.totalSessions = 1
+            profile.totalMinutes = 1  // 1 minute for the starter reset
+        }
+
         try? modelContext.save()
 
+        // Track analytics
         let duration = Int(Date().timeIntervalSince(viewModel.startTime ?? Date()))
         AnalyticsService.shared.track(.onboardingCompleted(
             durationSeconds: duration,
@@ -138,6 +222,7 @@ struct OnboardingFlowView: View {
             dailyMinutes: profile.dailyTimeMinutes
         ))
 
+        // Schedule notifications if enabled
         if viewModel.reminderFrequency != .off {
             Task {
                 let granted = await NotificationService.shared.requestPermission()
@@ -152,7 +237,5 @@ struct OnboardingFlowView: View {
                 try? modelContext.save()
             }
         }
-
-        appState.presentPaywall(source: "onboarding")
     }
 }

@@ -13,6 +13,10 @@ final class AnalyticsService: @unchecked Sendable {
         case onboardingStarted
         case onboardingStepCompleted(step: String)
         case onboardingCompleted(durationSeconds: Int, goal: String, focusAreas: [String], dailyMinutes: Int)
+        case onboardingSummaryViewed
+        case starterResetStarted
+        case starterResetCompleted(durationSeconds: Int, exerciseCount: Int)
+        case starterResetSkipped
 
         case sessionStarted(sessionId: String, sessionType: String, durationSeconds: Int, exerciseCount: Int)
         case sessionPaused(sessionId: String, elapsedSeconds: Int)
@@ -72,6 +76,21 @@ final class AnalyticsService: @unchecked Sendable {
                 "focus_areas": focusAreas,
                 "daily_minutes": dailyMinutes
             ])
+
+        case .onboardingSummaryViewed:
+            return ("onboarding_summary_viewed", [:])
+
+        case .starterResetStarted:
+            return ("starter_reset_started", [:])
+
+        case .starterResetCompleted(let duration, let exerciseCount):
+            return ("starter_reset_completed", [
+                "duration_seconds": duration,
+                "exercise_count": exerciseCount
+            ])
+
+        case .starterResetSkipped:
+            return ("starter_reset_skipped", [:])
 
         case .sessionStarted(let sessionId, let sessionType, let duration, let exerciseCount):
             return ("session_started", [
