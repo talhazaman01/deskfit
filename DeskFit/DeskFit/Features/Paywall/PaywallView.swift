@@ -10,6 +10,9 @@ struct PaywallView: View {
 
     @StateObject private var viewModel = PaywallViewModel()
 
+    /// View-local flag to ensure loadProducts is called only once per view lifetime
+    @State private var didLoadProducts = false
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -37,6 +40,12 @@ struct PaywallView: View {
                             .foregroundStyle(.textSecondary)
                     }
                 }
+            }
+            .task {
+                // Load products once when view appears (guarded by view-local flag)
+                guard !didLoadProducts else { return }
+                didLoadProducts = true
+                await subscriptionManager.loadProducts()
             }
             .onAppear {
                 AnalyticsService.shared.track(.paywallViewed(source: source))
@@ -138,8 +147,9 @@ struct PaywallView: View {
             StoreUnavailableView(
                 loadState: subscriptionManager.productLoadState,
                 isSimulator: subscriptionManager.isRunningOnSimulator,
+                errorMessage: subscriptionManager.userFacingErrorMessage,
                 onTryAgain: {
-                    Task { await subscriptionManager.loadProducts() }
+                    Task { await subscriptionManager.loadProducts(force: true) }
                 },
                 onContinueFree: {
                     AnalyticsService.shared.track(.paywallDismissed(source: source, selectedPlan: nil))
@@ -459,35 +469,44 @@ struct SkeletonPlanCard: View {
 struct StoreUnavailableView: View {
     let loadState: SubscriptionManager.ProductLoadState
     let isSimulator: Bool
+    let errorMessage: String?
     let onTryAgain: () -> Void
     let onContinueFree: () -> Void
     let onRestorePurchases: () -> Void
 
     var body: some View {
         VStack(spacing: Theme.Spacing.lg) {
-            Image(systemName: "exclamationmark.icloud")
+            Image(systemName: isSimulator ? "hammer.fill" : "exclamationmark.icloud")
                 .font(.system(size: 40))
-                .foregroundStyle(.textSecondary)
+                .foregroundStyle(isSimulator ? .warning : .textSecondary)
 
-            Text("Store unavailable right now")
+            Text(isSimulator ? "Simulator Setup Required" : "Store unavailable right now")
                 .font(Theme.Typography.headline)
                 .foregroundStyle(.textPrimary)
 
-            Text(messageText)
+            Text(errorMessage ?? fallbackMessageText)
                 .font(Theme.Typography.caption)
                 .foregroundStyle(.textSecondary)
                 .multilineTextAlignment(.center)
 
-            // Debug hint for simulator
+            // Debug hint for simulator with setup steps
             #if DEBUG
             if case .failed(let reason) = loadState,
                reason == .simulatorMissingConfig {
-                Text("Dev hint: Add StoreKit configuration file to test in-app purchases on Simulator")
-                    .font(Theme.Typography.caption)
-                    .foregroundStyle(.warning)
-                    .padding(Theme.Spacing.sm)
-                    .background(Color.warning.opacity(0.1))
-                    .cornerRadius(Theme.Radius.small)
+                VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+                    Text("Setup Steps:")
+                        .font(Theme.Typography.caption)
+                        .fontWeight(.semibold)
+                    Text("1. Product > Scheme > Edit Scheme")
+                    Text("2. Run > Options tab")
+                    Text("3. StoreKit Configuration: DeskFit.storekit")
+                }
+                .font(Theme.Typography.caption)
+                .foregroundStyle(.warning)
+                .padding(Theme.Spacing.sm)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.warning.opacity(0.1))
+                .cornerRadius(Theme.Radius.small)
             }
             #endif
 
@@ -526,7 +545,8 @@ struct StoreUnavailableView: View {
         )
     }
 
-    private var messageText: String {
+    /// Fallback message if errorMessage is nil
+    private var fallbackMessageText: String {
         switch loadState {
         case .timeout:
             return "The connection timed out. Please check your internet and try again."
@@ -535,7 +555,7 @@ struct StoreUnavailableView: View {
             case .networkError:
                 return "Unable to connect. Please check your internet connection."
             case .simulatorMissingConfig:
-                return "StoreKit configuration not found."
+                return "Store not configured for Simulator. Attach DeskFit.storekit to your Run Scheme."
             default:
                 return "Something went wrong. Please try again later."
             }

@@ -1,0 +1,134 @@
+{
+  "identifier" : "E79F34A0-8E4D-4B23-9C5E-1234567890AB",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6741920127",
+    "_developerTeamID" : "YOUR_TEAM_ID",
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21606107",
+      "localizations" : [
+
+      ],
+      "name" : "DeskFit Pro",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "29.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6741920128",
+          "introductoryOffer" : {
+            "displayPrice" : "0",
+            "internalID" : "FREE_TRIAL_ANNUAL",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1W"
+          },
+          "localizations" : [
+            {
+              "description" : "Full access to DeskFit Pro features, billed annually",
+              "displayName" : "DeskFit Pro Annual",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.deskfit.pro.annual",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "DeskFit Pro Annual",
+          "subscriptionGroupID" : "21606107",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6741920129",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Full access to DeskFit Pro features, billed monthly",
+              "displayName" : "DeskFit Pro Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.deskfit.pro.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "DeskFit Pro Monthly",
+          "subscriptionGroupID" : "21606107",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}
