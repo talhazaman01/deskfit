@@ -131,7 +131,7 @@ class SubscriptionManager: ObservableObject {
             AnalyticsService.shared.track(.subscribeSuccess(
                 plan: planName,
                 price: product.price,
-                currency: product.priceFormatStyle.currencyCode ?? "USD",
+                currency: product.priceFormatStyle.currencyCode,
                 isTrial: isTrial
             ))
 

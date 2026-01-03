@@ -1,6 +1,7 @@
 import UIKit
 
-class HapticsService {
+@MainActor
+final class HapticsService {
     static let shared = HapticsService()
 
     private let lightGenerator = UIImpactFeedbackGenerator(style: .light)

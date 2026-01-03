@@ -271,7 +271,13 @@ struct WorkHoursEditView: View {
         profile.workStartMinutes = startTime.minutesSinceMidnight
         profile.workEndMinutes = endTime.minutesSinceMidnight
         try? modelContext.save()
-        NotificationService.shared.scheduleReminders(for: profile)
+        Task {
+            await NotificationService.shared.scheduleReminders(
+                frequency: ReminderFrequency(rawValue: profile.reminderFrequency) ?? .every2Hours,
+                workStartMinutes: profile.workStartMinutes,
+                workEndMinutes: profile.workEndMinutes
+            )
+        }
         dismiss()
     }
 }
@@ -287,7 +293,13 @@ struct ReminderFrequencyEditView: View {
                 Button {
                     profile.reminderFrequency = frequency.rawValue
                     try? modelContext.save()
-                    NotificationService.shared.scheduleReminders(for: profile)
+                    Task {
+                        await NotificationService.shared.scheduleReminders(
+                            frequency: frequency,
+                            workStartMinutes: profile.workStartMinutes,
+                            workEndMinutes: profile.workEndMinutes
+                        )
+                    }
                     dismiss()
                 } label: {
                     HStack {

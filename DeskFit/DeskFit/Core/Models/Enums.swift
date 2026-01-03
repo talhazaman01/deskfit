@@ -109,12 +109,12 @@ enum SessionFeedback: String, CaseIterable {
     }
 }
 
-enum NotificationAction: String {
+enum NotificationAction: String, Sendable {
     case startNow = "START_NOW"
     case snooze15 = "SNOOZE_15"
     case snooze60 = "SNOOZE_60"
 
-    static let categoryIdentifier = "DESKFIT_REMINDER"
+    nonisolated static let categoryIdentifier = "DESKFIT_REMINDER"
 }
 
 enum SubscriptionStatus: String {

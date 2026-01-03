@@ -2,7 +2,7 @@ import Foundation
 
 /// Stub analytics service - prints to console in DEBUG.
 /// Replace with real provider (Mixpanel, Amplitude, PostHog) before launch.
-class AnalyticsService {
+final class AnalyticsService: @unchecked Sendable {
     static let shared = AnalyticsService()
 
     private init() {}
