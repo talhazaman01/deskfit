@@ -6,10 +6,16 @@ final class UserProfile {
     var id: UUID
     var createdAt: Date
 
-    // Onboarding
+    // Onboarding - Core preferences
     var goal: String
     var focusAreas: [String]
     var dailyTimeMinutes: Int
+
+    // Onboarding - Personal info (for personalization)
+    var dateOfBirth: Date?
+    var gender: String?           // Stores Gender.rawValue
+    var heightCm: Double?         // Always stored in metric (cm)
+    var weightKg: Double?         // Always stored in metric (kg)
 
     // Work hours as minutes since midnight (0-1439)
     // e.g., 9:00 AM = 540, 5:00 PM = 1020
@@ -42,6 +48,10 @@ final class UserProfile {
         self.goal = ""
         self.focusAreas = []
         self.dailyTimeMinutes = 5
+        self.dateOfBirth = nil
+        self.gender = nil
+        self.heightCm = nil
+        self.weightKg = nil
         self.workStartMinutes = 540  // 9:00 AM
         self.workEndMinutes = 1020   // 5:00 PM
         self.reminderFrequency = "every_2_hours"
@@ -54,6 +64,34 @@ final class UserProfile {
         self.totalSessions = 0
         self.onboardingCompleted = false
         self.notificationPermissionAsked = false
+    }
+
+    // MARK: - Computed Properties for Personal Info
+
+    /// User's age calculated from date of birth
+    var age: Int? {
+        guard let dob = dateOfBirth else { return nil }
+        let calendar = Calendar.current
+        let now = Date()
+        let ageComponents = calendar.dateComponents([.year], from: dob, to: now)
+        return ageComponents.year
+    }
+
+    /// Age band for analytics (does not expose raw DOB)
+    var ageBand: AgeBand? {
+        guard let age = age else { return nil }
+        return AgeBand.from(age: age)
+    }
+
+    /// Gender as typed enum
+    var genderEnum: Gender? {
+        guard let genderString = gender else { return nil }
+        return Gender(rawValue: genderString)
+    }
+
+    /// Whether user has provided personal info for personalization
+    var hasPersonalInfo: Bool {
+        dateOfBirth != nil || gender != nil || heightCm != nil || weightKg != nil
     }
 
     // Convenience computed properties

@@ -10,7 +10,8 @@ struct OnboardingFlowView: View {
     @StateObject private var viewModel = OnboardingViewModel()
     @State private var currentStep = 0
 
-    private let totalSteps = 5
+    // Updated to 8 steps: goal, focus, dob, gender, height/weight, time, work hours, reminders
+    private let totalSteps = 8
 
     private var profile: UserProfile? {
         profiles.first
@@ -45,23 +46,52 @@ struct OnboardingFlowView: View {
 
             // Content
             TabView(selection: $currentStep) {
+                // Step 0: Goal
                 GoalSelectionView(selectedGoal: $viewModel.selectedGoal)
                     .tag(0)
 
+                // Step 1: Focus Areas
                 FocusAreasView(selectedAreas: $viewModel.selectedFocusAreas)
                     .tag(1)
 
-                TimePreferenceView(selectedTime: $viewModel.selectedDailyTime)
+                // Step 2: Date of Birth
+                DateOfBirthView(
+                    dateOfBirth: $viewModel.dateOfBirth,
+                    hasSetDateOfBirth: $viewModel.hasSetDateOfBirth
+                )
                     .tag(2)
 
+                // Step 3: Gender
+                GenderSelectionView(selectedGender: $viewModel.selectedGender)
+                    .tag(3)
+
+                // Step 4: Height & Weight
+                HeightWeightView(
+                    measurementUnit: $viewModel.measurementUnit,
+                    heightFeet: $viewModel.heightFeet,
+                    heightInches: $viewModel.heightInches,
+                    heightCm: $viewModel.heightCm,
+                    weightLb: $viewModel.weightLb,
+                    weightKg: $viewModel.weightKg,
+                    hasEnteredHeight: $viewModel.hasEnteredHeight,
+                    hasEnteredWeight: $viewModel.hasEnteredWeight
+                )
+                    .tag(4)
+
+                // Step 5: Time Preference
+                TimePreferenceView(selectedTime: $viewModel.selectedDailyTime)
+                    .tag(5)
+
+                // Step 6: Work Hours
                 WorkHoursView(
                     startMinutes: $viewModel.workStartMinutes,
                     endMinutes: $viewModel.workEndMinutes
                 )
-                    .tag(3)
+                    .tag(6)
 
+                // Step 7: Reminders
                 ReminderSetupView(selectedFrequency: $viewModel.reminderFrequency)
-                    .tag(4)
+                    .tag(7)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             .animation(.easeInOut(duration: 0.3), value: currentStep)
@@ -81,6 +111,7 @@ struct OnboardingFlowView: View {
             reminderFrequency: viewModel.reminderFrequency,
             workStartMinutes: viewModel.workStartMinutes,
             workEndMinutes: viewModel.workEndMinutes,
+            hasPersonalInfo: viewModel.hasSetDateOfBirth || viewModel.selectedGender != nil || viewModel.hasEnteredHeight || viewModel.hasEnteredWeight,
             onStartReset: {
                 withAnimation {
                     viewModel.currentPhase = .starterReset
@@ -165,20 +196,35 @@ struct OnboardingFlowView: View {
 
     private var isCurrentStepValid: Bool {
         switch currentStep {
-        case 0: return viewModel.selectedGoal != nil
-        case 1: return !viewModel.selectedFocusAreas.isEmpty
-        case 2: return true
-        case 3: return viewModel.workEndMinutes > viewModel.workStartMinutes
-        case 4: return true
-        default: return false
+        case 0: // Goal
+            return viewModel.selectedGoal != nil
+        case 1: // Focus Areas
+            return !viewModel.selectedFocusAreas.isEmpty
+        case 2: // DOB - must be 13+ years old
+            return viewModel.isDateOfBirthValid
+        case 3: // Gender - always valid (optional, can continue without selection)
+            return true
+        case 4: // Height/Weight - always valid (optional) but validate ranges if entered
+            return viewModel.isHeightValid && viewModel.isWeightValid
+        case 5: // Time Preference
+            return true
+        case 6: // Work Hours
+            return viewModel.workEndMinutes > viewModel.workStartMinutes
+        case 7: // Reminders
+            return true
+        default:
+            return false
         }
     }
 
     // MARK: - Actions
 
     private func handleContinue() {
-        let stepNames = ["goal", "focus_areas", "time", "work_hours", "reminders"]
+        let stepNames = ["goal", "focus_areas", "dob", "gender", "height_weight", "time", "work_hours", "reminders"]
         AnalyticsService.shared.track(.onboardingStepCompleted(step: stepNames[currentStep]))
+
+        // Track additional properties for personalization steps
+        trackPersonalizationStep()
 
         if currentStep < totalSteps - 1 {
             withAnimation { currentStep += 1 }
@@ -190,16 +236,60 @@ struct OnboardingFlowView: View {
         }
     }
 
+    private func trackPersonalizationStep() {
+        switch currentStep {
+        case 2: // DOB
+            let ageBand = AgeBand.from(age: viewModel.age)
+            AnalyticsService.shared.track(.onboardingPersonalInfo(
+                step: "dob",
+                ageBand: ageBand.rawValue,
+                gender: nil,
+                hasHeight: nil,
+                hasWeight: nil
+            ))
+        case 3: // Gender
+            let genderValue = viewModel.selectedGender != .preferNotToSay ? viewModel.selectedGender?.rawValue : nil
+            AnalyticsService.shared.track(.onboardingPersonalInfo(
+                step: "gender",
+                ageBand: nil,
+                gender: genderValue,
+                hasHeight: nil,
+                hasWeight: nil
+            ))
+        case 4: // Height/Weight
+            AnalyticsService.shared.track(.onboardingPersonalInfo(
+                step: "height_weight",
+                ageBand: nil,
+                gender: nil,
+                hasHeight: viewModel.hasEnteredHeight,
+                hasWeight: viewModel.hasEnteredWeight
+            ))
+        default:
+            break
+        }
+    }
+
     private func finalizeOnboarding(completedStarterReset: Bool) {
         guard let profile = profile else { return }
 
-        // Save user preferences
+        // Save core preferences
         profile.goal = viewModel.selectedGoal?.rawValue ?? ""
         profile.focusAreas = viewModel.selectedFocusAreas.map { $0.rawValue }
         profile.dailyTimeMinutes = viewModel.selectedDailyTime
         profile.workStartMinutes = viewModel.workStartMinutes
         profile.workEndMinutes = viewModel.workEndMinutes
         profile.reminderFrequency = viewModel.reminderFrequency.rawValue
+
+        // Save personal info (for personalization)
+        if viewModel.hasSetDateOfBirth {
+            profile.dateOfBirth = viewModel.dateOfBirth
+        }
+        if let gender = viewModel.selectedGender {
+            profile.gender = gender.rawValue
+        }
+        profile.heightCm = viewModel.heightCmForStorage
+        profile.weightKg = viewModel.weightKgForStorage
+
         profile.onboardingCompleted = true
 
         // If user completed the starter reset, initialize their streak

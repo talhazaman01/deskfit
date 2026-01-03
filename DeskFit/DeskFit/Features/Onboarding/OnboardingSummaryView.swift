@@ -7,6 +7,7 @@ struct OnboardingSummaryView: View {
     let reminderFrequency: ReminderFrequency
     let workStartMinutes: Int
     let workEndMinutes: Int
+    let hasPersonalInfo: Bool
     let onStartReset: () -> Void
 
     var body: some View {
@@ -51,6 +52,25 @@ struct OnboardingSummaryView: View {
             Text("Here's what we've personalized for you")
                 .font(Theme.Typography.subtitle)
                 .foregroundStyle(.textSecondary)
+
+            // Personalized badge - shown if user provided personal info
+            if hasPersonalInfo {
+                HStack(spacing: Theme.Spacing.xs) {
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 12, weight: .medium))
+
+                    Text("Personalized for you")
+                        .font(Theme.Typography.caption)
+                        .fontWeight(.medium)
+                }
+                .foregroundStyle(.appTeal)
+                .padding(.horizontal, Theme.Spacing.md)
+                .padding(.vertical, Theme.Spacing.sm)
+                .background(
+                    Capsule()
+                        .fill(Color.appTeal.opacity(0.1))
+                )
+            }
         }
         .padding(.top, Theme.Spacing.lg)
     }
@@ -178,7 +198,7 @@ private struct SummaryRow: View {
     }
 }
 
-#Preview {
+#Preview("Without personalization") {
     OnboardingSummaryView(
         goal: .reduceStiffness,
         focusAreas: [.neck, .shoulders, .lowerBack],
@@ -186,6 +206,20 @@ private struct SummaryRow: View {
         reminderFrequency: .every2Hours,
         workStartMinutes: 540,
         workEndMinutes: 1020,
+        hasPersonalInfo: false,
+        onStartReset: {}
+    )
+}
+
+#Preview("With personalization") {
+    OnboardingSummaryView(
+        goal: .improvePosture,
+        focusAreas: [.neck, .shoulders, .upperBack],
+        dailyTimeMinutes: 5,
+        reminderFrequency: .hourly,
+        workStartMinutes: 480,
+        workEndMinutes: 1020,
+        hasPersonalInfo: true,
         onStartReset: {}
     )
 }

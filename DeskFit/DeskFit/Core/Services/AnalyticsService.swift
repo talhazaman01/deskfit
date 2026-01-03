@@ -12,6 +12,7 @@ final class AnalyticsService: @unchecked Sendable {
 
         case onboardingStarted
         case onboardingStepCompleted(step: String)
+        case onboardingPersonalInfo(step: String, ageBand: String?, gender: String?, hasHeight: Bool?, hasWeight: Bool?)
         case onboardingCompleted(durationSeconds: Int, goal: String, focusAreas: [String], dailyMinutes: Int)
         case onboardingSummaryViewed
         case starterResetStarted
@@ -68,6 +69,14 @@ final class AnalyticsService: @unchecked Sendable {
 
         case .onboardingStepCompleted(let step):
             return ("onboarding_step_completed", ["step": step])
+
+        case .onboardingPersonalInfo(let step, let ageBand, let gender, let hasHeight, let hasWeight):
+            var props: [String: Any] = ["step": step]
+            if let ageBand = ageBand { props["age_band"] = ageBand }
+            if let gender = gender { props["gender"] = gender }
+            if let hasHeight = hasHeight { props["has_height"] = hasHeight }
+            if let hasWeight = hasWeight { props["has_weight"] = hasWeight }
+            return ("onboarding_personal_info", props)
 
         case .onboardingCompleted(let duration, let goal, let focusAreas, let dailyMinutes):
             return ("onboarding_completed", [

@@ -124,3 +124,71 @@ enum SubscriptionStatus: String {
     case expired
     case unknown
 }
+
+// MARK: - Gender
+
+enum Gender: String, CaseIterable, Identifiable {
+    case female
+    case male
+    case nonBinary = "non_binary"
+    case preferNotToSay = "prefer_not_to_say"
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .female: return "Female"
+        case .male: return "Male"
+        case .nonBinary: return "Non-binary"
+        case .preferNotToSay: return "Prefer not to say"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .female: return "figure.stand.dress"
+        case .male: return "figure.stand"
+        case .nonBinary: return "person.fill"
+        case .preferNotToSay: return "person.fill.questionmark"
+        }
+    }
+}
+
+// MARK: - Measurement Unit
+
+enum MeasurementUnit: String, CaseIterable {
+    case metric
+    case imperial
+
+    var heightLabel: String {
+        switch self {
+        case .metric: return "cm"
+        case .imperial: return "ft/in"
+        }
+    }
+
+    var weightLabel: String {
+        switch self {
+        case .metric: return "kg"
+        case .imperial: return "lb"
+        }
+    }
+}
+
+// MARK: - Age Band (for analytics, not raw DOB)
+
+enum AgeBand: String {
+    case teen = "13-17"
+    case youngAdult = "18-39"
+    case middleAge = "40-59"
+    case senior = "60+"
+
+    static func from(age: Int) -> AgeBand {
+        switch age {
+        case 13...17: return .teen
+        case 18...39: return .youngAdult
+        case 40...59: return .middleAge
+        default: return .senior
+        }
+    }
+}

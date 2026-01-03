@@ -53,30 +53,33 @@ struct ExerciseDisplayView: View {
 // MARK: - Safety Disclaimer View
 
 /// Displays safety/contraindication warnings with full text - no truncation or "More" button.
+/// Typography is optimized for readability with comfortable line spacing and breathing room.
 private struct SafetyDisclaimerView: View {
     let text: String
 
     var body: some View {
-        HStack(alignment: .top, spacing: Theme.Spacing.sm) {
+        HStack(alignment: .top, spacing: Theme.Spacing.md) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundStyle(.warning)
-                .font(Theme.Typography.caption)
-                .padding(.top, 2)
+                .font(.system(size: 15, weight: .medium))
+                .padding(.top, 3)
 
             // Full text display - no line limit, no truncation
+            // Improved typography: slightly larger font, comfortable line spacing
             Text(text)
-                .font(Theme.Typography.caption)
+                .font(.system(size: 14, weight: .regular))
                 .foregroundStyle(.textSecondary)
                 .multilineTextAlignment(.leading)
+                .lineSpacing(3)
                 .lineLimit(nil)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.horizontal, Theme.Spacing.lg)
-        .padding(.vertical, Theme.Spacing.sm)
+        .padding(.vertical, Theme.Spacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: Theme.Radius.small)
-                .fill(Color.warning.opacity(0.1))
+            RoundedRectangle(cornerRadius: Theme.Radius.medium)
+                .fill(Color.warning.opacity(0.08))
         )
         .accessibilityIdentifier("SafetyDisclaimer")
     }
