@@ -124,16 +124,21 @@ class SubscriptionManager: ObservableObject {
     private var previousStatus: SubscriptionStatus = .unknown
     private var loadProductsTask: Task<Void, Never>?
 
-    // Guard against multiple instances
-    private static var instanceCount = 0
+    #if DEBUG
+    // Guard against multiple instances (debug only)
+    // nonisolated(unsafe) because deinit is always nonisolated
+    nonisolated(unsafe) private static var instanceCount = 0
+    #endif
 
     init() {
+        #if DEBUG
         Self.instanceCount += 1
         logDebug("init() called - instance #\(Self.instanceCount)")
 
         if Self.instanceCount > 1 {
             logDebug("⚠️ WARNING: Multiple SubscriptionManager instances detected. Use SubscriptionManager.shared instead.")
         }
+        #endif
 
         updateListenerTask = listenForTransactionUpdates()
 
@@ -147,7 +152,9 @@ class SubscriptionManager: ObservableObject {
     deinit {
         updateListenerTask?.cancel()
         loadProductsTask?.cancel()
+        #if DEBUG
         Self.instanceCount -= 1
+        #endif
     }
 
     // MARK: - Product Loading with Deduplication
