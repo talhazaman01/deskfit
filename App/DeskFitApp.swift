@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import UserNotifications
+import Combine
 
 @main
 struct DeskFitApp: App {

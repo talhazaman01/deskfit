@@ -1,24 +1,5 @@
 import SwiftUI
 
-struct SecondaryButton: View {
-    let title: String
-    var isEnabled: Bool = true
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Text(title)
-                .fontWeight(.semibold)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
-                .background(Color.secondaryBackground)
-                .foregroundStyle(isEnabled ? .primary : .secondary)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-        }
-        .disabled(!isEnabled)
-    }
-}
-
 struct TextButton: View {
     let title: String
     var color: Color = .brandPrimary
