@@ -241,9 +241,9 @@ struct PaywallView: View {
         guard let monthly = subscriptionManager.monthlyProduct,
               let annual = subscriptionManager.annualProduct else { return nil }
 
-        let yearlyIfMonthly = monthly.price * 12
+        let yearlyIfMonthly = monthly.price * Decimal(12)
         let savings = yearlyIfMonthly - annual.price
-        let savingsPercent = Int((savings / yearlyIfMonthly) * 100)
+        let savingsPercent = Int(truncating: ((savings / yearlyIfMonthly) * Decimal(100)) as NSDecimalNumber)
 
         guard savingsPercent > 0 else { return nil }
         return "Save \(savingsPercent)%"

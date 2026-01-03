@@ -34,10 +34,10 @@ struct RemindersView: View {
                 }
 
                 Section("Work Hours") {
-                    TimePicker(label: "Start", minutesSinceMidnight: $viewModel.workStartMinutes)
+                    TimePickerRow(label: "Start", minutesSinceMidnight: $viewModel.workStartMinutes)
                         .onChange(of: viewModel.workStartMinutes) { _, _ in updateReminders() }
 
-                    TimePicker(label: "End", minutesSinceMidnight: $viewModel.workEndMinutes)
+                    TimePickerRow(label: "End", minutesSinceMidnight: $viewModel.workEndMinutes)
                         .onChange(of: viewModel.workEndMinutes) { _, _ in updateReminders() }
                 }
 
