@@ -7,7 +7,7 @@ struct SessionCompleteView: View {
     @State private var showFeedback = true
 
     var body: some View {
-        VStack(spacing: 32) {
+        VStack(spacing: Theme.Spacing.xxl) {
             Spacer()
 
             ZStack {
@@ -21,23 +21,24 @@ struct SessionCompleteView: View {
             }
 
             Text("Great job!")
-                .font(.largeTitle)
-                .fontWeight(.bold)
+                .font(Theme.Typography.largeTitle)
+                .foregroundStyle(.textPrimary)
 
             Text("You completed \(session.durationSeconds.formattedMinutes) of movement")
-                .font(.body)
-                .foregroundStyle(.secondary)
+                .font(Theme.Typography.body)
+                .foregroundStyle(.textSecondary)
 
             if showFeedback {
-                VStack(spacing: 16) {
+                VStack(spacing: Theme.Spacing.lg) {
                     Text("How was this session?")
-                        .font(.headline)
+                        .font(Theme.Typography.headline)
+                        .foregroundStyle(.textPrimary)
 
                     FeedbackView { feedback in
                         onFeedback(feedback)
                     }
                 }
-                .padding(.top, 24)
+                .padding(.top, Theme.Spacing.xl)
             }
 
             Spacer()
@@ -45,8 +46,8 @@ struct SessionCompleteView: View {
             PrimaryButton(title: "Done") {
                 onFeedback(nil)
             }
-            .padding(.bottom, 32)
+            .padding(.bottom, Theme.Spacing.xxl)
         }
-        .padding()
+        .padding(.horizontal, Theme.Spacing.screenHorizontal)
     }
 }

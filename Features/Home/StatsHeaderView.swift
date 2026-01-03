@@ -4,26 +4,34 @@ struct StatsHeaderView: View {
     let profile: UserProfile
 
     var body: some View {
-        HStack(spacing: 24) {
+        HStack(spacing: 0) {
             StatItem(
                 icon: "flame.fill",
                 value: "\(profile.currentStreak)",
                 label: "day streak",
-                color: .orange
+                color: .streakFlame
             )
+
+            Spacer()
 
             Divider()
                 .frame(height: 40)
+
+            Spacer()
 
             StatItem(
                 icon: "clock.fill",
                 value: "\(todayMinutes)",
                 label: "min today",
-                color: .brandPrimary
+                color: .appTeal
             )
+
+            Spacer()
 
             Divider()
                 .frame(height: 40)
+
+            Spacer()
 
             StatItem(
                 icon: "chart.bar.fill",
@@ -32,10 +40,10 @@ struct StatsHeaderView: View {
                 color: .success
             )
         }
-        .padding()
+        .padding(Theme.Spacing.lg)
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.secondaryBackground)
+            RoundedRectangle(cornerRadius: Theme.Radius.large)
+                .fill(Color.cardBackground)
         )
     }
 
@@ -52,17 +60,19 @@ struct StatItem: View {
     let color: Color
 
     var body: some View {
-        VStack(spacing: 4) {
-            HStack(spacing: 4) {
+        VStack(spacing: Theme.Spacing.xs) {
+            HStack(spacing: Theme.Spacing.xs) {
                 Image(systemName: icon)
                     .foregroundStyle(color)
+
                 Text(value)
-                    .font(.title2)
-                    .fontWeight(.bold)
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(.textPrimary)
             }
+
             Text(label)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(Theme.Typography.caption)
+                .foregroundStyle(.textSecondary)
         }
     }
 }

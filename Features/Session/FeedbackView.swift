@@ -4,7 +4,7 @@ struct FeedbackView: View {
     let onSelect: (SessionFeedback) -> Void
 
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: Theme.Spacing.lg) {
             ForEach(SessionFeedback.allCases, id: \.self) { feedback in
                 FeedbackButton(feedback: feedback) {
                     HapticsService.shared.light()
@@ -21,17 +21,19 @@ struct FeedbackButton: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 8) {
+            VStack(spacing: Theme.Spacing.sm) {
                 Image(systemName: feedback.icon)
                     .font(.title2)
+                    .foregroundStyle(.textPrimary)
                 Text(feedback.displayName)
-                    .font(.caption)
+                    .font(Theme.Typography.caption)
+                    .foregroundStyle(.textSecondary)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
+            .padding(.vertical, Theme.Spacing.lg)
             .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.secondaryBackground)
+                RoundedRectangle(cornerRadius: Theme.Radius.medium)
+                    .fill(Color.cardBackground)
             )
         }
         .buttonStyle(.plain)

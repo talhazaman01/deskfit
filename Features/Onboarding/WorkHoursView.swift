@@ -5,38 +5,49 @@ struct WorkHoursView: View {
     @Binding var endMinutes: Int
 
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(alignment: .leading, spacing: 0) {
+            // Title section
+            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                Text("When do you work?")
+                    .font(Theme.Typography.largeTitle)
+                    .foregroundStyle(.textPrimary)
+
+                Text("We'll only remind you during these hours.")
+                    .font(Theme.Typography.subtitle)
+                    .foregroundStyle(.textSecondary)
+            }
+            .padding(.horizontal, Theme.Spacing.screenHorizontal)
+            .padding(.bottom, Theme.Spacing.xxl)
+
             Spacer()
 
-            Text("When do you work?")
-                .font(.title)
-                .fontWeight(.bold)
-                .multilineTextAlignment(.center)
-
-            Text("We'll only remind you during these hours")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-
-            VStack(spacing: 20) {
-                TimePicker(label: "Start", minutesSinceMidnight: $startMinutes)
-                TimePicker(label: "End", minutesSinceMidnight: $endMinutes)
+            // Time pickers
+            VStack(spacing: Theme.Spacing.md) {
+                TimePickerRow(label: "Start", minutesSinceMidnight: $startMinutes)
+                TimePickerRow(label: "End", minutesSinceMidnight: $endMinutes)
             }
-            .padding(.horizontal)
+            .padding(.horizontal, Theme.Spacing.screenHorizontal)
 
+            // Validation message
             if endMinutes <= startMinutes {
-                Label("End time must be after start time", systemImage: "exclamationmark.triangle")
-                    .font(.caption)
-                    .foregroundStyle(.red)
+                HStack(spacing: Theme.Spacing.sm) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.warning)
+                    Text("End time must be after start time")
+                        .font(Theme.Typography.caption)
+                        .foregroundStyle(.textSecondary)
+                }
+                .padding(.horizontal, Theme.Spacing.screenHorizontal)
+                .padding(.top, Theme.Spacing.md)
             }
 
             Spacer()
             Spacer()
         }
-        .padding()
     }
 }
 
-struct TimePicker: View {
+struct TimePickerRow: View {
     let label: String
     @Binding var minutesSinceMidnight: Int
 
@@ -50,7 +61,8 @@ struct TimePicker: View {
     var body: some View {
         HStack {
             Text(label)
-                .font(.headline)
+                .font(Theme.Typography.option)
+                .foregroundStyle(.textPrimary)
 
             Spacer()
 
@@ -60,12 +72,20 @@ struct TimePicker: View {
                 displayedComponents: .hourAndMinute
             )
             .labelsHidden()
-            .tint(.brandPrimary)
+            .tint(.appTeal)
         }
-        .padding()
+        .padding(.horizontal, Theme.Spacing.lg)
+        .frame(height: Theme.Height.optionCard)
         .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.secondaryBackground)
+            RoundedRectangle(cornerRadius: Theme.Radius.medium)
+                .fill(Color.cardBackground)
         )
     }
+}
+
+#Preview {
+    WorkHoursView(
+        startMinutes: .constant(540),
+        endMinutes: .constant(1020)
+    )
 }

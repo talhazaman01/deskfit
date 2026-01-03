@@ -27,7 +27,7 @@ struct SessionPlayerView: View {
 
     var body: some View {
         ZStack {
-            Color.background.ignoresSafeArea()
+            Color.appBackground.ignoresSafeArea()
 
             if viewModel.isComplete {
                 SessionCompleteView(
@@ -37,10 +37,10 @@ struct SessionPlayerView: View {
                     }
                 )
             } else if viewModel.isPaused {
-                VStack(spacing: 24) {
+                VStack(spacing: Theme.Spacing.xl) {
                     Text("Paused")
-                        .font(.title)
-                        .fontWeight(.bold)
+                        .font(Theme.Typography.title)
+                        .foregroundStyle(.textPrimary)
 
                     PrimaryButton(title: "Resume") {
                         viewModel.resume()
@@ -50,16 +50,16 @@ struct SessionPlayerView: View {
                         handleAbandon()
                     }
                 }
-                .padding()
+                .padding(.horizontal, Theme.Spacing.screenHorizontal)
             } else {
-                VStack(spacing: 32) {
+                VStack(spacing: Theme.Spacing.xxl) {
                     ProgressView(value: viewModel.overallProgress)
-                        .tint(.brandPrimary)
-                        .padding(.horizontal)
+                        .tint(.appTeal)
+                        .padding(.horizontal, Theme.Spacing.screenHorizontal)
 
                     Text("\(viewModel.currentExerciseIndex + 1) of \(viewModel.exercises.count)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(Theme.Typography.caption)
+                        .foregroundStyle(.textSecondary)
 
                     Spacer()
 
@@ -82,9 +82,9 @@ struct SessionPlayerView: View {
                     } label: {
                         Image(systemName: "pause.circle.fill")
                             .font(.system(size: 60))
-                            .foregroundStyle(.brandPrimary)
+                            .foregroundStyle(.appTeal)
                     }
-                    .padding(.bottom, 32)
+                    .padding(.bottom, Theme.Spacing.xxl)
                 }
             }
         }
@@ -99,7 +99,7 @@ struct SessionPlayerView: View {
                     }
                 } label: {
                     Image(systemName: "xmark")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.textSecondary)
                 }
             }
         }

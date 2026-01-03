@@ -18,21 +18,24 @@ struct HomeView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
+            VStack(spacing: Theme.Spacing.xl) {
+                // Stats header
                 if let profile = profile {
                     StatsHeaderView(profile: profile)
                 }
 
+                // Pro banner for free users
                 if !subscriptionManager.isProUser {
-                    ProBanner {
+                    ProBannerView {
                         appState.presentPaywall(source: "home_banner")
                     }
                 }
 
-                VStack(alignment: .leading, spacing: 16) {
+                // Today's sessions
+                VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
                     Text("Today's Resets")
-                        .font(.title2)
-                        .fontWeight(.bold)
+                        .font(Theme.Typography.title)
+                        .foregroundStyle(.textPrimary)
 
                     if let plan = todaysPlan {
                         ForEach(Array(plan.sessions.enumerated()), id: \.element.id) { index, session in
@@ -50,42 +53,30 @@ struct HomeView: View {
                         }
                     } else {
                         ProgressView()
+                            .frame(maxWidth: .infinity, minHeight: 100)
                             .onAppear {
                                 generateTodaysPlan()
                             }
                     }
                 }
 
-                if let plan = todaysPlan, let nextSession = plan.sessions.first(where: { !$0.isCompleted }) {
-                    let sessionIndex = plan.sessions.firstIndex(where: { $0.id == nextSession.id }) ?? 0
-                    let isLocked = !subscriptionManager.isProUser && sessionIndex > 0
-
-                    if !isLocked {
-                        PrimaryButton(title: "Start Next Break") {
-                            appState.navigateTo(.session(nextSession))
-                        }
-                    }
-                } else if todaysPlan?.sessions.allSatisfy({ $0.isCompleted }) == true {
-                    VStack(spacing: 8) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.largeTitle)
-                            .foregroundStyle(.green)
-                        Text("All done for today!")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                    }
-                    .padding()
-                }
+                // Quick start button
+                quickStartSection
             }
-            .padding()
+            .padding(.horizontal, Theme.Spacing.screenHorizontal)
+            .padding(.top, Theme.Spacing.lg)
+            .padding(.bottom, Theme.Spacing.bottomArea)
         }
+        .background(Color.appBackground)
         .navigationTitle("DeskFit")
+        .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     appState.navigateTo(.settings)
                 } label: {
                     Image(systemName: "gearshape")
+                        .foregroundStyle(.textPrimary)
                 }
             }
         }
@@ -100,6 +91,22 @@ struct HomeView: View {
                 appState.shouldStartNextSession = false
                 startNextSession()
             }
+        }
+    }
+
+    @ViewBuilder
+    private var quickStartSection: some View {
+        if let plan = todaysPlan, let nextSession = plan.sessions.first(where: { !$0.isCompleted }) {
+            let sessionIndex = plan.sessions.firstIndex(where: { $0.id == nextSession.id }) ?? 0
+            let isLocked = !subscriptionManager.isProUser && sessionIndex > 0
+
+            if !isLocked {
+                PrimaryButton(title: "Start Next Break") {
+                    appState.navigateTo(.session(nextSession))
+                }
+            }
+        } else if todaysPlan?.sessions.allSatisfy({ $0.isCompleted }) == true {
+            CompletionBadgeView()
         }
     }
 
@@ -130,37 +137,56 @@ struct HomeView: View {
     }
 }
 
-struct ProBanner: View {
+// MARK: - Subviews
+
+struct ProBannerView: View {
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             HStack {
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
                     Text("Unlock all resets")
-                        .font(.headline)
+                        .font(Theme.Typography.headline)
+                        .foregroundStyle(.textPrimary)
+
                     Text("Get personalized daily plans")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(Theme.Typography.caption)
+                        .foregroundStyle(.textSecondary)
                 }
 
                 Spacer()
 
                 Text("Go Pro")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .background(Color.brandPrimary)
-                    .foregroundStyle(.white)
+                    .font(Theme.Typography.button)
+                    .padding(.horizontal, Theme.Spacing.lg)
+                    .padding(.vertical, Theme.Spacing.sm)
+                    .background(Color.appTeal)
+                    .foregroundStyle(.textOnDark)
                     .clipShape(Capsule())
             }
-            .padding()
+            .padding(Theme.Spacing.lg)
             .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.secondaryBackground)
+                RoundedRectangle(cornerRadius: Theme.Radius.large)
+                    .fill(Color.cardBackground)
             )
         }
         .buttonStyle(.plain)
+    }
+}
+
+struct CompletionBadgeView: View {
+    var body: some View {
+        VStack(spacing: Theme.Spacing.md) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 48))
+                .foregroundStyle(.success)
+
+            Text("All done for today!")
+                .font(Theme.Typography.headline)
+                .foregroundStyle(.textSecondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, Theme.Spacing.xl)
     }
 }

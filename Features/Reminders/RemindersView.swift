@@ -43,28 +43,29 @@ struct RemindersView: View {
                 if viewModel.workEndMinutes <= viewModel.workStartMinutes {
                     Section {
                         Label("End time must be after start time", systemImage: "exclamationmark.triangle")
-                            .foregroundStyle(.orange)
-                            .font(.caption)
+                            .foregroundStyle(.warning)
+                            .font(Theme.Typography.caption)
                     }
                 }
             }
 
             if viewModel.permissionDenied {
                 Section {
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
                         Label("Notifications are disabled", systemImage: "bell.slash")
-                            .foregroundStyle(.orange)
+                            .foregroundStyle(.warning)
 
                         Text("Enable notifications in Settings to receive break reminders.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(Theme.Typography.caption)
+                            .foregroundStyle(.textSecondary)
 
                         Button("Open Settings") {
                             if let url = URL(string: UIApplication.openSettingsURLString) {
                                 UIApplication.shared.open(url)
                             }
                         }
-                        .font(.subheadline)
+                        .font(Theme.Typography.subtitle)
+                        .foregroundStyle(.appTeal)
                     }
                 }
             }

@@ -15,10 +15,10 @@ struct SessionCardView: View {
 
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: 16) {
+            HStack(spacing: Theme.Spacing.lg) {
                 ZStack {
                     Circle()
-                        .fill(session.isCompleted ? Color.success.opacity(0.2) : Color.brandPrimary.opacity(0.1))
+                        .fill(session.isCompleted ? Color.success.opacity(0.2) : Color.appTeal.opacity(0.1))
                         .frame(width: 48, height: 48)
 
                     if session.isCompleted {
@@ -26,32 +26,32 @@ struct SessionCardView: View {
                             .foregroundStyle(.success)
                     } else if isLocked {
                         Image(systemName: "lock.fill")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.textSecondary)
                     } else {
                         Image(systemName: session.type.icon)
-                            .foregroundStyle(.brandPrimary)
+                            .foregroundStyle(.appTeal)
                     }
                 }
 
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
                     Text(session.title)
-                        .font(.headline)
-                        .foregroundStyle(isLocked ? .secondary : .primary)
+                        .font(Theme.Typography.headline)
+                        .foregroundStyle(isLocked ? .textSecondary : .textPrimary)
 
-                    HStack(spacing: 8) {
+                    HStack(spacing: Theme.Spacing.sm) {
                         Text(session.durationSeconds.formattedMinutes)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(Theme.Typography.caption)
+                            .foregroundStyle(.textSecondary)
 
                         Text("•")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.textSecondary)
 
-                        HStack(spacing: 4) {
+                        HStack(spacing: Theme.Spacing.xs) {
                             ForEach(focusAreas, id: \.self) { area in
                                 if let focusArea = FocusArea(rawValue: area) {
                                     Image(systemName: focusArea.icon)
                                         .font(.caption2)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(.textSecondary)
                                 }
                             }
                         }
@@ -62,22 +62,22 @@ struct SessionCardView: View {
 
                 if isLocked {
                     Text("PRO")
-                        .font(.caption)
+                        .font(Theme.Typography.caption)
                         .fontWeight(.bold)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color.brandPrimary)
-                        .foregroundStyle(.white)
+                        .padding(.horizontal, Theme.Spacing.sm)
+                        .padding(.vertical, Theme.Spacing.xs)
+                        .background(Color.appTeal)
+                        .foregroundStyle(.textOnDark)
                         .clipShape(Capsule())
                 } else if !session.isCompleted {
                     Image(systemName: "chevron.right")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.textSecondary)
                 }
             }
-            .padding()
+            .padding(Theme.Spacing.lg)
             .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.secondaryBackground)
+                RoundedRectangle(cornerRadius: Theme.Radius.large)
+                    .fill(Color.cardBackground)
             )
             .opacity(session.isCompleted ? 0.7 : 1)
         }

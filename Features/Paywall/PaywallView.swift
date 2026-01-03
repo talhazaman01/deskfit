@@ -12,7 +12,7 @@ struct PaywallView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
+                VStack(spacing: Theme.Spacing.xl) {
                     headerSection
                     benefitsSection
                     plansSection
@@ -21,8 +21,10 @@ struct PaywallView: View {
                     restoreButton
                     skipButton
                 }
-                .padding()
+                .padding(.horizontal, Theme.Spacing.screenHorizontal)
+                .padding(.vertical, Theme.Spacing.lg)
             }
+            .background(Color.appBackground)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -31,7 +33,7 @@ struct PaywallView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.textSecondary)
                     }
                 }
             }
@@ -49,43 +51,43 @@ struct PaywallView: View {
     // MARK: - Header
 
     private var headerSection: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: Theme.Spacing.md) {
             Image(systemName: "sparkles")
                 .font(.system(size: 50))
-                .foregroundStyle(.brandPrimary)
+                .foregroundStyle(.appTeal)
 
             Text("Unlock Your Full Reset")
-                .font(.title)
-                .fontWeight(.bold)
+                .font(Theme.Typography.largeTitle)
+                .foregroundStyle(.textPrimary)
 
             Text("Get the most out of your breaks")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(Theme.Typography.subtitle)
+                .foregroundStyle(.textSecondary)
         }
-        .padding(.top, 32)
+        .padding(.top, Theme.Spacing.xxl)
     }
 
     // MARK: - Benefits
 
     private var benefitsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
             BenefitRow(icon: "infinity", text: "Unlimited daily breaks")
             BenefitRow(icon: "calendar", text: "Full personalized daily plans")
             BenefitRow(icon: "person.fill", text: "Tailored to your focus areas")
             BenefitRow(icon: "bell.fill", text: "Smart reminder scheduling")
             BenefitRow(icon: "chart.line.uptrend.xyaxis", text: "Detailed progress tracking")
         }
-        .padding()
+        .padding(Theme.Spacing.lg)
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.secondaryBackground)
+            RoundedRectangle(cornerRadius: Theme.Radius.large)
+                .fill(Color.cardBackground)
         )
     }
 
     // MARK: - Plans (Prices from StoreKit)
 
     private var plansSection: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: Theme.Spacing.md) {
             // Annual plan - with 7-day trial
             if let annual = subscriptionManager.annualProduct {
                 PlanCard(
@@ -121,19 +123,21 @@ struct PaywallView: View {
             // Loading state
             if subscriptionManager.products.isEmpty && subscriptionManager.isLoading {
                 ProgressView("Loading plans...")
-                    .padding()
+                    .padding(Theme.Spacing.lg)
             }
 
             // Error state
             if subscriptionManager.products.isEmpty && !subscriptionManager.isLoading {
-                VStack(spacing: 8) {
+                VStack(spacing: Theme.Spacing.sm) {
                     Text("Unable to load subscription options")
-                        .foregroundStyle(.secondary)
+                        .font(Theme.Typography.body)
+                        .foregroundStyle(.textSecondary)
                     Button("Try Again") {
                         Task { await subscriptionManager.loadProducts() }
                     }
+                    .foregroundStyle(.appTeal)
                 }
-                .padding()
+                .padding(Theme.Spacing.lg)
             }
         }
     }
@@ -164,8 +168,8 @@ struct PaywallView: View {
 
     private var legalText: some View {
         Text("Cancel anytime. Subscription auto-renews unless cancelled at least 24 hours before the end of the current period.")
-            .font(.caption)
-            .foregroundStyle(.secondary)
+            .font(Theme.Typography.caption)
+            .foregroundStyle(.textTertiary)
             .multilineTextAlignment(.center)
     }
 
@@ -180,8 +184,8 @@ struct PaywallView: View {
                 }
             }
         }
-        .font(.subheadline)
-        .foregroundStyle(.secondary)
+        .font(Theme.Typography.subtitle)
+        .foregroundStyle(.textSecondary)
     }
 
     // MARK: - Skip
@@ -191,9 +195,9 @@ struct PaywallView: View {
             AnalyticsService.shared.track(.paywallDismissed(source: source, selectedPlan: nil))
             dismiss()
         }
-        .font(.subheadline)
-        .foregroundStyle(.secondary)
-        .padding(.bottom, 32)
+        .font(Theme.Typography.subtitle)
+        .foregroundStyle(.textSecondary)
+        .padding(.bottom, Theme.Spacing.xxl)
     }
 
     // MARK: - Helpers
@@ -276,13 +280,14 @@ struct BenefitRow: View {
     let text: String
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: Theme.Spacing.md) {
             Image(systemName: icon)
-                .foregroundStyle(.brandPrimary)
+                .foregroundStyle(.appTeal)
                 .frame(width: 24)
 
             Text(text)
-                .font(.body)
+                .font(Theme.Typography.body)
+                .foregroundStyle(.textPrimary)
 
             Spacer()
         }
@@ -301,32 +306,33 @@ struct PlanCard: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                 HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack(spacing: 8) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+                        HStack(spacing: Theme.Spacing.sm) {
                             Text(title)
-                                .font(.headline)
+                                .font(Theme.Typography.headline)
+                                .foregroundStyle(.textPrimary)
 
                             if isBestValue {
                                 Text("BEST VALUE")
                                     .font(.caption2)
                                     .fontWeight(.bold)
-                                    .padding(.horizontal, 8)
+                                    .padding(.horizontal, Theme.Spacing.sm)
                                     .padding(.vertical, 2)
-                                    .background(Color.brandPrimary)
-                                    .foregroundStyle(.white)
+                                    .background(Color.appTeal)
+                                    .foregroundStyle(.textOnDark)
                                     .clipShape(Capsule())
                             }
                         }
 
-                        HStack(spacing: 4) {
+                        HStack(spacing: Theme.Spacing.xs) {
                             Text(priceText)
-                                .font(.title3)
-                                .fontWeight(.bold)
+                                .font(.system(size: 20, weight: .bold))
+                                .foregroundStyle(.textPrimary)
                             Text(periodText)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .font(Theme.Typography.caption)
+                                .foregroundStyle(.textSecondary)
                         }
                     }
 
@@ -334,29 +340,29 @@ struct PlanCard: View {
 
                     if let savings = savingsText {
                         Text(savings)
-                            .font(.caption)
+                            .font(Theme.Typography.caption)
                             .fontWeight(.semibold)
-                            .foregroundStyle(.green)
+                            .foregroundStyle(.success)
                     }
 
                     Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                        .foregroundStyle(isSelected ? .brandPrimary : .secondary)
+                        .foregroundStyle(isSelected ? .appTeal : .textSecondary)
                         .font(.title2)
                 }
 
                 if let trial = trialText {
                     Text(trial)
-                        .font(.caption)
-                        .foregroundStyle(.brandPrimary)
+                        .font(Theme.Typography.caption)
+                        .foregroundStyle(.appTeal)
                 }
             }
-            .padding()
+            .padding(Theme.Spacing.lg)
             .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.secondaryBackground)
+                RoundedRectangle(cornerRadius: Theme.Radius.medium)
+                    .fill(Color.cardBackground)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .strokeBorder(isSelected ? Color.brandPrimary : Color.clear, lineWidth: 2)
+                        RoundedRectangle(cornerRadius: Theme.Radius.medium)
+                            .strokeBorder(isSelected ? Color.appTeal : Color.clear, lineWidth: 2)
                     )
             )
         }

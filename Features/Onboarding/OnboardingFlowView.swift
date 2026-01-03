@@ -17,11 +17,10 @@ struct OnboardingFlowView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            ProgressView(value: Double(currentStep + 1), total: Double(totalSteps))
-                .tint(.brandPrimary)
-                .padding(.horizontal)
-                .padding(.top)
+            // Navigation bar with back and progress
+            navigationBar
 
+            // Content
             TabView(selection: $currentStep) {
                 GoalSelectionView(selectedGoal: $viewModel.selectedGoal)
                     .tag(0)
@@ -42,31 +41,56 @@ struct OnboardingFlowView: View {
                     .tag(4)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
-            .animation(.easeInOut, value: currentStep)
+            .animation(.easeInOut(duration: 0.3), value: currentStep)
 
-            HStack(spacing: 16) {
-                if currentStep > 0 {
-                    SecondaryButton(title: "Back") {
-                        withAnimation {
-                            currentStep -= 1
-                        }
-                    }
-                }
-
-                PrimaryButton(
-                    title: currentStep == totalSteps - 1 ? "Get Started" : "Continue",
-                    isEnabled: isCurrentStepValid
-                ) {
-                    handleContinue()
-                }
-            }
-            .padding()
+            // Bottom button area
+            bottomArea
         }
+        .background(Color.appBackground)
         .onAppear {
             AnalyticsService.shared.track(.onboardingStarted)
             viewModel.startTime = Date()
         }
     }
+
+    // MARK: - Navigation Bar
+
+    private var navigationBar: some View {
+        HStack(spacing: Theme.Spacing.md) {
+            // Back button
+            Button {
+                if currentStep > 0 {
+                    withAnimation { currentStep -= 1 }
+                }
+            } label: {
+                Image(systemName: "arrow.left")
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundStyle(currentStep > 0 ? .textPrimary : .clear)
+            }
+            .disabled(currentStep == 0)
+
+            // Progress bar
+            ProgressBar(progress: Double(currentStep + 1) / Double(totalSteps))
+        }
+        .padding(.horizontal, Theme.Spacing.screenHorizontal)
+        .padding(.top, Theme.Spacing.md)
+        .padding(.bottom, Theme.Spacing.lg)
+    }
+
+    // MARK: - Bottom Area
+
+    private var bottomArea: some View {
+        PrimaryButton(
+            title: currentStep == totalSteps - 1 ? "Get Started" : "Continue",
+            isEnabled: isCurrentStepValid
+        ) {
+            handleContinue()
+        }
+        .padding(.horizontal, Theme.Spacing.screenHorizontal)
+        .padding(.bottom, Theme.Spacing.bottomArea)
+    }
+
+    // MARK: - Validation
 
     private var isCurrentStepValid: Bool {
         switch currentStep {
@@ -79,14 +103,14 @@ struct OnboardingFlowView: View {
         }
     }
 
+    // MARK: - Actions
+
     private func handleContinue() {
         let stepNames = ["goal", "focus_areas", "time", "work_hours", "reminders"]
         AnalyticsService.shared.track(.onboardingStepCompleted(step: stepNames[currentStep]))
 
         if currentStep < totalSteps - 1 {
-            withAnimation {
-                currentStep += 1
-            }
+            withAnimation { currentStep += 1 }
         } else {
             completeOnboarding()
         }

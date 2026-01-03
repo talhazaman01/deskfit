@@ -10,68 +10,75 @@ struct TimePreferenceView: View {
     ]
 
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(alignment: .leading, spacing: 0) {
+            // Title section
+            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                Text("How much time per break?")
+                    .font(Theme.Typography.largeTitle)
+                    .foregroundStyle(.textPrimary)
+
+                Text("You'll get 3 breaks throughout the day.")
+                    .font(Theme.Typography.subtitle)
+                    .foregroundStyle(.textSecondary)
+            }
+            .padding(.horizontal, Theme.Spacing.screenHorizontal)
+            .padding(.bottom, Theme.Spacing.xxl)
+
             Spacer()
 
-            Text("How much time per break?")
-                .font(.title)
-                .fontWeight(.bold)
-                .multilineTextAlignment(.center)
-
-            Text("You'll get 3 breaks throughout the day")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-
-            HStack(spacing: 12) {
+            // Time options
+            HStack(spacing: Theme.Spacing.md) {
                 ForEach(options, id: \.value) { option in
-                    TimeOptionCard(
+                    TimeCard(
                         label: option.label,
                         description: option.description,
                         isSelected: selectedTime == option.value
                     ) {
-                        withAnimation(.spring(response: 0.3)) {
+                        withAnimation(Theme.Animation.spring) {
                             selectedTime = option.value
-                            HapticsService.shared.light()
                         }
                     }
                 }
             }
-            .padding(.horizontal)
+            .padding(.horizontal, Theme.Spacing.screenHorizontal)
 
             Spacer()
             Spacer()
         }
-        .padding()
     }
 }
 
-struct TimeOptionCard: View {
+struct TimeCard: View {
     let label: String
     let description: String
     let isSelected: Bool
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
-            VStack(spacing: 8) {
+        Button(action: {
+            HapticsService.shared.light()
+            action()
+        }) {
+            VStack(spacing: Theme.Spacing.xs) {
                 Text(label)
-                    .font(.title2)
-                    .fontWeight(.bold)
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundStyle(isSelected ? .textOnDark : .textPrimary)
+
                 Text(description)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(Theme.Typography.caption)
+                    .foregroundStyle(isSelected ? .textOnDark.opacity(0.7) : .textSecondary)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 24)
+            .frame(height: 90)
             .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color.brandPrimary.opacity(0.1) : Color.secondaryBackground)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .strokeBorder(isSelected ? Color.brandPrimary : Color.clear, lineWidth: 2)
-                    )
+                RoundedRectangle(cornerRadius: Theme.Radius.medium)
+                    .fill(isSelected ? Color.cardSelected : Color.cardBackground)
             )
         }
         .buttonStyle(.plain)
     }
+}
+
+#Preview {
+    TimePreferenceView(selectedTime: .constant(5))
 }
