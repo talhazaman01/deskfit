@@ -96,7 +96,8 @@ struct OnboardingFlowView: View {
                 // Step 7: Work Hours
                 WorkHoursView(
                     startMinutes: $viewModel.workStartMinutes,
-                    endMinutes: $viewModel.workEndMinutes
+                    endMinutes: $viewModel.workEndMinutes,
+                    sedentaryHoursBucket: $viewModel.sedentaryHoursBucket
                 )
                     .tag(7)
 
@@ -298,6 +299,10 @@ struct OnboardingFlowView: View {
                 hasHeight: viewModel.hasEnteredHeight,
                 hasWeight: viewModel.hasEnteredWeight
             ))
+        case 7: // Work Hours
+            AnalyticsService.shared.track(.onboardingWorkHours(
+                sedentaryHoursBucket: viewModel.sedentaryHoursBucket?.rawValue
+            ))
         default:
             break
         }
@@ -314,6 +319,7 @@ struct OnboardingFlowView: View {
         profile.workEndMinutes = viewModel.workEndMinutes
         profile.reminderFrequency = viewModel.reminderFrequency.rawValue
         profile.stiffnessTimes = viewModel.selectedStiffnessTimes.map { $0.rawValue }.sorted()
+        profile.sedentaryHoursBucket = viewModel.sedentaryHoursBucket?.rawValue
 
         // Save personal info (for personalization)
         if viewModel.hasSetDateOfBirth {

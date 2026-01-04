@@ -43,6 +43,7 @@ class OnboardingViewModel: ObservableObject {
     // Step 7: Work Hours
     @Published var workStartMinutes: Int = 540   // 9:00 AM
     @Published var workEndMinutes: Int = 1020    // 5:00 PM
+    @Published var sedentaryHoursBucket: SedentaryHoursBucket?  // Optional sedentary hours
 
     // Step 8: Reminder Frequency
     @Published var reminderFrequency: ReminderFrequency = .every2Hours

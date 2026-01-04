@@ -14,6 +14,7 @@ final class AnalyticsService: @unchecked Sendable {
         case onboardingStepCompleted(step: String)
         case onboardingPersonalInfo(step: String, ageBand: String?, gender: String?, hasHeight: Bool?, hasWeight: Bool?)
         case onboardingStiffnessTime(stiffnessTime: String)
+        case onboardingWorkHours(sedentaryHoursBucket: String?)
         case onboardingCompleted(durationSeconds: Int, goal: String, focusAreas: [String], dailyMinutes: Int, stiffnessTime: String?)
         case onboardingSummaryViewed
         case onboardingSafetyAcknowledged(action: String)
@@ -86,6 +87,13 @@ final class AnalyticsService: @unchecked Sendable {
                 ? stiffnessTime
                 : stiffnessTime.split(separator: ",").map(String.init)
             return ("onboarding_stiffness_time", ["stiffness_time": value])
+
+        case .onboardingWorkHours(let sedentaryHoursBucket):
+            var props: [String: Any] = ["step": "work_hours"]
+            if let bucket = sedentaryHoursBucket {
+                props["sedentary_hours_bucket"] = bucket
+            }
+            return ("onboarding_step_completed", props)
 
         case .onboardingCompleted(let duration, let goal, let focusAreas, let dailyMinutes, let stiffnessTime):
             var props: [String: Any] = [

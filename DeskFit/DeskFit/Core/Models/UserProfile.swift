@@ -27,6 +27,9 @@ final class UserProfile {
     // When stiffness typically hits (for personalization) - multi-select
     var stiffnessTimes: [String] = []  // Array of StiffnessTime.rawValue
 
+    // Sedentary hours bucket (optional, for plan personalization)
+    var sedentaryHoursBucket: String?  // Stores SedentaryHoursBucket.rawValue
+
     // Preferences
     var soundEnabled: Bool
     var hapticsEnabled: Bool
@@ -59,6 +62,7 @@ final class UserProfile {
         self.workEndMinutes = 1020   // 5:00 PM
         self.reminderFrequency = "every_2_hours"
         self.stiffnessTimes = []
+        self.sedentaryHoursBucket = nil
         self.soundEnabled = true
         self.hapticsEnabled = true
         self.currentStreak = 0
@@ -96,6 +100,12 @@ final class UserProfile {
     /// Stiffness times as typed enums
     var stiffnessTimesEnum: Set<StiffnessTime> {
         Set(stiffnessTimes.compactMap { StiffnessTime(rawValue: $0) })
+    }
+
+    /// Sedentary hours bucket as typed enum
+    var sedentaryHoursBucketEnum: SedentaryHoursBucket? {
+        guard let bucket = sedentaryHoursBucket else { return nil }
+        return SedentaryHoursBucket(rawValue: bucket)
     }
 
     /// Whether user has provided personal info for personalization

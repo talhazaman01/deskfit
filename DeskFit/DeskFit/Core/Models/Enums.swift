@@ -227,6 +227,38 @@ enum MeasurementUnit: String, CaseIterable {
     }
 }
 
+// MARK: - Sedentary Hours Bucket
+
+enum SedentaryHoursBucket: String, CaseIterable, Identifiable {
+    case lessThan2 = "less_than_2"
+    case twoToFour = "2_to_4"
+    case fourToSix = "4_to_6"
+    case sixToEight = "6_to_8"
+    case moreThan8 = "more_than_8"
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .lessThan2: return "< 2"
+        case .twoToFour: return "2–4"
+        case .fourToSix: return "4–6"
+        case .sixToEight: return "6–8"
+        case .moreThan8: return "8+"
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .lessThan2: return "hours"
+        case .twoToFour: return "hours"
+        case .fourToSix: return "hours"
+        case .sixToEight: return "hours"
+        case .moreThan8: return "hours"
+        }
+    }
+}
+
 // MARK: - Age Band (for analytics, not raw DOB)
 
 enum AgeBand: String {
