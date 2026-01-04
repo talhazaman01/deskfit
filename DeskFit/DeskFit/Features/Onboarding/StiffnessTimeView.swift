@@ -2,16 +2,10 @@ import SwiftUI
 
 struct StiffnessTimeView: View {
     @Binding var selectedStiffnessTimes: Set<StiffnessTime>
-    let onContinue: () -> Void
 
     /// Whether all individual times are selected
     private var isAllSelected: Bool {
         selectedStiffnessTimes.count == StiffnessTime.allCases.count
-    }
-
-    /// At least one time is selected
-    private var hasSelection: Bool {
-        !selectedStiffnessTimes.isEmpty
     }
 
     var body: some View {
@@ -64,16 +58,6 @@ struct StiffnessTimeView: View {
                 }
                 .padding(.horizontal, Theme.Spacing.screenHorizontal)
             }
-
-            // Continue button
-            PrimaryButton(
-                title: "Continue",
-                isEnabled: hasSelection
-            ) {
-                onContinue()
-            }
-            .padding(.horizontal, Theme.Spacing.screenHorizontal)
-            .padding(.bottom, Theme.Spacing.bottomArea)
         }
         .background(Color.appBackground)
     }
@@ -181,8 +165,5 @@ struct StiffnessTimeCard: View {
 }
 
 #Preview {
-    StiffnessTimeView(
-        selectedStiffnessTimes: .constant([.midday, .evening]),
-        onContinue: {}
-    )
+    StiffnessTimeView(selectedStiffnessTimes: .constant([.midday, .evening]))
 }

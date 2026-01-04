@@ -57,12 +57,7 @@ struct OnboardingFlowView: View {
                     .tag(1)
 
                 // Step 2: Stiffness Times (when stiffness hits) - multi-select
-                StiffnessTimeView(
-                    selectedStiffnessTimes: $viewModel.selectedStiffnessTimes,
-                    onContinue: {
-                        withAnimation { currentStep += 1 }
-                    }
-                )
+                StiffnessTimeView(selectedStiffnessTimes: $viewModel.selectedStiffnessTimes)
                     .tag(2)
 
                 // Step 3: Date of Birth
