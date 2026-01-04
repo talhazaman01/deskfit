@@ -56,9 +56,9 @@ struct OnboardingFlowView: View {
                 FocusAreasView(selectedAreas: $viewModel.selectedFocusAreas)
                     .tag(1)
 
-                // Step 2: Stiffness Time (when stiffness hits)
+                // Step 2: Stiffness Times (when stiffness hits) - multi-select
                 StiffnessTimeView(
-                    selectedStiffnessTime: $viewModel.selectedStiffnessTime,
+                    selectedStiffnessTimes: $viewModel.selectedStiffnessTimes,
                     onContinue: {
                         withAnimation { currentStep += 1 }
                     }
@@ -153,7 +153,7 @@ struct OnboardingFlowView: View {
     private var starterResetPhase: some View {
         StarterResetView(
             focusAreas: viewModel.selectedFocusAreas,
-            stiffnessTime: viewModel.selectedStiffnessTime,
+            stiffnessTimes: viewModel.selectedStiffnessTimes,
             onComplete: {
                 // Calculate approximate duration (60s target)
                 viewModel.starterResetDuration = 60
@@ -229,8 +229,8 @@ struct OnboardingFlowView: View {
             return viewModel.selectedGoal != nil
         case 1: // Focus Areas
             return !viewModel.selectedFocusAreas.isEmpty
-        case 2: // Stiffness Time - handled by one-tap continue, always valid
-            return viewModel.selectedStiffnessTime != nil
+        case 2: // Stiffness Times - at least one must be selected
+            return !viewModel.selectedStiffnessTimes.isEmpty
         case 3: // DOB - must be 13+ years old
             return viewModel.isDateOfBirthValid
         case 4: // Gender - always valid (optional, can continue without selection)
@@ -269,10 +269,9 @@ struct OnboardingFlowView: View {
 
     private func trackPersonalizationStep() {
         switch currentStep {
-        case 2: // Stiffness Time
-            if let stiffnessTime = viewModel.selectedStiffnessTime {
-                AnalyticsService.shared.track(.onboardingStiffnessTime(stiffnessTime: stiffnessTime.rawValue))
-            }
+        case 2: // Stiffness Times
+            let stiffnessTimeValue = viewModel.stiffnessTimesAnalyticsValue
+            AnalyticsService.shared.track(.onboardingStiffnessTime(stiffnessTime: stiffnessTimeValue))
         case 3: // DOB
             let ageBand = AgeBand.from(age: viewModel.age)
             AnalyticsService.shared.track(.onboardingPersonalInfo(
@@ -314,7 +313,7 @@ struct OnboardingFlowView: View {
         profile.workStartMinutes = viewModel.workStartMinutes
         profile.workEndMinutes = viewModel.workEndMinutes
         profile.reminderFrequency = viewModel.reminderFrequency.rawValue
-        profile.stiffnessTime = viewModel.selectedStiffnessTime?.rawValue
+        profile.stiffnessTimes = viewModel.selectedStiffnessTimes.map { $0.rawValue }.sorted()
 
         // Save personal info (for personalization)
         if viewModel.hasSetDateOfBirth {
@@ -346,7 +345,7 @@ struct OnboardingFlowView: View {
             goal: profile.goal,
             focusAreas: profile.focusAreas,
             dailyMinutes: profile.dailyTimeMinutes,
-            stiffnessTime: profile.stiffnessTime
+            stiffnessTime: viewModel.stiffnessTimesAnalyticsValue
         ))
 
         // Schedule notifications if enabled

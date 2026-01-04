@@ -35,11 +35,11 @@ class StarterResetViewModel: ObservableObject {
         exercises.reduce(0) { $0 + $1.durationSeconds }
     }
 
-    init(focusAreas: [FocusArea], stiffnessTime: StiffnessTime? = nil) {
+    init(focusAreas: [FocusArea], stiffnessTimes: Set<StiffnessTime> = []) {
         // Generate tailored starter reset using PlanGeneratorService
         let starterReset = PlanGeneratorService.shared.generateStarterReset(
             focusAreas: Set(focusAreas),
-            stiffnessTime: stiffnessTime,
+            stiffnessTimes: stiffnessTimes,
             targetDuration: 60
         )
         self.sessionTitle = starterReset.title

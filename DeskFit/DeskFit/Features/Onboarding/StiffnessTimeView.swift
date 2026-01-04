@@ -1,8 +1,18 @@
 import SwiftUI
 
 struct StiffnessTimeView: View {
-    @Binding var selectedStiffnessTime: StiffnessTime?
+    @Binding var selectedStiffnessTimes: Set<StiffnessTime>
     let onContinue: () -> Void
+
+    /// Whether all individual times are selected
+    private var isAllSelected: Bool {
+        selectedStiffnessTimes.count == StiffnessTime.allCases.count
+    }
+
+    /// At least one time is selected
+    private var hasSelection: Bool {
+        !selectedStiffnessTimes.isEmpty
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -14,7 +24,7 @@ struct StiffnessTimeView: View {
                             .font(Theme.Typography.largeTitle)
                             .foregroundStyle(.textPrimary)
 
-                        Text("We'll prioritize your resets for when you need them most")
+                        Text("Select all that apply — we'll prioritize your resets accordingly")
                             .font(Theme.Typography.subtitle)
                             .foregroundStyle(.textSecondary)
                     }
@@ -22,15 +32,30 @@ struct StiffnessTimeView: View {
 
                     // Options
                     VStack(spacing: Theme.Spacing.md) {
+                        // "All day" option at top
+                        AllDayCard(
+                            isSelected: isAllSelected,
+                            onTap: {
+                                if isAllSelected {
+                                    // Deselect all
+                                    selectedStiffnessTimes.removeAll()
+                                } else {
+                                    // Select all
+                                    selectedStiffnessTimes = Set(StiffnessTime.allCases)
+                                }
+                            }
+                        )
+
+                        // Individual time options
                         ForEach(StiffnessTime.allCases) { time in
                             StiffnessTimeCard(
                                 time: time,
-                                isSelected: selectedStiffnessTime == time,
+                                isSelected: selectedStiffnessTimes.contains(time),
                                 onTap: {
-                                    selectedStiffnessTime = time
-                                    // Auto-continue after selection for one-tap experience
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                        onContinue()
+                                    if selectedStiffnessTimes.contains(time) {
+                                        selectedStiffnessTimes.remove(time)
+                                    } else {
+                                        selectedStiffnessTimes.insert(time)
                                     }
                                 }
                             )
@@ -39,8 +64,68 @@ struct StiffnessTimeView: View {
                 }
                 .padding(.horizontal, Theme.Spacing.screenHorizontal)
             }
+
+            // Continue button
+            PrimaryButton(
+                title: "Continue",
+                isEnabled: hasSelection
+            ) {
+                onContinue()
+            }
+            .padding(.horizontal, Theme.Spacing.screenHorizontal)
+            .padding(.bottom, Theme.Spacing.bottomArea)
         }
         .background(Color.appBackground)
+    }
+}
+
+struct AllDayCard: View {
+    let isSelected: Bool
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: Theme.Spacing.lg) {
+                // Icon
+                ZStack {
+                    Circle()
+                        .fill(isSelected ? Color.appTeal.opacity(0.2) : Color.cardBackground)
+                        .frame(width: 48, height: 48)
+
+                    Image(systemName: "clock.fill")
+                        .font(.system(size: 20))
+                        .foregroundStyle(isSelected ? .appTeal : .textSecondary)
+                }
+
+                // Text content
+                VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+                    Text("All day")
+                        .font(Theme.Typography.headline)
+                        .foregroundStyle(.textPrimary)
+
+                    Text("It varies throughout my workday")
+                        .font(Theme.Typography.caption)
+                        .foregroundStyle(.textSecondary)
+                }
+
+                Spacer()
+
+                // Selection indicator
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.title2)
+                    .foregroundStyle(isSelected ? .appTeal : .textSecondary)
+            }
+            .padding(Theme.Spacing.lg)
+            .background(
+                RoundedRectangle(cornerRadius: Theme.Radius.large)
+                    .fill(Color.cardBackground)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: Theme.Radius.large)
+                            .strokeBorder(isSelected ? Color.appTeal : Color.clear, lineWidth: 2)
+                    )
+            )
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -97,7 +182,7 @@ struct StiffnessTimeCard: View {
 
 #Preview {
     StiffnessTimeView(
-        selectedStiffnessTime: .constant(.midday),
+        selectedStiffnessTimes: .constant([.midday, .evening]),
         onContinue: {}
     )
 }

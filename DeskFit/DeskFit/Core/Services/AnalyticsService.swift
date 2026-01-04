@@ -81,7 +81,11 @@ final class AnalyticsService: @unchecked Sendable {
             return ("onboarding_personal_info", props)
 
         case .onboardingStiffnessTime(let stiffnessTime):
-            return ("onboarding_stiffness_time", ["stiffness_time": stiffnessTime])
+            // stiffnessTime is either "all_day" or comma-separated values like "morning,evening"
+            let value: Any = stiffnessTime == "all_day"
+                ? stiffnessTime
+                : stiffnessTime.split(separator: ",").map(String.init)
+            return ("onboarding_stiffness_time", ["stiffness_time": value])
 
         case .onboardingCompleted(let duration, let goal, let focusAreas, let dailyMinutes, let stiffnessTime):
             var props: [String: Any] = [
@@ -90,8 +94,12 @@ final class AnalyticsService: @unchecked Sendable {
                 "focus_areas": focusAreas,
                 "daily_minutes": dailyMinutes
             ]
-            if let stiffnessTime = stiffnessTime {
-                props["stiffness_time"] = stiffnessTime
+            if let stiffnessTime = stiffnessTime, !stiffnessTime.isEmpty {
+                // stiffnessTime is either "all_day" or comma-separated values like "morning,evening"
+                let value: Any = stiffnessTime == "all_day"
+                    ? stiffnessTime
+                    : stiffnessTime.split(separator: ",").map(String.init)
+                props["stiffness_time"] = value
             }
             return ("onboarding_completed", props)
 

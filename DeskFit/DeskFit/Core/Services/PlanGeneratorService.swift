@@ -11,27 +11,27 @@ class PlanGeneratorService {
     func generateDailyPlan(for profile: UserProfile) -> DailyPlan {
         let sessionDuration = calculateSessionDuration(dailyMinutes: profile.dailyTimeMinutes)
         let focusAreas = profile.focusAreas.isEmpty ? FocusArea.allCases.map { $0.rawValue } : profile.focusAreas
-        let stiffnessTime = profile.stiffnessTimeEnum
+        let stiffnessTimes = profile.stiffnessTimesEnum
 
-        // Generate sessions with tailored titles based on stiffness time
+        // Generate sessions with tailored titles based on stiffness times
         let sessions = [
             generateSession(
                 type: .morning,
                 duration: sessionDuration,
                 focusAreas: focusAreas,
-                stiffnessTime: stiffnessTime
+                stiffnessTimes: stiffnessTimes
             ),
             generateSession(
                 type: .midday,
                 duration: sessionDuration,
                 focusAreas: focusAreas,
-                stiffnessTime: stiffnessTime
+                stiffnessTimes: stiffnessTimes
             ),
             generateSession(
                 type: .afternoon,
                 duration: sessionDuration,
                 focusAreas: focusAreas,
-                stiffnessTime: stiffnessTime
+                stiffnessTimes: stiffnessTimes
             )
         ]
 
@@ -42,7 +42,7 @@ class PlanGeneratorService {
         type: SessionType,
         duration: Int,
         focusAreas: [String],
-        stiffnessTime: StiffnessTime?
+        stiffnessTimes: Set<StiffnessTime>
     ) -> PlannedSession {
         let exercises = exerciseService.getExercises(forDuration: duration, focusAreas: focusAreas)
         let totalDuration = exercises.reduce(0) { $0 + $1.durationSeconds }
@@ -54,27 +54,27 @@ class PlanGeneratorService {
             durationSeconds: totalDuration
         )
 
-        // Customize title based on stiffness time preference
-        session = customizeSessionTitle(session: session, stiffnessTime: stiffnessTime)
+        // Customize title based on stiffness time preferences
+        session = customizeSessionTitle(session: session, stiffnessTimes: stiffnessTimes)
 
         return session
     }
 
     /// Customize session title based on when user typically feels stiff
-    private func customizeSessionTitle(session: PlannedSession, stiffnessTime: StiffnessTime?) -> PlannedSession {
-        guard let stiffnessTime = stiffnessTime else {
+    private func customizeSessionTitle(session: PlannedSession, stiffnessTimes: Set<StiffnessTime>) -> PlannedSession {
+        guard !stiffnessTimes.isEmpty else {
             return session
         }
 
         var modifiedSession = session
 
-        // If this is the user's stiffness time, add personalized messaging
-        switch (session.type, stiffnessTime) {
-        case (.morning, .morning):
+        // If this session matches one of the user's stiffness times, add personalized messaging
+        switch session.type {
+        case .morning where stiffnessTimes.contains(.morning):
             modifiedSession.title = "Morning Relief"
-        case (.midday, .midday):
+        case .midday where stiffnessTimes.contains(.midday):
             modifiedSession.title = "Midday Unwind"
-        case (.afternoon, .evening):
+        case .afternoon where stiffnessTimes.contains(.evening):
             modifiedSession.title = "Evening Reset"
         default:
             // Keep default titles for non-matching times
@@ -112,25 +112,34 @@ class PlanGeneratorService {
 
     // MARK: - Starter Reset Generation
 
-    /// Generate a tailored starter reset based on user's stiffness time and focus areas
+    /// Generate a tailored starter reset based on user's stiffness times and focus areas
     func generateStarterReset(
         focusAreas: Set<FocusArea>,
-        stiffnessTime: StiffnessTime?,
+        stiffnessTimes: Set<StiffnessTime>,
         targetDuration: Int = 60
     ) -> (title: String, exercises: [Exercise]) {
         let focusAreaStrings = focusAreas.map { $0.rawValue }
         let exercises = exerciseService.getExercises(forDuration: targetDuration, focusAreas: focusAreaStrings)
 
-        // Customize starter reset title based on stiffness time
+        // Customize starter reset title based on stiffness times
         let title: String
-        switch stiffnessTime {
-        case .morning:
-            title = "Morning Wake-Up"
-        case .midday:
-            title = "Quick Desk Reset"
-        case .evening:
-            title = "End-of-Day Unwind"
-        case nil:
+        if stiffnessTimes.isEmpty {
+            title = "Your First Reset"
+        } else if stiffnessTimes.count == StiffnessTime.allCases.count {
+            // All day selected
+            title = "Your Daily Reset"
+        } else if stiffnessTimes.count == 1, let singleTime = stiffnessTimes.first {
+            // Single time selected - use specific title
+            switch singleTime {
+            case .morning:
+                title = "Morning Wake-Up"
+            case .midday:
+                title = "Quick Desk Reset"
+            case .evening:
+                title = "End-of-Day Unwind"
+            }
+        } else {
+            // Multiple (but not all) times selected
             title = "Your First Reset"
         }
 

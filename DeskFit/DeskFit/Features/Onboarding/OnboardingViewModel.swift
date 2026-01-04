@@ -17,8 +17,8 @@ class OnboardingViewModel: ObservableObject {
     // Step 1: Focus Areas
     @Published var selectedFocusAreas: Set<FocusArea> = []
 
-    // Step 2: Stiffness Time
-    @Published var selectedStiffnessTime: StiffnessTime?
+    // Step 2: Stiffness Times (multi-select)
+    @Published var selectedStiffnessTimes: Set<StiffnessTime> = []
 
     // Step 3: Date of Birth
     @Published var dateOfBirth: Date = Calendar.current.date(byAdding: .year, value: -25, to: Date()) ?? Date()
@@ -54,6 +54,18 @@ class OnboardingViewModel: ObservableObject {
     var startTime: Date?
 
     // MARK: - Computed Properties
+
+    /// Analytics value for stiffness times selection
+    /// Returns "all_day" if all 3 selected, otherwise comma-separated sorted list
+    var stiffnessTimesAnalyticsValue: String {
+        if selectedStiffnessTimes.count == StiffnessTime.allCases.count {
+            return "all_day"
+        }
+        return selectedStiffnessTimes
+            .map { $0.rawValue }
+            .sorted()
+            .joined(separator: ",")
+    }
 
     /// Age calculated from date of birth
     var age: Int {
