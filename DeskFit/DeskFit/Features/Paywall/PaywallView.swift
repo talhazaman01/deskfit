@@ -13,6 +13,9 @@ struct PaywallView: View {
     /// View-local flag to ensure loadProducts is called only once per view lifetime
     @State private var didLoadProducts = false
 
+    /// Controls display of "How free trial works" modal
+    @State private var showTrialInfoModal = false
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -20,9 +23,10 @@ struct PaywallView: View {
                     headerSection
                     benefitsSection
                     plansSection
+                    trialInfoButton
                     subscribeButton
                     legalText
-                    restoreButton
+                    legalLinks
                     skipButton
                 }
                 .padding(.horizontal, Theme.Spacing.screenHorizontal)
@@ -54,6 +58,9 @@ struct PaywallView: View {
                 Button("OK") {}
             } message: {
                 Text(viewModel.errorMessage)
+            }
+            .sheet(isPresented: $showTrialInfoModal) {
+                FreeTrialInfoModal()
             }
         }
     }
@@ -113,8 +120,11 @@ struct PaywallView: View {
                 if let annual = subscriptionManager.annualProduct {
                     PlanCard(
                         title: "Annual",
+                        label: "Best value",
                         priceText: annual.displayPrice,
                         periodText: periodText(for: annual),
+                        monthlyEquivalentText: monthlyEquivalentText(for: annual),
+                        strikethroughText: strikethroughMonthlyText(),
                         savingsText: calculateSavings(),
                         trialText: trialText(for: annual),
                         isSelected: viewModel.selectedPlan == .annual,
@@ -129,8 +139,11 @@ struct PaywallView: View {
                 if let monthly = subscriptionManager.monthlyProduct {
                     PlanCard(
                         title: "Monthly",
+                        label: "Flexible",
                         priceText: monthly.displayPrice,
                         periodText: periodText(for: monthly),
+                        monthlyEquivalentText: nil,
+                        strikethroughText: nil,
                         savingsText: nil,
                         trialText: nil,
                         isSelected: viewModel.selectedPlan == .monthly,
@@ -211,21 +224,53 @@ struct PaywallView: View {
         }
     }
 
-    // MARK: - Restore
+    // MARK: - Trial Info Button
 
     @ViewBuilder
-    private var restoreButton: some View {
-        // Only show when products are loaded
+    private var trialInfoButton: some View {
+        if subscriptionManager.productLoadState == .loaded,
+           viewModel.selectedPlan == .annual,
+           let annual = subscriptionManager.annualProduct,
+           annual.subscription?.introductoryOffer != nil {
+            Button {
+                showTrialInfoModal = true
+            } label: {
+                HStack(spacing: Theme.Spacing.xs) {
+                    Image(systemName: "questionmark.circle")
+                    Text("How the free trial works")
+                }
+                .font(Theme.Typography.caption)
+                .foregroundStyle(.appTeal)
+            }
+        }
+    }
+
+    // MARK: - Legal Links (Restore, Terms, Privacy)
+
+    @ViewBuilder
+    private var legalLinks: some View {
         if subscriptionManager.productLoadState == .loaded {
-            Button("Restore Purchases") {
-                Task {
-                    await subscriptionManager.restorePurchases()
-                    if subscriptionManager.isProUser {
-                        dismiss()
+            HStack(spacing: Theme.Spacing.lg) {
+                Button("Restore") {
+                    Task {
+                        await subscriptionManager.restorePurchases()
+                        if subscriptionManager.isProUser {
+                            dismiss()
+                        }
                     }
                 }
+
+                Text("•")
+                    .foregroundStyle(.textTertiary)
+
+                Link("Terms", destination: URL(string: "https://deskfit.app/terms")!)
+
+                Text("•")
+                    .foregroundStyle(.textTertiary)
+
+                Link("Privacy", destination: URL(string: "https://deskfit.app/privacy")!)
             }
-            .font(Theme.Typography.subtitle)
+            .font(Theme.Typography.caption)
             .foregroundStyle(.textSecondary)
         }
     }
@@ -301,16 +346,52 @@ struct PaywallView: View {
         }
     }
 
+    /// Calculates savings percentage for annual vs monthly.
+    /// Only returns a value if savings is between 15% and 70% (to avoid far-fetched numbers).
     private func calculateSavings() -> String? {
         guard let monthly = subscriptionManager.monthlyProduct,
               let annual = subscriptionManager.annualProduct else { return nil }
 
         let yearlyIfMonthly = monthly.price * Decimal(12)
-        let savings = yearlyIfMonthly - annual.price
-        let savingsPercent = Int(truncating: ((savings / yearlyIfMonthly) * Decimal(100)) as NSDecimalNumber)
+        guard yearlyIfMonthly > 0 else { return nil }
 
-        guard savingsPercent > 0 else { return nil }
-        return "Save \(savingsPercent)%"
+        let savingsPercent = 1.0 - (NSDecimalNumber(decimal: annual.price).doubleValue /
+                                     NSDecimalNumber(decimal: yearlyIfMonthly).doubleValue)
+        let roundedPercent = Int((savingsPercent * 100).rounded())
+
+        // Only show if between 15% and 70% to avoid looking scammy
+        guard roundedPercent >= 15, roundedPercent <= 70 else { return nil }
+        return "Save \(roundedPercent)%"
+    }
+
+    /// Calculates the monthly equivalent price from annual subscription (annual_price / 12).
+    /// Returns a formatted string like "£2.49/mo" using the product's locale.
+    private func monthlyEquivalentText(for product: Product) -> String? {
+        guard product.subscription?.subscriptionPeriod.unit == .year else { return nil }
+
+        let monthlyEquivalent = product.price / Decimal(12)
+        let formatted = formatPrice(monthlyEquivalent, using: product)
+        return "\(formatted)/mo"
+    }
+
+    /// Shows the monthly price as strikethrough reference when comparing annual savings.
+    /// Returns the monthly price formatted like "£4.99/mo" for visual anchoring.
+    private func strikethroughMonthlyText() -> String? {
+        guard let monthly = subscriptionManager.monthlyProduct,
+              subscriptionManager.annualProduct != nil else { return nil }
+
+        // Only show strikethrough if savings is in valid range
+        guard calculateSavings() != nil else { return nil }
+
+        return "\(monthly.displayPrice)/mo"
+    }
+
+    /// Formats a Decimal price using the product's currency format.
+    /// Handles locale-specific formatting robustly.
+    private func formatPrice(_ price: Decimal, using product: Product) -> String {
+        var formatStyle = product.priceFormatStyle
+        formatStyle.locale = product.priceFormatStyle.locale
+        return formatStyle.format(price)
     }
 
     private func handlePurchase() {
@@ -365,8 +446,11 @@ struct BenefitRow: View {
 
 struct PlanCard: View {
     let title: String
+    let label: String
     let priceText: String
     let periodText: String
+    let monthlyEquivalentText: String?
+    let strikethroughText: String?
     let savingsText: String?
     let trialText: String?
     let isSelected: Bool
@@ -378,23 +462,23 @@ struct PlanCard: View {
             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                 HStack {
                     VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+                        // Title row with label badge
                         HStack(spacing: Theme.Spacing.sm) {
                             Text(title)
                                 .font(Theme.Typography.headline)
                                 .foregroundStyle(.textPrimary)
 
-                            if isBestValue {
-                                Text("BEST VALUE")
-                                    .font(.caption2)
-                                    .fontWeight(.bold)
-                                    .padding(.horizontal, Theme.Spacing.sm)
-                                    .padding(.vertical, 2)
-                                    .background(Color.appTeal)
-                                    .foregroundStyle(.textOnDark)
-                                    .clipShape(Capsule())
-                            }
+                            Text(label.uppercased())
+                                .font(.caption2)
+                                .fontWeight(.bold)
+                                .padding(.horizontal, Theme.Spacing.sm)
+                                .padding(.vertical, 2)
+                                .background(isBestValue ? Color.appTeal : Color.textTertiary.opacity(0.3))
+                                .foregroundStyle(isBestValue ? .textOnDark : .textSecondary)
+                                .clipShape(Capsule())
                         }
 
+                        // Price row
                         HStack(spacing: Theme.Spacing.xs) {
                             Text(priceText)
                                 .font(.system(size: 20, weight: .bold))
@@ -403,20 +487,38 @@ struct PlanCard: View {
                                 .font(Theme.Typography.caption)
                                 .foregroundStyle(.textSecondary)
                         }
+
+                        // Monthly equivalent with strikethrough comparison (for annual plan)
+                        if let equivalent = monthlyEquivalentText {
+                            HStack(spacing: Theme.Spacing.xs) {
+                                if let strikethrough = strikethroughText {
+                                    Text(strikethrough)
+                                        .font(Theme.Typography.caption)
+                                        .foregroundStyle(.textTertiary)
+                                        .strikethrough(true, color: .textTertiary)
+                                }
+                                Text(equivalent)
+                                    .font(Theme.Typography.caption)
+                                    .fontWeight(.medium)
+                                    .foregroundStyle(.textSecondary)
+                            }
+                        }
                     }
 
                     Spacer()
 
-                    if let savings = savingsText {
-                        Text(savings)
-                            .font(Theme.Typography.caption)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.success)
-                    }
+                    VStack(alignment: .trailing, spacing: Theme.Spacing.xs) {
+                        if let savings = savingsText {
+                            Text(savings)
+                                .font(Theme.Typography.caption)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.success)
+                        }
 
-                    Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                        .foregroundStyle(isSelected ? .appTeal : .textSecondary)
-                        .font(.title2)
+                        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                            .foregroundStyle(isSelected ? .appTeal : .textSecondary)
+                            .font(.title2)
+                    }
                 }
 
                 if let trial = trialText {
@@ -585,6 +687,146 @@ struct StoreUnavailableView: View {
             }
         default:
             return "Please try again."
+        }
+    }
+}
+
+// MARK: - Free Trial Info Modal
+
+struct FreeTrialInfoModal: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: Theme.Spacing.xxl) {
+                    // Header
+                    VStack(spacing: Theme.Spacing.md) {
+                        Image(systemName: "gift.fill")
+                            .font(.system(size: 50))
+                            .foregroundStyle(.appTeal)
+
+                        Text("How your free trial works")
+                            .font(Theme.Typography.largeTitle)
+                            .foregroundStyle(.textPrimary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding(.top, Theme.Spacing.xl)
+
+                    // Timeline
+                    VStack(spacing: 0) {
+                        TrialTimelineRow(
+                            day: "Today",
+                            icon: "checkmark.circle.fill",
+                            iconColor: .appTeal,
+                            title: "Unlock full access",
+                            description: "Start your 7-day free trial and explore all premium features.",
+                            isFirst: true,
+                            isLast: false
+                        )
+
+                        TrialTimelineRow(
+                            day: "Day 5",
+                            icon: "bell.fill",
+                            iconColor: .warning,
+                            title: "Reminder notification",
+                            description: "We'll send you a reminder before your trial ends. No surprises.",
+                            isFirst: false,
+                            isLast: false
+                        )
+
+                        TrialTimelineRow(
+                            day: "Day 7",
+                            icon: "star.fill",
+                            iconColor: .success,
+                            title: "Trial ends",
+                            description: "Your subscription begins. Cancel anytime before if you change your mind.",
+                            isFirst: false,
+                            isLast: true
+                        )
+                    }
+                    .padding(.horizontal, Theme.Spacing.md)
+
+                    // Note
+                    Text("You won't be charged during the trial period. Cancel anytime in Settings > Subscriptions.")
+                        .font(Theme.Typography.caption)
+                        .foregroundStyle(.textTertiary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, Theme.Spacing.lg)
+
+                    Spacer(minLength: Theme.Spacing.xxl)
+                }
+                .padding(.horizontal, Theme.Spacing.screenHorizontal)
+            }
+            .background(Color.appBackground)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .foregroundStyle(.textSecondary)
+                    }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
+    }
+}
+
+struct TrialTimelineRow: View {
+    let day: String
+    let icon: String
+    let iconColor: Color
+    let title: String
+    let description: String
+    let isFirst: Bool
+    let isLast: Bool
+
+    var body: some View {
+        HStack(alignment: .top, spacing: Theme.Spacing.md) {
+            // Timeline line and dot
+            VStack(spacing: 0) {
+                if !isFirst {
+                    Rectangle()
+                        .fill(Color.progressBackground)
+                        .frame(width: 2, height: Theme.Spacing.md)
+                }
+
+                Image(systemName: icon)
+                    .font(.system(size: 24))
+                    .foregroundStyle(iconColor)
+                    .frame(width: 32, height: 32)
+
+                if !isLast {
+                    Rectangle()
+                        .fill(Color.progressBackground)
+                        .frame(width: 2)
+                        .frame(maxHeight: .infinity)
+                }
+            }
+            .frame(width: 32)
+
+            // Content
+            VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+                Text(day)
+                    .font(Theme.Typography.caption)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.appTeal)
+
+                Text(title)
+                    .font(Theme.Typography.headline)
+                    .foregroundStyle(.textPrimary)
+
+                Text(description)
+                    .font(Theme.Typography.body)
+                    .foregroundStyle(.textSecondary)
+            }
+            .padding(.bottom, Theme.Spacing.lg)
+
+            Spacer()
         }
     }
 }

@@ -10,8 +10,8 @@
     "_applicationInternalID" : "6741920127",
     "_developerTeamID" : "YOUR_TEAM_ID",
     "_failTransactionsEnabled" : false,
-    "_locale" : "en_US",
-    "_storefront" : "USA",
+    "_locale" : "en_GB",
+    "_storefront" : "GBR",
     "_storeKitErrors" : [
       {
         "current" : null,
@@ -90,7 +90,7 @@
             {
               "description" : "Full access to DeskFit Pro features, billed annually",
               "displayName" : "DeskFit Pro Annual",
-              "locale" : "en_US"
+              "locale" : "en_GB"
             }
           ],
           "productID" : "com.deskfit.pro.annual",
@@ -115,7 +115,7 @@
             {
               "description" : "Full access to DeskFit Pro features, billed monthly",
               "displayName" : "DeskFit Pro Monthly",
-              "locale" : "en_US"
+              "locale" : "en_GB"
             }
           ],
           "productID" : "com.deskfit.pro.monthly",
