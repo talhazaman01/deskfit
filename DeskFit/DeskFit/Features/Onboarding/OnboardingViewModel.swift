@@ -48,6 +48,9 @@ class OnboardingViewModel: ObservableObject {
     // Step 8: Reminder Frequency
     @Published var reminderFrequency: ReminderFrequency = .every2Hours
 
+    // Step 9: AirPods
+    @Published var airpodsResponse: AirPodsOnboardingResponse?
+
     // Flow state
     @Published var currentPhase: OnboardingPhase = .questionnaire
     @Published var starterResetDuration: Int = 0  // Actual duration completed

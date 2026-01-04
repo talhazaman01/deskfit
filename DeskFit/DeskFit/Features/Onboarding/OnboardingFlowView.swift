@@ -10,8 +10,8 @@ struct OnboardingFlowView: View {
     @StateObject private var viewModel = OnboardingViewModel()
     @State private var currentStep = 0
 
-    // Updated to 9 steps: goal, focus, stiffness, dob, gender, height/weight, time, work hours, reminders
-    private let totalSteps = 9
+    // Updated to 10 steps: goal, focus, stiffness, dob, gender, height/weight, time, work hours, reminders, airpods
+    private let totalSteps = 10
 
     private var profile: UserProfile? {
         profiles.first
@@ -99,6 +99,10 @@ struct OnboardingFlowView: View {
                 // Step 8: Reminders
                 ReminderSetupView(selectedFrequency: $viewModel.reminderFrequency)
                     .tag(8)
+
+                // Step 9: AirPods
+                AirPodsOnboardingStepView(selectedResponse: $viewModel.airpodsResponse)
+                    .tag(9)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             .animation(.easeInOut(duration: 0.3), value: currentStep)
@@ -239,6 +243,8 @@ struct OnboardingFlowView: View {
             return viewModel.workEndMinutes > viewModel.workStartMinutes
         case 8: // Reminders
             return true
+        case 9: // AirPods - always valid (can skip with "Not sure" or just continue)
+            return viewModel.airpodsResponse != nil
         default:
             return false
         }
@@ -247,7 +253,7 @@ struct OnboardingFlowView: View {
     // MARK: - Actions
 
     private func handleContinue() {
-        let stepNames = ["goal", "focus_areas", "stiffness_time", "dob", "gender", "height_weight", "time", "work_hours", "reminders"]
+        let stepNames = ["goal", "focus_areas", "stiffness_time", "dob", "gender", "height_weight", "time", "work_hours", "reminders", "airpods"]
         AnalyticsService.shared.track(.onboardingStepCompleted(step: stepNames[currentStep]))
 
         // Track additional properties for personalization steps
@@ -298,6 +304,13 @@ struct OnboardingFlowView: View {
             AnalyticsService.shared.track(.onboardingWorkHours(
                 sedentaryHoursBucket: viewModel.sedentaryHoursBucket?.rawValue
             ))
+        case 9: // AirPods
+            if let response = viewModel.airpodsResponse {
+                AnalyticsService.shared.track(.onboardingAirpodsAnswered(
+                    value: response.rawValue,
+                    detectedNow: AirPodsDetectionService.shared.isHeadphoneDetected
+                ))
+            }
         default:
             break
         }
@@ -327,6 +340,11 @@ struct OnboardingFlowView: View {
         profile.weightKg = viewModel.weightKgForStorage
 
         profile.onboardingCompleted = true
+
+        // Save AirPods response to the capability store
+        if let airpodsResponse = viewModel.airpodsResponse {
+            AirPodsCapabilityStore.shared.setOnboardingResponse(airpodsResponse)
+        }
 
         // If user completed the starter reset, initialize their streak
         if completedStarterReset {

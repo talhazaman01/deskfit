@@ -46,6 +46,14 @@ final class AnalyticsService: @unchecked Sendable {
 
         case streakMilestone(days: Int)
         case settingsChanged(setting: String, newValue: String)
+
+        // AirPods Detection
+        case onboardingAirpodsQuestionViewed
+        case onboardingAirpodsAnswered(value: String, detectedNow: Bool)
+        case airpodsRouteDetected(detected: Bool, routeType: String)
+        case airpodsPostureNudgesEnabled
+        case airpodsUpsellViewed(source: String)
+        case airpodsUpsellTapped(action: String)
     }
 
     func track(_ event: Event) {
@@ -209,6 +217,30 @@ final class AnalyticsService: @unchecked Sendable {
 
         case .settingsChanged(let setting, let newValue):
             return ("settings_changed", ["setting": setting, "new_value": newValue])
+
+        case .onboardingAirpodsQuestionViewed:
+            return ("onboarding_airpods_question_viewed", [:])
+
+        case .onboardingAirpodsAnswered(let value, let detectedNow):
+            return ("onboarding_airpods_answered", [
+                "value": value,
+                "detected_now": detectedNow
+            ])
+
+        case .airpodsRouteDetected(let detected, let routeType):
+            return ("airpods_route_detected", [
+                "detected": detected,
+                "route_type": routeType
+            ])
+
+        case .airpodsPostureNudgesEnabled:
+            return ("airpods_posture_nudges_enabled", [:])
+
+        case .airpodsUpsellViewed(let source):
+            return ("airpods_upsell_viewed", ["source": source])
+
+        case .airpodsUpsellTapped(let action):
+            return ("airpods_upsell_tapped", ["action": action])
         }
     }
 }

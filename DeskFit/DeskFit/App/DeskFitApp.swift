@@ -64,6 +64,12 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     ) -> Bool {
         UNUserNotificationCenter.current().delegate = self
         NotificationService.shared.setupNotificationCategories()
+
+        // Start AirPods detection service to monitor headphone routes
+        Task { @MainActor in
+            AirPodsDetectionService.shared.startListening()
+        }
+
         return true
     }
 
