@@ -30,6 +30,21 @@ final class UserProfile {
     // Sedentary hours bucket (optional, for plan personalization)
     var sedentaryHoursBucket: String?  // Stores SedentaryHoursBucket.rawValue
 
+    // Pain/discomfort areas (multi-select)
+    var painAreas: [String] = []  // Array of PainArea.rawValue
+
+    // Posture issues (multi-select)
+    var postureIssues: [String] = []  // Array of PostureIssue.rawValue
+
+    // Work type (single select)
+    var workType: String?  // Stores WorkType.rawValue
+
+    // Exercise frequency (single select)
+    var exerciseFrequency: String?  // Stores ExerciseFrequency.rawValue
+
+    // Motivation level (optional, for tone/difficulty)
+    var motivationLevel: String?  // Stores MotivationLevel.rawValue
+
     // Preferences
     var soundEnabled: Bool
     var hapticsEnabled: Bool
@@ -63,6 +78,11 @@ final class UserProfile {
         self.reminderFrequency = "every_2_hours"
         self.stiffnessTimes = []
         self.sedentaryHoursBucket = nil
+        self.painAreas = []
+        self.postureIssues = []
+        self.workType = nil
+        self.exerciseFrequency = nil
+        self.motivationLevel = nil
         self.soundEnabled = true
         self.hapticsEnabled = true
         self.currentStreak = 0
@@ -106,6 +126,34 @@ final class UserProfile {
     var sedentaryHoursBucketEnum: SedentaryHoursBucket? {
         guard let bucket = sedentaryHoursBucket else { return nil }
         return SedentaryHoursBucket(rawValue: bucket)
+    }
+
+    /// Pain areas as typed enums
+    var painAreasEnum: Set<PainArea> {
+        Set(painAreas.compactMap { PainArea(rawValue: $0) })
+    }
+
+    /// Posture issues as typed enums
+    var postureIssuesEnum: Set<PostureIssue> {
+        Set(postureIssues.compactMap { PostureIssue(rawValue: $0) })
+    }
+
+    /// Work type as typed enum
+    var workTypeEnum: WorkType? {
+        guard let type = workType else { return nil }
+        return WorkType(rawValue: type)
+    }
+
+    /// Exercise frequency as typed enum
+    var exerciseFrequencyEnum: ExerciseFrequency? {
+        guard let freq = exerciseFrequency else { return nil }
+        return ExerciseFrequency(rawValue: freq)
+    }
+
+    /// Motivation level as typed enum
+    var motivationLevelEnum: MotivationLevel? {
+        guard let level = motivationLevel else { return nil }
+        return MotivationLevel(rawValue: level)
     }
 
     /// Whether user has provided personal info for personalization
