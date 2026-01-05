@@ -28,6 +28,8 @@ struct OnboardingFlowView: View {
                 safetyPhase
             case .starterReset:
                 starterResetPhase
+            case .planPreview:
+                planPreviewPhase
             case .completion:
                 completionPhase
             }
@@ -157,19 +159,40 @@ struct OnboardingFlowView: View {
             onComplete: {
                 // Calculate approximate duration (60s target)
                 viewModel.starterResetDuration = 60
-                withAnimation {
-                    viewModel.currentPhase = .completion
-                }
+                // Generate the weekly plan and show preview
+                generateWeeklyPlanAndShowPreview()
             },
             onSkip: {
-                // User skipped - finalize and show paywall
-                finalizeOnboarding(completedStarterReset: false)
-                appState.presentPaywall(source: "post_starter_reset")
+                // User skipped - generate plan anyway and show preview
+                generateWeeklyPlanAndShowPreview()
             }
         )
     }
 
-    // MARK: - Completion Phase
+    // MARK: - Plan Preview Phase
+
+    private var planPreviewPhase: some View {
+        Group {
+            if let planResult = viewModel.generatedPlanResult {
+                WeeklyPlanPreviewView(
+                    planResult: planResult,
+                    onUnlockPlans: {
+                        finalizeOnboarding(completedStarterReset: viewModel.starterResetDuration > 0)
+                        appState.presentPaywall(source: "post_plan_preview")
+                    },
+                    onContinueFree: {
+                        finalizeOnboarding(completedStarterReset: viewModel.starterResetDuration > 0)
+                    }
+                )
+            } else {
+                // Fallback while generating or if generation fails
+                ProgressView("Creating your plan...")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+    }
+
+    // MARK: - Completion Phase (fallback)
 
     private var completionPhase: some View {
         StarterResetCompletionView(
@@ -314,6 +337,50 @@ struct OnboardingFlowView: View {
         default:
             break
         }
+    }
+
+    private func generateWeeklyPlanAndShowPreview() {
+        guard let profile = profile else {
+            // Fallback to completion if no profile
+            withAnimation {
+                viewModel.currentPhase = .completion
+            }
+            return
+        }
+
+        // Build a temporary profile with the current onboarding values for plan generation
+        let tempProfile = buildTemporaryProfile(from: profile)
+
+        // Generate the weekly plan
+        let planResult = PlanGeneratorService.shared.generateWeeklyPlan(for: tempProfile)
+        viewModel.generatedPlanResult = planResult
+
+        withAnimation {
+            viewModel.currentPhase = .planPreview
+        }
+    }
+
+    /// Build a temporary UserProfile with current onboarding values for plan generation
+    private func buildTemporaryProfile(from existingProfile: UserProfile) -> UserProfile {
+        // Update the existing profile with current onboarding values (not saved yet)
+        existingProfile.goal = viewModel.selectedGoal?.rawValue ?? ""
+        existingProfile.focusAreas = viewModel.selectedFocusAreas.map { $0.rawValue }
+        existingProfile.dailyTimeMinutes = viewModel.selectedDailyTime
+        existingProfile.workStartMinutes = viewModel.workStartMinutes
+        existingProfile.workEndMinutes = viewModel.workEndMinutes
+        existingProfile.stiffnessTimes = viewModel.selectedStiffnessTimes.map { $0.rawValue }.sorted()
+        existingProfile.sedentaryHoursBucket = viewModel.sedentaryHoursBucket?.rawValue
+
+        if viewModel.hasSetDateOfBirth {
+            existingProfile.dateOfBirth = viewModel.dateOfBirth
+        }
+        if let gender = viewModel.selectedGender {
+            existingProfile.gender = gender.rawValue
+        }
+        existingProfile.heightCm = viewModel.heightCmForStorage
+        existingProfile.weightKg = viewModel.weightKgForStorage
+
+        return existingProfile
     }
 
     private func finalizeOnboarding(completedStarterReset: Bool) {

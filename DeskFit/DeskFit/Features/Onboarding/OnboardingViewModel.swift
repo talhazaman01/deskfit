@@ -2,11 +2,12 @@ import Foundation
 import Combine
 
 enum OnboardingPhase {
-    case questionnaire  // Steps 0-8: goal, focus, stiffness, dob, gender, height/weight, time, hours, reminders
+    case questionnaire  // Steps 0-9: goal, focus, stiffness, dob, gender, height/weight, time, hours, reminders, airpods
     case summary        // "Your plan is ready" screen
     case safety         // Safety acknowledgment screen (before starter reset)
     case starterReset   // 60s starter session
-    case completion     // Post-reset completion screen
+    case planPreview    // 7-day plan preview screen
+    case completion     // Post-reset completion screen (fallback if plan generation fails)
 }
 
 @MainActor
@@ -54,6 +55,9 @@ class OnboardingViewModel: ObservableObject {
     // Flow state
     @Published var currentPhase: OnboardingPhase = .questionnaire
     @Published var starterResetDuration: Int = 0  // Actual duration completed
+
+    /// Generated weekly plan result (created after starter reset)
+    @Published var generatedPlanResult: PlanGenerationResult?
 
     var startTime: Date?
 
