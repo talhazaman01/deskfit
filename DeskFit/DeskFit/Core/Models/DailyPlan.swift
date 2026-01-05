@@ -85,7 +85,7 @@ struct PlannedSession: Codable, Hashable, Identifiable {
     }
 }
 
-enum SessionType: String, Codable {
+enum SessionType: String, Codable, Sendable {
     case morning
     case midday
     case afternoon

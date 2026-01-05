@@ -46,30 +46,24 @@ struct GenderSelectionView: View {
 
 #Preview("None selected - iPhone SE") {
     GenderSelectionView(selectedGender: .constant(nil))
-        .previewDevice("iPhone SE (3rd generation)")
 }
 
 #Preview("Female selected - iPhone SE") {
     GenderSelectionView(selectedGender: .constant(.female))
-        .previewDevice("iPhone SE (3rd generation)")
 }
 
 #Preview("None selected - iPhone 15 Pro") {
     GenderSelectionView(selectedGender: .constant(nil))
-        .previewDevice("iPhone 15 Pro")
 }
 
 #Preview("Male selected - iPhone 15 Pro") {
     GenderSelectionView(selectedGender: .constant(.male))
-        .previewDevice("iPhone 15 Pro")
 }
 
 #Preview("None selected - iPhone 15 Pro Max") {
     GenderSelectionView(selectedGender: .constant(nil))
-        .previewDevice("iPhone 15 Pro Max")
 }
 
 #Preview("Non-binary selected - iPhone 15 Pro Max") {
     GenderSelectionView(selectedGender: .constant(.nonBinary))
-        .previewDevice("iPhone 15 Pro Max")
 }

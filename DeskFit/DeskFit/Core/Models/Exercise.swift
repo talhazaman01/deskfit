@@ -33,6 +33,40 @@ struct Exercise: Codable, Identifiable, Hashable {
     /// e.g., "chair", "wall", "doorway", "desk", "none"
     let equipment: String?
 
+    // MARK: - Initializer (with defaults for optional tag/equipment params)
+
+    init(
+        id: String,
+        name: String,
+        description: String,
+        cue: String,
+        durationSeconds: Int,
+        focusAreas: [String],
+        difficulty: String,
+        imageAsset: String,
+        animationAsset: String?,
+        contraindication: String,
+        issueTags: [String]? = nil,
+        intentTags: [String]? = nil,
+        contextTags: [String]? = nil,
+        equipment: String? = nil
+    ) {
+        self.id = id
+        self.name = name
+        self.description = description
+        self.cue = cue
+        self.durationSeconds = durationSeconds
+        self.focusAreas = focusAreas
+        self.difficulty = difficulty
+        self.imageAsset = imageAsset
+        self.animationAsset = animationAsset
+        self.contraindication = contraindication
+        self.issueTags = issueTags
+        self.intentTags = intentTags
+        self.contextTags = contextTags
+        self.equipment = equipment
+    }
+
     // MARK: - Computed Properties
 
     var hasImage: Bool {

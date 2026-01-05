@@ -85,7 +85,6 @@ struct SessionExerciseContentView: View {
             contraindication: "Stop if dizzy."
         )
     )
-    .previewDevice("iPhone SE (3rd generation)")
 }
 
 #Preview("Long text - iPhone SE") {
@@ -103,7 +102,6 @@ struct SessionExerciseContentView: View {
             contraindication: "Stop immediately if you experience dizziness, sharp pain, or numbness in your arms or fingers. This exercise is not recommended for individuals with cervical spine injuries, herniated discs, recent neck surgery, or those experiencing acute neck pain. If you have any history of stroke or vertebral artery issues, please consult your healthcare provider before attempting this stretch."
         )
     )
-    .previewDevice("iPhone SE (3rd generation)")
 }
 
 #Preview("Long text - iPhone 15 Pro") {
@@ -121,7 +119,6 @@ struct SessionExerciseContentView: View {
             contraindication: "Stop immediately if you experience dizziness, sharp pain, or numbness in your arms or fingers. This exercise is not recommended for individuals with cervical spine injuries, herniated discs, recent neck surgery, or those experiencing acute neck pain. If you have any history of stroke or vertebral artery issues, please consult your healthcare provider before attempting this stretch."
         )
     )
-    .previewDevice("iPhone 15 Pro")
 }
 
 #Preview("Long text - iPhone 15 Pro Max") {
@@ -139,7 +136,6 @@ struct SessionExerciseContentView: View {
             contraindication: "Stop immediately if you experience dizziness, sharp pain, or numbness in your arms or fingers. This exercise is not recommended for individuals with cervical spine injuries, herniated discs, recent neck surgery, or those experiencing acute neck pain. If you have any history of stroke or vertebral artery issues, please consult your healthcare provider before attempting this stretch."
         )
     )
-    .previewDevice("iPhone 15 Pro Max")
 }
 
 #Preview("Compact variant - Onboarding") {

@@ -90,7 +90,6 @@ struct DateOfBirthView: View {
         dateOfBirth: .constant(Calendar.current.date(byAdding: .year, value: -25, to: Date()) ?? Date()),
         hasSetDateOfBirth: .constant(false)
     )
-    .previewDevice("iPhone SE (3rd generation)")
 }
 
 #Preview("Selected - iPhone SE") {
@@ -98,7 +97,6 @@ struct DateOfBirthView: View {
         dateOfBirth: .constant(Calendar.current.date(byAdding: .year, value: -32, to: Date()) ?? Date()),
         hasSetDateOfBirth: .constant(true)
     )
-    .previewDevice("iPhone SE (3rd generation)")
 }
 
 #Preview("Default - iPhone 15 Pro") {
@@ -106,7 +104,6 @@ struct DateOfBirthView: View {
         dateOfBirth: .constant(Calendar.current.date(byAdding: .year, value: -25, to: Date()) ?? Date()),
         hasSetDateOfBirth: .constant(false)
     )
-    .previewDevice("iPhone 15 Pro")
 }
 
 #Preview("Selected - iPhone 15 Pro") {
@@ -114,7 +111,6 @@ struct DateOfBirthView: View {
         dateOfBirth: .constant(Calendar.current.date(byAdding: .year, value: -28, to: Date()) ?? Date()),
         hasSetDateOfBirth: .constant(true)
     )
-    .previewDevice("iPhone 15 Pro")
 }
 
 #Preview("Default - iPhone 15 Pro Max") {
@@ -122,7 +118,6 @@ struct DateOfBirthView: View {
         dateOfBirth: .constant(Calendar.current.date(byAdding: .year, value: -25, to: Date()) ?? Date()),
         hasSetDateOfBirth: .constant(false)
     )
-    .previewDevice("iPhone 15 Pro Max")
 }
 
 #Preview("Selected - iPhone 15 Pro Max") {
@@ -130,5 +125,4 @@ struct DateOfBirthView: View {
         dateOfBirth: .constant(Calendar.current.date(byAdding: .year, value: -45, to: Date()) ?? Date()),
         hasSetDateOfBirth: .constant(true)
     )
-    .previewDevice("iPhone 15 Pro Max")
 }

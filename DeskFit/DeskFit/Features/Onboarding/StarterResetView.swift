@@ -170,7 +170,6 @@ struct StarterResetView: View {
         onComplete: {},
         onSkip: {}
     )
-    .previewDevice("iPhone SE (3rd generation)")
 }
 
 #Preview("iPhone 15 Pro") {
@@ -179,7 +178,6 @@ struct StarterResetView: View {
         onComplete: {},
         onSkip: {}
     )
-    .previewDevice("iPhone 15 Pro")
 }
 
 #Preview("iPhone 15 Pro Max") {
@@ -188,5 +186,4 @@ struct StarterResetView: View {
         onComplete: {},
         onSkip: {}
     )
-    .previewDevice("iPhone 15 Pro Max")
 }

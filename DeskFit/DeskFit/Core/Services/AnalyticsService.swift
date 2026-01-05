@@ -2,8 +2,10 @@ import Foundation
 
 /// Stub analytics service - prints to console in DEBUG.
 /// Replace with real provider (Mixpanel, Amplitude, PostHog) before launch.
-final class AnalyticsService: @unchecked Sendable {
-    static let shared = AnalyticsService()
+/// Marked Sendable with nonisolated static shared for cross-actor access in Swift 6.
+final class AnalyticsService: Sendable {
+    /// Nonisolated to allow access from any actor (e.g., NotificationService).
+    nonisolated static let shared = AnalyticsService()
 
     private init() {}
 
@@ -56,7 +58,7 @@ final class AnalyticsService: @unchecked Sendable {
         case airpodsUpsellTapped(action: String)
     }
 
-    func track(_ event: Event) {
+    nonisolated func track(_ event: Event) {
         let (name, properties) = eventDetails(event)
 
         // TODO: Replace with real analytics provider
@@ -70,7 +72,7 @@ final class AnalyticsService: @unchecked Sendable {
         #endif
     }
 
-    private func eventDetails(_ event: Event) -> (name: String, properties: [String: Any]) {
+    private nonisolated func eventDetails(_ event: Event) -> (name: String, properties: [String: Any]) {
         switch event {
         case .appOpened(let isFirstLaunch):
             return ("app_opened", ["is_first_launch": isFirstLaunch])

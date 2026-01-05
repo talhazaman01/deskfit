@@ -251,7 +251,6 @@ private struct MeasurementInputField: View {
         hasEnteredHeight: .constant(false),
         hasEnteredWeight: .constant(false)
     )
-    .previewDevice("iPhone SE (3rd generation)")
 }
 
 #Preview("Metric - iPhone SE") {
@@ -265,7 +264,6 @@ private struct MeasurementInputField: View {
         hasEnteredHeight: .constant(true),
         hasEnteredWeight: .constant(true)
     )
-    .previewDevice("iPhone SE (3rd generation)")
 }
 
 #Preview("Imperial - iPhone 15 Pro") {
@@ -279,7 +277,6 @@ private struct MeasurementInputField: View {
         hasEnteredHeight: .constant(true),
         hasEnteredWeight: .constant(true)
     )
-    .previewDevice("iPhone 15 Pro")
 }
 
 #Preview("Metric - iPhone 15 Pro") {
@@ -293,7 +290,6 @@ private struct MeasurementInputField: View {
         hasEnteredHeight: .constant(false),
         hasEnteredWeight: .constant(false)
     )
-    .previewDevice("iPhone 15 Pro")
 }
 
 #Preview("Imperial - iPhone 15 Pro Max") {
@@ -307,7 +303,6 @@ private struct MeasurementInputField: View {
         hasEnteredHeight: .constant(true),
         hasEnteredWeight: .constant(false)
     )
-    .previewDevice("iPhone 15 Pro Max")
 }
 
 #Preview("Metric - iPhone 15 Pro Max") {
@@ -321,5 +316,4 @@ private struct MeasurementInputField: View {
         hasEnteredHeight: .constant(true),
         hasEnteredWeight: .constant(true)
     )
-    .previewDevice("iPhone 15 Pro Max")
 }

@@ -84,7 +84,6 @@ struct ExerciseDisplayView: View {
             timeRemaining: 60
         )
     }
-    .previewDevice("iPhone SE (3rd generation)")
 }
 
 #Preview("Long text - iPhone 15 Pro") {
@@ -105,7 +104,6 @@ struct ExerciseDisplayView: View {
             timeRemaining: 60
         )
     }
-    .previewDevice("iPhone 15 Pro")
 }
 
 #Preview("Long text - iPhone 15 Pro Max") {
@@ -126,7 +124,6 @@ struct ExerciseDisplayView: View {
             timeRemaining: 60
         )
     }
-    .previewDevice("iPhone 15 Pro Max")
 }
 
 #Preview("Very long text - Stress test") {

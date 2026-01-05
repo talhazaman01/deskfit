@@ -136,7 +136,7 @@ final class WeeklyPlan {
 
 // MARK: - Day Plan Item (one day's worth of sessions)
 
-struct DayPlanItem: Codable, Identifiable, Hashable {
+struct DayPlanItem: Codable, Identifiable, Hashable, Sendable {
     var id: UUID
     var dayIndex: Int  // 0-6 (Day 1 to Day 7)
     var sessions: [MicroSession]
@@ -177,7 +177,7 @@ struct DayPlanItem: Codable, Identifiable, Hashable {
 
 // MARK: - Micro Session (individual session within a day)
 
-struct MicroSession: Codable, Identifiable, Hashable {
+struct MicroSession: Codable, Identifiable, Hashable, Sendable {
     var id: UUID
     var title: String  // e.g., "Morning Reset", "Midday Desk Break"
     var sessionType: SessionType
@@ -212,7 +212,9 @@ struct MicroSession: Codable, Identifiable, Hashable {
 
 // MARK: - Onboarding Profile Snapshot (for plan regeneration and display)
 
-struct OnboardingProfileSnapshot: Codable, Hashable {
+/// Snapshot of onboarding profile used for plan generation.
+/// Marked Sendable and @preconcurrency Codable to enable nonisolated encoding/decoding in Swift 6.
+struct OnboardingProfileSnapshot: @preconcurrency Codable, Hashable, Sendable {
     let goal: String
     let focusAreas: [String]
     let painAreas: [String]
