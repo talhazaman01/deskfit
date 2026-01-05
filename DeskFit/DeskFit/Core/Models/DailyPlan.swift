@@ -79,6 +79,16 @@ struct PlannedSession: Codable, Hashable, Identifiable {
         self.completedAt = nil
     }
 
+    init(type: SessionType, title: String, exerciseIds: [String], durationSeconds: Int) {
+        self.id = UUID()
+        self.type = type
+        self.title = title
+        self.exerciseIds = exerciseIds
+        self.durationSeconds = durationSeconds
+        self.isCompleted = false
+        self.completedAt = nil
+    }
+
     mutating func markCompleted() {
         isCompleted = true
         completedAt = Date()

@@ -61,6 +61,26 @@ final class AnalyticsService: Sendable {
         case analysisViewed(score: Int, category: String, insightCount: Int)
         case analysisCtaTapped
         case analysisInsightRendered(tags: [String])
+
+        // Tab Navigation
+        case tabOpened(name: String)
+
+        // Session Actions (with source tracking)
+        case sessionStartedFromSource(sessionId: String, source: String)
+
+        // Progress
+        case progressViewed
+        case progressDayOpened(dayIndex: Int, date: String)
+
+        // Upgrade Prompts
+        case upgradeCardViewed(source: String)
+        case upgradeTapped(source: String)
+
+        // Training
+        case planDayOpened(dayIndex: Int)
+        case libraryOpened
+        case exerciseViewed(exerciseId: String, source: String)
+        case quickResetStarted(source: String)
     }
 
     nonisolated func track(_ event: Event) {
@@ -261,6 +281,45 @@ final class AnalyticsService: Sendable {
 
         case .analysisInsightRendered(let tags):
             return ("analysis_insight_rendered", ["tags": tags])
+
+        case .tabOpened(let name):
+            return ("tab_opened", ["name": name])
+
+        case .sessionStartedFromSource(let sessionId, let source):
+            return ("session_started_from_source", [
+                "session_id": sessionId,
+                "source": source
+            ])
+
+        case .progressViewed:
+            return ("progress_viewed", [:])
+
+        case .progressDayOpened(let dayIndex, let date):
+            return ("progress_day_opened", [
+                "day_index": dayIndex,
+                "date": date
+            ])
+
+        case .upgradeCardViewed(let source):
+            return ("upgrade_card_viewed", ["source": source])
+
+        case .upgradeTapped(let source):
+            return ("upgrade_tapped", ["source": source])
+
+        case .planDayOpened(let dayIndex):
+            return ("plan_day_opened", ["day_index": dayIndex])
+
+        case .libraryOpened:
+            return ("library_opened", [:])
+
+        case .exerciseViewed(let exerciseId, let source):
+            return ("exercise_viewed", [
+                "exercise_id": exerciseId,
+                "source": source
+            ])
+
+        case .quickResetStarted(let source):
+            return ("quick_reset_started", ["source": source])
         }
     }
 }

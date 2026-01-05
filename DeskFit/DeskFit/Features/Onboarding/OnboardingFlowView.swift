@@ -459,18 +459,37 @@ struct OnboardingFlowView: View {
 
         profile.onboardingCompleted = true
 
+        // Persist the generated weekly plan to SwiftData
+        if let planResult = viewModel.generatedPlanResult {
+            modelContext.insert(planResult.plan)
+        } else {
+            // Generate and save a new plan if one wasn't already generated
+            let _ = PlanGeneratorService.shared.getOrCreateWeeklyPlan(context: modelContext, profile: profile)
+        }
+
         // Save AirPods response to the capability store
         if let airpodsResponse = viewModel.airpodsResponse {
             AirPodsCapabilityStore.shared.setOnboardingResponse(airpodsResponse)
         }
 
-        // If user completed the starter reset, initialize their streak
+        // If user completed the starter reset, initialize their streak and progress
         if completedStarterReset {
             profile.currentStreak = 1
             profile.longestStreak = 1
             profile.lastSessionDate = Date()
             profile.totalSessions = 1
             profile.totalMinutes = 1  // 1 minute for the starter reset
+
+            // Record to ProgressStore for the Progress tab
+            Task { @MainActor in
+                let snapshot = OnboardingProfileSnapshot.from(profile: profile)
+                ProgressStore.shared.recordSessionCompletion(
+                    durationSeconds: viewModel.starterResetDuration,
+                    focusAreas: profile.focusAreas,
+                    profile: snapshot,
+                    currentStreak: 1
+                )
+            }
         }
 
         try? modelContext.save()

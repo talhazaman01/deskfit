@@ -13,7 +13,8 @@ struct DeskFitApp: App {
         let schema = Schema([
             UserProfile.self,
             SessionRecord.self,
-            DailyPlan.self
+            DailyPlan.self,
+            WeeklyPlan.self
         ])
         let modelConfiguration = ModelConfiguration(
             schema: schema,
@@ -174,28 +175,97 @@ struct RootView: View {
     }
 }
 
+// MARK: - Tab Selection
+
+enum MainTab: String, CaseIterable {
+    case home
+    case training
+    case progress
+
+    var title: String {
+        switch self {
+        case .home: return "Home"
+        case .training: return "Training"
+        case .progress: return "Progress"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .home: return "house.fill"
+        case .training: return "figure.run"
+        case .progress: return "chart.line.uptrend.xyaxis"
+        }
+    }
+}
+
 struct MainTabView: View {
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var subscriptionManager: SubscriptionManager
+    @StateObject private var progressStore = ProgressStore.shared
+    @State private var selectedTab: MainTab = .home
 
     var body: some View {
-        NavigationStack(path: $appState.navigationPath) {
-            HomeView()
-                .navigationDestination(for: AppDestination.self) { destination in
-                    switch destination {
-                    case .session(let session):
-                        SessionPlayerView(plannedSession: session)
-                    case .reminders:
-                        RemindersView()
-                    case .settings:
-                        SettingsView()
+        TabView(selection: $selectedTab) {
+            // MARK: - Home Tab
+            NavigationStack(path: $appState.navigationPath) {
+                HomeTabView()
+                    .navigationDestination(for: AppDestination.self) { destination in
+                        destinationView(for: destination)
                     }
-                }
+            }
+            .tag(MainTab.home)
+            .tabItem {
+                Label(MainTab.home.title, systemImage: MainTab.home.icon)
+            }
+
+            // MARK: - Training Tab
+            NavigationStack {
+                TrainingTabView()
+                    .navigationDestination(for: AppDestination.self) { destination in
+                        destinationView(for: destination)
+                    }
+            }
+            .tag(MainTab.training)
+            .tabItem {
+                Label(MainTab.training.title, systemImage: MainTab.training.icon)
+            }
+
+            // MARK: - Progress Tab
+            NavigationStack {
+                ProgressTabView()
+                    .navigationDestination(for: AppDestination.self) { destination in
+                        destinationView(for: destination)
+                    }
+            }
+            .tag(MainTab.progress)
+            .tabItem {
+                Label(MainTab.progress.title, systemImage: MainTab.progress.icon)
+            }
         }
+        .tint(.appTeal)
+        .environmentObject(progressStore)
         .onAppear {
+            configureTabBarAppearance()
             handlePendingDeepLink()
+        }
+        .onChange(of: selectedTab) { _, newTab in
+            AnalyticsService.shared.track(.tabOpened(name: newTab.rawValue))
         }
         .onChange(of: appState.pendingDeepLink) { _, _ in
             handlePendingDeepLink()
+        }
+    }
+
+    @ViewBuilder
+    private func destinationView(for destination: AppDestination) -> some View {
+        switch destination {
+        case .session(let session):
+            SessionPlayerView(plannedSession: session)
+        case .reminders:
+            RemindersView()
+        case .settings:
+            SettingsView()
         }
     }
 
@@ -205,9 +275,20 @@ struct MainTabView: View {
 
         switch deepLink {
         case .startNextSession:
+            selectedTab = .home
             appState.shouldStartNextSession = true
         case .home:
+            selectedTab = .home
             appState.popToRoot()
         }
+    }
+
+    private func configureTabBarAppearance() {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithDefaultBackground()
+        appearance.backgroundColor = UIColor.systemBackground
+
+        UITabBar.appearance().standardAppearance = appearance
+        UITabBar.appearance().scrollEdgeAppearance = appearance
     }
 }
