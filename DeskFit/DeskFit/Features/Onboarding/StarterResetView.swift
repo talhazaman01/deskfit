@@ -145,13 +145,34 @@ struct StarterResetView: View {
     // MARK: - Completed State
 
     private var completedState: some View {
-        VStack {
-            // Trigger completion callback
-            Color.clear
-                .onAppear {
-                    HapticsService.shared.sessionComplete()
-                    onComplete()
-                }
+        VStack(spacing: Theme.Spacing.xl) {
+            Spacer()
+
+            // Brief success indicator before transitioning
+            ZStack {
+                Circle()
+                    .fill(Color.success.opacity(0.2))
+                    .frame(width: 100, height: 100)
+
+                Image(systemName: "checkmark")
+                    .font(.system(size: 44, weight: .bold))
+                    .foregroundStyle(.success)
+            }
+
+            Text("Great job!")
+                .font(Theme.Typography.title)
+                .foregroundStyle(.textPrimary)
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.appBackground)
+        .onAppear {
+            HapticsService.shared.sessionComplete()
+            // Small delay to show the success state before transitioning
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                onComplete()
+            }
         }
     }
 }
