@@ -30,6 +30,7 @@ final class AnalyticsService: Sendable {
         case sessionAbandoned(sessionId: String, completedExercises: Int, totalExercises: Int)
         case sessionCompleted(sessionId: String, durationSeconds: Int, feedback: String?)
         case exerciseCompleted(exerciseId: String, durationSeconds: Int)
+        case exerciseSkipped(exerciseId: String, skippedAtSeconds: Int, totalDurationSeconds: Int)
 
         case paywallViewed(source: String)
         case paywallDismissed(source: String, selectedPlan: String?)
@@ -192,6 +193,13 @@ final class AnalyticsService: Sendable {
 
         case .exerciseCompleted(let exerciseId, let duration):
             return ("exercise_completed", ["exercise_id": exerciseId, "duration_seconds": duration])
+
+        case .exerciseSkipped(let exerciseId, let skippedAt, let totalDuration):
+            return ("exercise_skipped", [
+                "exercise_id": exerciseId,
+                "skipped_at_seconds": skippedAt,
+                "total_duration_seconds": totalDuration
+            ])
 
         case .paywallViewed(let source):
             return ("paywall_viewed", ["source": source])

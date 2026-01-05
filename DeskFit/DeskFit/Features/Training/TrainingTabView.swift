@@ -5,6 +5,8 @@ import SwiftData
 
 /// Training tab with Plan and Library segments.
 struct TrainingTabView: View {
+    @ObservedObject var sessionCoordinator: TrainingSessionCoordinator
+
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var subscriptionManager: SubscriptionManager
@@ -39,7 +41,7 @@ struct TrainingTabView: View {
             // Content
             switch selectedSegment {
             case .plan:
-                PlanView(weeklyPlan: currentWeeklyPlan, profile: profile)
+                PlanView(weeklyPlan: currentWeeklyPlan, profile: profile, sessionCoordinator: sessionCoordinator)
             case .library:
                 LibraryView()
             }
@@ -80,6 +82,8 @@ enum TrainingSegment: String, CaseIterable, Identifiable {
 struct PlanView: View {
     let weeklyPlan: WeeklyPlan?
     let profile: UserProfile?
+    @ObservedObject var sessionCoordinator: TrainingSessionCoordinator
+
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var subscriptionManager: SubscriptionManager
 
@@ -264,7 +268,7 @@ struct PlanView: View {
             durationSeconds: 120
         )
 
-        appState.navigateTo(.session(session))
+        sessionCoordinator.startSession(session)
     }
 
     private func startSession(_ microSession: MicroSession) {
@@ -280,7 +284,7 @@ struct PlanView: View {
             source: "training"
         ))
 
-        appState.navigateTo(.session(session))
+        sessionCoordinator.startSession(session)
     }
 }
 
@@ -591,7 +595,7 @@ struct ExerciseRow: View {
 
 #Preview {
     NavigationStack {
-        TrainingTabView()
+        TrainingTabView(sessionCoordinator: TrainingSessionCoordinator())
     }
     .environmentObject(AppState())
     .environmentObject(SubscriptionManager.shared)

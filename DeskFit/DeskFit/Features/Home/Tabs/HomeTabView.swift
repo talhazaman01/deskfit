@@ -6,6 +6,8 @@ import Combine
 
 /// Main home tab with daily focus, score, next session, and personalized insights.
 struct HomeTabView: View {
+    @ObservedObject var sessionCoordinator: HomeSessionCoordinator
+
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var subscriptionManager: SubscriptionManager
@@ -381,7 +383,7 @@ struct HomeTabView: View {
     }
 
     private func startSession(_ session: MicroSession) {
-        // Convert MicroSession to PlannedSession for navigation
+        // Convert MicroSession to PlannedSession for coordinator
         let plannedSession = PlannedSession(
             type: session.sessionType,
             title: session.title,
@@ -392,7 +394,7 @@ struct HomeTabView: View {
             sessionId: session.id.uuidString,
             source: "home"
         ))
-        appState.navigateTo(.session(plannedSession))
+        sessionCoordinator.startSession(plannedSession)
     }
 
     private func generatePlanIfNeeded() {
@@ -607,7 +609,7 @@ class HomeTabViewModel: ObservableObject {
 
 #Preview {
     NavigationStack {
-        HomeTabView()
+        HomeTabView(sessionCoordinator: HomeSessionCoordinator())
     }
     .environmentObject(AppState())
     .environmentObject(SubscriptionManager.shared)

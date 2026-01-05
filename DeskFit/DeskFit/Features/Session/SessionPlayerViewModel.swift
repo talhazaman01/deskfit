@@ -99,6 +99,40 @@ class SessionPlayerViewModel: ObservableObject {
         }
     }
 
+    /// Skip to the next exercise early. Safe to call even if timer is running.
+    func skipToNext() {
+        guard let exercise = currentExercise else { return }
+
+        // Stop current timer first to avoid double-tick race
+        timer?.invalidate()
+        timer = nil
+
+        // Track skip event
+        let skippedAtSeconds = exercise.durationSeconds - timeRemaining
+        AnalyticsService.shared.track(.exerciseSkipped(
+            exerciseId: exercise.id,
+            skippedAtSeconds: skippedAtSeconds,
+            totalDurationSeconds: exercise.durationSeconds
+        ))
+
+        HapticsService.shared.exerciseComplete()
+
+        currentExerciseIndex += 1
+
+        if currentExerciseIndex >= exercises.count {
+            isComplete = true
+        } else {
+            timeRemaining = exercises[currentExerciseIndex].durationSeconds
+            HapticsService.shared.exerciseStart()
+            startTimer()
+        }
+    }
+
+    /// Returns true if on the last exercise
+    var isLastExercise: Bool {
+        currentExerciseIndex >= exercises.count - 1
+    }
+
     private func completeCurrentExercise() {
         guard let exercise = currentExercise else { return }
 

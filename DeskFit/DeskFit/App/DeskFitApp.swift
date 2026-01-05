@@ -203,13 +203,15 @@ struct MainTabView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var subscriptionManager: SubscriptionManager
     @StateObject private var progressStore = ProgressStore.shared
+    @StateObject private var homeCoordinator = HomeSessionCoordinator()
+    @StateObject private var trainingCoordinator = TrainingSessionCoordinator()
     @State private var selectedTab: MainTab = .home
 
     var body: some View {
         TabView(selection: $selectedTab) {
             // MARK: - Home Tab
             NavigationStack(path: $appState.navigationPath) {
-                HomeTabView()
+                HomeTabView(sessionCoordinator: homeCoordinator)
                     .navigationDestination(for: AppDestination.self) { destination in
                         destinationView(for: destination)
                     }
@@ -218,10 +220,17 @@ struct MainTabView: View {
             .tabItem {
                 Label(MainTab.home.title, systemImage: MainTab.home.icon)
             }
+            .fullScreenCover(item: $homeCoordinator.activeSession) { session in
+                SessionPlayerView(
+                    plannedSession: session,
+                    sourceTab: homeCoordinator.sourceTab,
+                    onDismiss: { homeCoordinator.endSession() }
+                )
+            }
 
             // MARK: - Training Tab
             NavigationStack {
-                TrainingTabView()
+                TrainingTabView(sessionCoordinator: trainingCoordinator)
                     .navigationDestination(for: AppDestination.self) { destination in
                         destinationView(for: destination)
                     }
@@ -229,6 +238,13 @@ struct MainTabView: View {
             .tag(MainTab.training)
             .tabItem {
                 Label(MainTab.training.title, systemImage: MainTab.training.icon)
+            }
+            .fullScreenCover(item: $trainingCoordinator.activeSession) { session in
+                SessionPlayerView(
+                    plannedSession: session,
+                    sourceTab: trainingCoordinator.sourceTab,
+                    onDismiss: { trainingCoordinator.endSession() }
+                )
             }
 
             // MARK: - Progress Tab
@@ -260,8 +276,10 @@ struct MainTabView: View {
     @ViewBuilder
     private func destinationView(for destination: AppDestination) -> some View {
         switch destination {
-        case .session(let session):
-            SessionPlayerView(plannedSession: session)
+        case .session:
+            // Sessions are now handled via fullScreenCover per tab
+            // This case is kept for backwards compatibility but won't be used
+            EmptyView()
         case .reminders:
             RemindersView()
         case .settings:

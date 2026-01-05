@@ -110,6 +110,15 @@ class PlanGeneratorService {
         try? context.save()
     }
 
+    /// Mark a session as completed in the weekly plan
+    func markSessionCompletedInWeeklyPlan(session: PlannedSession, in weeklyPlan: WeeklyPlan, context: ModelContext) {
+        let calendar = Calendar.current
+        let dayIndex = calendar.dateComponents([.day], from: weeklyPlan.weekStartDate, to: Date()).day ?? 0
+        let clampedDayIndex = min(6, max(0, dayIndex))
+        weeklyPlan.markSessionCompleted(dayIndex: clampedDayIndex, sessionId: session.id)
+        try? context.save()
+    }
+
     // MARK: - Starter Reset Generation
 
     /// Generate a tailored starter reset based on user's stiffness times and focus areas

@@ -4,12 +4,13 @@ import Combine
 
 struct SessionPlayerView: View {
     let plannedSession: PlannedSession
+    let sourceTab: String
+    let onDismiss: () -> Void
 
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var appState: AppState
     @Query private var profiles: [UserProfile]
-    @Query(sort: \DailyPlan.date, order: .reverse) private var plans: [DailyPlan]
+    @Query private var weeklyPlans: [WeeklyPlan]
 
     @StateObject private var viewModel: SessionPlayerViewModel
 
@@ -17,12 +18,19 @@ struct SessionPlayerView: View {
         profiles.first
     }
 
-    private var todaysPlan: DailyPlan? {
-        plans.first { Calendar.current.isDateInToday($0.date) }
+    private var currentWeeklyPlan: WeeklyPlan? {
+        weeklyPlans.first { plan in
+            let calendar = Calendar.current
+            let weekStart = plan.weekStartDate
+            let weekEnd = calendar.date(byAdding: .day, value: 6, to: weekStart)!
+            return Date() >= weekStart && Date() <= weekEnd
+        }
     }
 
-    init(plannedSession: PlannedSession) {
+    init(plannedSession: PlannedSession, sourceTab: String, onDismiss: @escaping () -> Void) {
         self.plannedSession = plannedSession
+        self.sourceTab = sourceTab
+        self.onDismiss = onDismiss
         _viewModel = StateObject(wrappedValue: SessionPlayerViewModel(session: plannedSession))
     }
 
@@ -78,19 +86,41 @@ struct SessionPlayerView: View {
                     }
                     .frame(maxHeight: .infinity)
 
-                    // MARK: - Bottom Section (Fixed - Timer & Pause)
+                    // MARK: - Bottom Section (Fixed - Timer, Controls)
                     VStack(spacing: Theme.Spacing.lg) {
                         TimerView(
                             timeRemaining: viewModel.timeRemaining,
                             totalTime: viewModel.currentExercise?.durationSeconds ?? 0
                         )
 
-                        Button {
-                            viewModel.pause()
-                        } label: {
-                            Image(systemName: "pause.circle.fill")
-                                .font(.system(size: 60))
-                                .foregroundStyle(.appTeal)
+                        // Control buttons: Pause and Next
+                        HStack(spacing: Theme.Spacing.xl) {
+                            // Pause button
+                            Button {
+                                viewModel.pause()
+                            } label: {
+                                Image(systemName: "pause.circle.fill")
+                                    .font(.system(size: 60))
+                                    .foregroundStyle(.appTeal)
+                            }
+
+                            // Next/Finish button
+                            Button {
+                                if viewModel.isLastExercise {
+                                    // Skip to completion
+                                    viewModel.skipToNext()
+                                } else {
+                                    viewModel.skipToNext()
+                                }
+                            } label: {
+                                VStack(spacing: Theme.Spacing.xs) {
+                                    Image(systemName: viewModel.isLastExercise ? "checkmark.circle.fill" : "forward.fill")
+                                        .font(.system(size: 32))
+                                    Text(viewModel.isLastExercise ? "Finish" : "Next")
+                                        .font(Theme.Typography.caption)
+                                }
+                                .foregroundStyle(.textSecondary)
+                            }
                         }
                     }
                     .padding(.bottom, Theme.Spacing.xl)
@@ -102,7 +132,7 @@ struct SessionPlayerView: View {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
                     if viewModel.isComplete {
-                        dismiss()
+                        onDismiss()
                     } else {
                         viewModel.pause()
                     }
@@ -127,8 +157,8 @@ struct SessionPlayerView: View {
     }
 
     private func handleSessionComplete(feedback: SessionFeedback?) {
-        guard let profile = profile, let plan = todaysPlan else {
-            dismiss()
+        guard let profile = profile else {
+            onDismiss()
             return
         }
 
@@ -139,11 +169,14 @@ struct SessionPlayerView: View {
             context: modelContext
         )
 
-        PlanGeneratorService.shared.markSessionCompleted(
-            session: plannedSession,
-            in: plan,
-            context: modelContext
-        )
+        // Mark session completed in weekly plan
+        if let weeklyPlan = currentWeeklyPlan {
+            PlanGeneratorService.shared.markSessionCompletedInWeeklyPlan(
+                session: plannedSession,
+                in: weeklyPlan,
+                context: modelContext
+            )
+        }
 
         // Record to ProgressStore for Progress tab tracking
         Task { @MainActor in
@@ -170,7 +203,7 @@ struct SessionPlayerView: View {
 
         HapticsService.shared.sessionComplete()
 
-        appState.popToRoot()
+        onDismiss()
     }
 
     private func handleAbandon() {
@@ -179,6 +212,6 @@ struct SessionPlayerView: View {
             completedExercises: viewModel.currentExerciseIndex,
             totalExercises: viewModel.exercises.count
         ))
-        dismiss()
+        onDismiss()
     }
 }
