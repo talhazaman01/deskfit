@@ -56,6 +56,11 @@ final class AnalyticsService: Sendable {
         case airpodsPostureNudgesEnabled
         case airpodsUpsellViewed(source: String)
         case airpodsUpsellTapped(action: String)
+
+        // Analysis Report
+        case analysisViewed(score: Int, category: String, insightCount: Int)
+        case analysisCtaTapped
+        case analysisInsightRendered(tags: [String])
     }
 
     nonisolated func track(_ event: Event) {
@@ -243,6 +248,19 @@ final class AnalyticsService: Sendable {
 
         case .airpodsUpsellTapped(let action):
             return ("airpods_upsell_tapped", ["action": action])
+
+        case .analysisViewed(let score, let category, let insightCount):
+            return ("analysis_viewed", [
+                "score": score,
+                "category": category,
+                "insight_count": insightCount
+            ])
+
+        case .analysisCtaTapped:
+            return ("analysis_cta_tapped", [:])
+
+        case .analysisInsightRendered(let tags):
+            return ("analysis_insight_rendered", ["tags": tags])
         }
     }
 }

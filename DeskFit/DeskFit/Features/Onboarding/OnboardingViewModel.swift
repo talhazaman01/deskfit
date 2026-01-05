@@ -6,6 +6,7 @@ enum OnboardingPhase {
     case summary        // "Your plan is ready" screen
     case safety         // Safety acknowledgment screen (before starter reset)
     case starterReset   // 60s starter session
+    case analysis       // Personalized analysis screen (before plan reveal)
     case planPreview    // 7-day plan preview screen
     case completion     // Post-reset completion screen (fallback if plan generation fails)
 }
@@ -58,6 +59,9 @@ class OnboardingViewModel: ObservableObject {
 
     /// Generated weekly plan result (created after starter reset)
     @Published var generatedPlanResult: PlanGenerationResult?
+
+    /// Generated analysis report (created after starter reset, before plan preview)
+    @Published var generatedAnalysisReport: AnalysisReport?
 
     var startTime: Date?
 

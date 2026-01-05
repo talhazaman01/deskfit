@@ -28,6 +28,8 @@ struct OnboardingFlowView: View {
                 safetyPhase
             case .starterReset:
                 starterResetPhase
+            case .analysis:
+                analysisPhase
             case .planPreview:
                 planPreviewPhase
             case .completion:
@@ -167,6 +169,42 @@ struct OnboardingFlowView: View {
                 generateWeeklyPlanAndShowPreview()
             }
         )
+    }
+
+    // MARK: - Analysis Phase
+
+    private var analysisPhase: some View {
+        Group {
+            if let report = viewModel.generatedAnalysisReport {
+                PersonalizedAnalysisView(
+                    report: report,
+                    onBuildPlan: {
+                        // Persist the report
+                        AnalysisReportStore.shared.save(report)
+
+                        // Generate weekly plan if not already generated
+                        if viewModel.generatedPlanResult == nil {
+                            generateWeeklyPlan()
+                        }
+
+                        withAnimation {
+                            viewModel.currentPhase = .planPreview
+                        }
+                    },
+                    onEditAnswers: {
+                        // Navigate back to questionnaire start
+                        withAnimation {
+                            currentStep = 0
+                            viewModel.currentPhase = .questionnaire
+                        }
+                    }
+                )
+            } else {
+                // Fallback while generating
+                ProgressView("Analyzing your answers...")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
     }
 
     // MARK: - Plan Preview Phase
@@ -348,16 +386,29 @@ struct OnboardingFlowView: View {
             return
         }
 
-        // Build a temporary profile with the current onboarding values for plan generation
+        // Build a temporary profile with the current onboarding values
+        let tempProfile = buildTemporaryProfile(from: profile)
+
+        // Generate the analysis report first
+        let snapshot = OnboardingProfileSnapshot.from(profile: tempProfile)
+        let analysisReport = AnalysisEngine.shared.generate(profile: snapshot)
+        viewModel.generatedAnalysisReport = analysisReport
+
+        // Go to analysis phase (plan will be generated when user taps CTA)
+        withAnimation {
+            viewModel.currentPhase = .analysis
+        }
+    }
+
+    private func generateWeeklyPlan() {
+        guard let profile = profile else { return }
+
+        // Build a temporary profile with the current onboarding values
         let tempProfile = buildTemporaryProfile(from: profile)
 
         // Generate the weekly plan
         let planResult = PlanGeneratorService.shared.generateWeeklyPlan(for: tempProfile)
         viewModel.generatedPlanResult = planResult
-
-        withAnimation {
-            viewModel.currentPhase = .planPreview
-        }
     }
 
     /// Build a temporary UserProfile with current onboarding values for plan generation

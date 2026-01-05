@@ -255,6 +255,11 @@ struct OnboardingProfileSnapshot: @preconcurrency Codable, Hashable, Sendable {
         return WorkType(rawValue: wt)
     }
 
+    var sedentaryHoursBucketEnum: SedentaryHoursBucket? {
+        guard let bucket = sedentaryHoursBucket else { return nil }
+        return SedentaryHoursBucket(rawValue: bucket)
+    }
+
     var exerciseFrequencyEnum: ExerciseFrequency? {
         guard let ef = exerciseFrequency else { return nil }
         return ExerciseFrequency(rawValue: ef)
