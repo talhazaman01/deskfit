@@ -31,10 +31,10 @@ enum FeatureGate {
 
     // MARK: - Core Access Checks
 
-    /// Check if user has Pro subscription
+    /// Check if user has Pro subscription - uses EntitlementStore as single source of truth
     @MainActor
     static var isPro: Bool {
-        SubscriptionManager.shared.isProUser
+        EntitlementStore.shared.isPro
     }
 
     /// Check if user can access the full 7-day plan

@@ -197,6 +197,17 @@ final class AnalysisEngine: Sendable {
 
     // MARK: - Individual Insight Generators
 
+    /// Deterministic seed for template rotation - ensures same inputs produce same outputs,
+    /// but different inputs get different templates
+    private func templateSeed(for profile: OnboardingProfileSnapshot) -> Int {
+        var hasher = Hasher()
+        hasher.combine(profile.painAreas.sorted().joined())
+        hasher.combine(profile.stiffnessTimes.sorted().joined())
+        hasher.combine(profile.sedentaryHoursBucket)
+        hasher.combine(profile.focusAreas.sorted().joined())
+        return abs(hasher.finalize()) % 100
+    }
+
     private func generateSedentaryLoadInsight(_ profile: OnboardingProfileSnapshot) -> InsightCard? {
         guard let bucket = profile.sedentaryHoursBucketEnum else { return nil }
 
@@ -206,12 +217,34 @@ final class AnalysisEngine: Sendable {
 
         let hoursText = bucket.displayName
         let severity: Severity = bucket == .moreThan8 ? .high : .medium
+        let seed = templateSeed(for: profile)
+
+        // Template rotation for variety
+        let templates: [(title: String, body: String, action: String)] = [
+            (
+                "Sedentary Load",
+                "Sitting \(hoursText)+ hours daily is commonly linked with increased muscle tension and reduced circulation. Regular movement breaks can help counteract these effects.",
+                "We'll schedule micro-resets throughout your workday."
+            ),
+            (
+                "Extended Sitting Pattern",
+                "Your \(hoursText)+ hour desk days may contribute to the stiffness you're experiencing. Brief, targeted movements throughout the day often help.",
+                "Your plan includes exercises timed for your work schedule."
+            ),
+            (
+                "Desk Time Impact",
+                "With \(hoursText)+ hours of daily sitting, muscle tension can accumulate gradually. Consistent movement breaks are often effective at managing this.",
+                "We'll help you build a sustainable movement routine."
+            )
+        ]
+
+        let template = templates[seed % templates.count]
 
         return InsightCard(
-            title: "Sedentary Load",
-            body: "Sitting \(hoursText)+ hours daily is commonly linked with increased muscle tension and reduced circulation. Regular movement breaks can help counteract these effects.",
+            title: template.title,
+            body: template.body,
             severity: severity,
-            actionLabel: "We'll schedule micro-resets throughout your workday.",
+            actionLabel: template.action,
             tags: ["sedentary", "sitting", bucket.rawValue],
             icon: InsightType.sedentaryLoad.icon
         )
@@ -226,21 +259,39 @@ final class AnalysisEngine: Sendable {
 
         let isAllDay = times.count == StiffnessTime.allCases.count
         let severity: Severity = isAllDay ? .high : .medium
+        let seed = templateSeed(for: profile)
 
-        let body: String
-        if isAllDay {
-            body = "You're experiencing stiffness throughout your entire day. This widespread pattern often correlates with prolonged sitting and limited movement variety."
-        } else {
-            body = "You feel stiffest during \(timesText). This timing pattern can help us target your exercises when they'll have the most impact."
-        }
+        let templates: [(title: String, bodyAllDay: String, bodyPartial: String, actionAllDay: String, actionPartial: String)] = [
+            (
+                "Stiffness Pattern",
+                "You're experiencing stiffness throughout your entire day. This widespread pattern often correlates with prolonged sitting and limited movement variety.",
+                "You feel stiffest during \(timesText). This timing pattern can help us target your exercises when they'll have the most impact.",
+                "We'll spread exercises across your day for continuous relief.",
+                "We'll prioritize sessions during your peak stiffness times."
+            ),
+            (
+                "Your Stiffness Rhythm",
+                "All-day stiffness suggests your body may need more frequent movement throughout your workday. Small, consistent breaks often help.",
+                "Your \(timesText) stiffness pattern tells us when your body most needs movement. We'll time your resets accordingly.",
+                "Your plan includes exercises distributed throughout the day.",
+                "Sessions are timed for when you typically feel most tense."
+            ),
+            (
+                "Timing Matters",
+                "Feeling stiff all day indicates tension is accumulating faster than it's releasing. More frequent micro-movements can help break this cycle.",
+                "The \(timesText) stiffness you mentioned points to specific windows where movement can be most beneficial.",
+                "We'll help you build movement habits for every part of your day.",
+                "Your resets are scheduled for maximum impact."
+            )
+        ]
+
+        let template = templates[seed % templates.count]
 
         return InsightCard(
-            title: "Stiffness Pattern",
-            body: body,
+            title: template.title,
+            body: isAllDay ? template.bodyAllDay : template.bodyPartial,
             severity: severity,
-            actionLabel: isAllDay
-                ? "We'll spread exercises across your day for continuous relief."
-                : "We'll prioritize sessions during your peak stiffness times.",
+            actionLabel: isAllDay ? template.actionAllDay : template.actionPartial,
             tags: ["stiffness", "timing"] + times.map { $0.rawValue },
             icon: InsightType.stiffnessTiming.icon
         )
@@ -279,12 +330,33 @@ final class AnalysisEngine: Sendable {
         if hasHeadaches { concerns.append("tension headaches") }
 
         let concernsText = concerns.prefix(2).joined(separator: " and ")
+        let seed = templateSeed(for: profile)
+
+        let templates: [(title: String, body: String, action: String)] = [
+            (
+                "Neck & Upper Back Focus",
+                "Your \(concernsText) may be connected to desk posture habits. These areas often benefit from targeted mobility and strengthening exercises.",
+                "We'll include specific neck and upper back exercises in your plan."
+            ),
+            (
+                "Upper Body Attention",
+                "The \(concernsText) you mentioned is common among desk workers. Gentle, consistent movement can help address the underlying tension patterns.",
+                "Your plan prioritizes exercises for these key areas."
+            ),
+            (
+                "Targeting Your Tension",
+                "Screen time and desk positioning often contribute to \(concernsText). Regular mobility work can help maintain comfort throughout your day.",
+                "We've designed exercises specifically for your upper body needs."
+            )
+        ]
+
+        let template = templates[seed % templates.count]
 
         return InsightCard(
-            title: "Neck & Upper Back Focus",
-            body: "Your \(concernsText) may be connected to desk posture habits. These areas often benefit from targeted mobility and strengthening exercises.",
+            title: template.title,
+            body: template.body,
             severity: severity,
-            actionLabel: "We'll include specific neck and upper back exercises in your plan.",
+            actionLabel: template.action,
             tags: ["neck", "upper_back", "shoulders", "posture"],
             icon: InsightType.neckUpperBack.icon
         )

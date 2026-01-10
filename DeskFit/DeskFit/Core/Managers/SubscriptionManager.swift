@@ -378,6 +378,12 @@ class SubscriptionManager: ObservableObject {
                 let isTrial = transaction.offer?.type == .introductory
                 let planName = product.id.contains("annual") ? "annual" : "monthly"
 
+                // CRITICAL: Immediately update EntitlementStore for instant UI unlock
+                EntitlementStore.shared.markPurchaseSuccessful(
+                    productId: product.id,
+                    isTrial: isTrial
+                )
+
                 AnalyticsService.shared.track(.subscribeSuccess(
                     plan: planName,
                     price: product.price,
@@ -419,6 +425,9 @@ class SubscriptionManager: ObservableObject {
         do {
             try await AppStore.sync()
             await updateEntitlementStatus()
+
+            // Notify EntitlementStore to refresh and mark as restored
+            EntitlementStore.shared.markRestoreSuccessful()
 
             if isProUser {
                 let plan = entitledProductIds.first { $0.contains("annual") } != nil ? "annual" : "monthly"

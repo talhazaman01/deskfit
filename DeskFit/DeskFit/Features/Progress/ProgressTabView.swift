@@ -8,6 +8,7 @@ struct ProgressTabView: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var subscriptionManager: SubscriptionManager
+    @EnvironmentObject var entitlementStore: EntitlementStore
     @EnvironmentObject var progressStore: ProgressStore
     @Query private var profiles: [UserProfile]
 
@@ -190,7 +191,7 @@ struct ProgressTabView: View {
             }
 
             // Upgrade prompt for more history
-            if !subscriptionManager.isProUser {
+            if !entitlementStore.isPro {
                 upgradeHistoryPrompt
             }
         }
@@ -271,47 +272,200 @@ struct ProgressTabView: View {
     }
 }
 
-// MARK: - Weekly Chart
+// MARK: - Interactive Weekly Chart
 
 struct WeeklyChart: View {
     let entries: [DailyScoreEntry]
+    @StateObject private var viewModel = WeeklyChartViewModel()
 
     private var maxScore: Int {
         max(entries.map { $0.score }.max() ?? 100, 100)
     }
 
     var body: some View {
-        HStack(alignment: .bottom, spacing: Theme.Spacing.sm) {
-            ForEach(entries) { entry in
-                VStack(spacing: Theme.Spacing.xs) {
-                    // Bar
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(barColor(for: entry))
-                        .frame(height: barHeight(for: entry))
-                        .frame(maxWidth: .infinity)
+        VStack(spacing: Theme.Spacing.md) {
+            // Tooltip (appears when day is selected)
+            tooltipView
+                .frame(height: 50)
+                .animation(.easeInOut(duration: 0.2), value: viewModel.selectedDayIndex)
 
-                    // Day label
-                    Text(entry.shortDayName)
-                        .font(.system(size: 10))
-                        .foregroundStyle(entry.isToday ? .appTeal : .textTertiary)
+            // Chart bars
+            HStack(alignment: .bottom, spacing: Theme.Spacing.sm) {
+                ForEach(Array(entries.enumerated()), id: \.element.id) { index, entry in
+                    ChartBar(
+                        entry: entry,
+                        index: index,
+                        isSelected: viewModel.selectedDayIndex == index,
+                        maxScore: maxScore,
+                        onTap: {
+                            // Haptic feedback
+                            let generator = UIImpactFeedbackGenerator(style: .light)
+                            generator.impactOccurred()
+
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                viewModel.toggleSelection(for: index)
+                            }
+                        }
+                    )
                 }
             }
+            .frame(height: 100)
+
+            // Detail row (appears when day is selected and has activity)
+            detailView
+                .frame(height: 24)
+                .animation(.easeInOut(duration: 0.2), value: viewModel.selectedDayIndex)
         }
-        .frame(height: 120)
+        .onAppear {
+            viewModel.updateEntries(entries)
+        }
+        .onChange(of: entries) { _, newEntries in
+            viewModel.updateEntries(newEntries)
+        }
     }
 
-    private func barHeight(for entry: DailyScoreEntry) -> CGFloat {
+    // MARK: - Tooltip View
+
+    @ViewBuilder
+    private var tooltipView: some View {
+        if let tooltip = viewModel.selectedDayTooltip {
+            VStack(spacing: Theme.Spacing.xs) {
+                Text(tooltip)
+                    .font(Theme.Typography.headline)
+                    .foregroundStyle(.textPrimary)
+
+                if let delta = viewModel.selectedDayDelta {
+                    HStack(spacing: Theme.Spacing.xs) {
+                        Image(systemName: delta.isPositive ? "arrow.up.right" : delta.isNegative ? "arrow.down.right" : "minus")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(deltaColor(for: delta))
+
+                        Text(delta.displayText)
+                            .font(Theme.Typography.caption)
+                            .foregroundStyle(deltaColor(for: delta))
+                    }
+                }
+            }
+            .padding(.horizontal, Theme.Spacing.lg)
+            .padding(.vertical, Theme.Spacing.sm)
+            .background(
+                RoundedRectangle(cornerRadius: Theme.Radius.medium)
+                    .fill(Color.cardBackground)
+                    .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+            )
+            .transition(.scale.combined(with: .opacity))
+        } else {
+            // Empty state hint
+            Text("Tap a day to see details")
+                .font(Theme.Typography.caption)
+                .foregroundStyle(.textTertiary)
+        }
+    }
+
+    // MARK: - Detail View
+
+    @ViewBuilder
+    private var detailView: some View {
+        if let detail = viewModel.selectedDayDetail {
+            HStack(spacing: Theme.Spacing.sm) {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 14))
+                    .foregroundStyle(.success)
+
+                Text(detail)
+                    .font(Theme.Typography.caption)
+                    .foregroundStyle(.textSecondary)
+
+                if let streak = viewModel.selectedDayStreak, streak > 1 {
+                    Spacer()
+
+                    HStack(spacing: Theme.Spacing.xs) {
+                        Image(systemName: "flame.fill")
+                            .font(.system(size: 12))
+                            .foregroundStyle(.streakFlame)
+
+                        Text("\(streak) day streak")
+                            .font(Theme.Typography.caption)
+                            .foregroundStyle(.textSecondary)
+                    }
+                }
+            }
+            .transition(.opacity)
+        }
+    }
+
+    // MARK: - Helpers
+
+    private func deltaColor(for delta: DeltaInfo) -> Color {
+        if delta.isPositive {
+            return .success
+        } else if delta.isNegative {
+            return .warning
+        } else {
+            return .textSecondary
+        }
+    }
+}
+
+// MARK: - Chart Bar
+
+private struct ChartBar: View {
+    let entry: DailyScoreEntry
+    let index: Int
+    let isSelected: Bool
+    let maxScore: Int
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            VStack(spacing: Theme.Spacing.xs) {
+                // Bar
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(barColor)
+                    .frame(height: barHeight)
+                    .frame(maxWidth: .infinity)
+                    .scaleEffect(x: isSelected ? 1.15 : 1.0, y: 1.0, anchor: .bottom)
+                    .shadow(
+                        color: isSelected ? barColor.opacity(0.4) : .clear,
+                        radius: isSelected ? 4 : 0,
+                        x: 0,
+                        y: 2
+                    )
+
+                // Day label
+                Text(entry.shortDayName)
+                    .font(.system(size: isSelected ? 11 : 10, weight: isSelected ? .semibold : .regular))
+                    .foregroundStyle(labelColor)
+            }
+        }
+        .buttonStyle(.plain)
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
+    }
+
+    private var barHeight: CGFloat {
         guard entry.score > 0 else { return 8 }
-        return max(8, CGFloat(entry.score) / CGFloat(maxScore) * 100)
+        return max(8, CGFloat(entry.score) / CGFloat(maxScore) * 80)
     }
 
-    private func barColor(for entry: DailyScoreEntry) -> Color {
+    private var barColor: Color {
         if !entry.hasActivity {
             return .progressBackground
+        } else if isSelected {
+            return .appTeal
         } else if entry.isToday {
             return .appTeal
         } else {
             return .appTeal.opacity(0.6)
+        }
+    }
+
+    private var labelColor: Color {
+        if isSelected {
+            return .appTeal
+        } else if entry.isToday {
+            return .appTeal
+        } else {
+            return .textTertiary
         }
     }
 }

@@ -86,6 +86,7 @@ struct PlanView: View {
 
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var subscriptionManager: SubscriptionManager
+    @EnvironmentObject var entitlementStore: EntitlementStore
 
     private var todayDayIndex: Int {
         guard let plan = weeklyPlan else { return 0 }
@@ -182,7 +183,7 @@ struct PlanView: View {
             }
 
             // Upgrade prompt for free users
-            if !subscriptionManager.isProUser {
+            if !entitlementStore.isPro {
                 upgradePrompt
             }
         }
@@ -423,6 +424,7 @@ struct SessionRow: View {
 struct LibraryView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var subscriptionManager: SubscriptionManager
+    @EnvironmentObject var entitlementStore: EntitlementStore
 
     @State private var selectedCategory: ExerciseCategory = .all
     @State private var exercises: [Exercise] = []

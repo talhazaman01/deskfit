@@ -83,6 +83,17 @@ final class AnalyticsService: Sendable {
         case libraryOpened
         case exerciseViewed(exerciseId: String, source: String)
         case quickResetStarted(source: String)
+
+        // Entitlement tracking
+        case proUnlocked(source: String)
+        case proRevoked
+        case entitlementsRefreshed(isPro: Bool, productCount: Int)
+
+        // Chart interaction
+        case chartDaySelected(dayIndex: Int, score: Int)
+
+        // Insights
+        case insightGenerated(category: String, personaHash: String)
     }
 
     nonisolated func track(_ event: Event) {
@@ -336,6 +347,30 @@ final class AnalyticsService: Sendable {
 
         case .quickResetStarted(let source):
             return ("quick_reset_started", ["source": source])
+
+        case .proUnlocked(let source):
+            return ("pro_unlocked", ["source": source])
+
+        case .proRevoked:
+            return ("pro_revoked", [:])
+
+        case .entitlementsRefreshed(let isPro, let productCount):
+            return ("entitlements_refreshed", [
+                "is_pro": isPro,
+                "product_count": productCount
+            ])
+
+        case .chartDaySelected(let dayIndex, let score):
+            return ("chart_day_selected", [
+                "day_index": dayIndex,
+                "score": score
+            ])
+
+        case .insightGenerated(let category, let personaHash):
+            return ("insight_generated", [
+                "category": category,
+                "persona_hash": personaHash
+            ])
         }
     }
 }

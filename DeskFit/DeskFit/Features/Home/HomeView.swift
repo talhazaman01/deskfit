@@ -5,6 +5,7 @@ struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var subscriptionManager: SubscriptionManager
+    @EnvironmentObject var entitlementStore: EntitlementStore
     @Query private var profiles: [UserProfile]
     @Query(sort: \DailyPlan.date, order: .reverse) private var plans: [DailyPlan]
 
@@ -28,7 +29,7 @@ struct HomeView: View {
     }
 
     private var isNextSessionLocked: Bool {
-        !subscriptionManager.isProUser && nextSessionIndex > 0
+        !entitlementStore.isPro && nextSessionIndex > 0
     }
 
     var body: some View {
@@ -45,8 +46,11 @@ struct HomeView: View {
                 // Primary CTA Section
                 primaryCTASection
 
+                // Today's Insight - personalized daily tip
+                TodayInsightSection()
+
                 // Pro banner for free users (dynamic)
-                if !subscriptionManager.isProUser, let profile = profile {
+                if !entitlementStore.isPro, let profile = profile {
                     DynamicProBannerView(
                         upsellText: viewModel.proUpsellText(for: profile)
                     ) {
@@ -144,10 +148,10 @@ struct HomeView: View {
                 ForEach(Array(plan.sessions.enumerated()), id: \.element.id) { index, session in
                     SessionCardView(
                         session: session,
-                        isLocked: !subscriptionManager.isProUser && index > 0,
+                        isLocked: !entitlementStore.isPro && index > 0,
                         lockReason: index > 0 ? "Unlock with Pro to access all daily resets" : nil,
                         onTap: {
-                            if subscriptionManager.isProUser || index == 0 {
+                            if entitlementStore.isPro || index == 0 {
                                 appState.navigateTo(.session(session))
                             } else {
                                 appState.presentPaywall(source: "locked_session")
@@ -184,7 +188,7 @@ struct HomeView: View {
               let nextSession = plan.sessions.first(where: { !$0.isCompleted }) else { return }
 
         let sessionIndex = plan.sessions.firstIndex(where: { $0.id == nextSession.id }) ?? 0
-        let isLocked = !subscriptionManager.isProUser && sessionIndex > 0
+        let isLocked = !entitlementStore.isPro && sessionIndex > 0
 
         if !isLocked {
             appState.navigateTo(.session(nextSession))

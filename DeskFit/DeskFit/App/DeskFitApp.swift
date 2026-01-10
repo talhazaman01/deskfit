@@ -8,6 +8,7 @@ struct DeskFitApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var appState = AppState()
     @StateObject private var subscriptionManager = SubscriptionManager()
+    @StateObject private var entitlementStore = EntitlementStore.shared
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -33,9 +34,15 @@ struct DeskFitApp: App {
             RootView()
                 .environmentObject(appState)
                 .environmentObject(subscriptionManager)
+                .environmentObject(entitlementStore)
                 .onAppear {
                     AnalyticsService.shared.track(.appOpened(isFirstLaunch: !appState.hasLaunchedBefore))
                     appState.hasLaunchedBefore = true
+
+                    // Refresh entitlements on app launch
+                    Task {
+                        await entitlementStore.refreshIfStale()
+                    }
                 }
                 .onOpenURL { url in
                     handleDeepLink(url)
