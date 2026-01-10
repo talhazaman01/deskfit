@@ -39,9 +39,10 @@ struct SessionExerciseContentView: View {
                 .fill(Color.appTeal.opacity(0.1))
                 .frame(width: iconSize, height: iconSize)
 
-            Image(systemName: "figure.flexibility")
+            Image(systemName: exercise.iconName)
                 .font(.system(size: iconFontSize))
                 .foregroundStyle(.appTeal)
+                .accessibilityLabel(exercise.iconAccessibilityLabel)
         }
     }
 

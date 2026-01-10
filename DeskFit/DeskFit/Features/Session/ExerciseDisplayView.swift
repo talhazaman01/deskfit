@@ -16,9 +16,10 @@ struct ExerciseDisplayView: View {
                     .fill(Color.appTeal.opacity(0.1))
                     .frame(width: 200, height: 200)
 
-                Image(systemName: "figure.flexibility")
+                Image(systemName: exercise.iconName)
                     .font(.system(size: 80))
                     .foregroundStyle(.appTeal)
+                    .accessibilityLabel(exercise.iconAccessibilityLabel)
             }
 
             // Exercise name - full text, no truncation

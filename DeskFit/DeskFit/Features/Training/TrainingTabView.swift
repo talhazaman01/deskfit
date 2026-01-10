@@ -555,8 +555,10 @@ struct ExerciseRow: View {
                     .fill(Color.cardBackground)
                     .frame(width: 60, height: 60)
                     .overlay(
-                        Image(systemName: "figure.flexibility")
+                        Image(systemName: exercise.iconName)
+                            .font(.title2)
                             .foregroundStyle(.textSecondary)
+                            .accessibilityLabel(exercise.iconAccessibilityLabel)
                     )
 
                 VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
