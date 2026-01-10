@@ -179,21 +179,20 @@ struct SessionPlayerView: View {
         }
 
         // Record to ProgressStore for Progress tab tracking
-        Task { @MainActor in
-            let snapshot = OnboardingProfileSnapshot.from(profile: profile)
-            let exercises = ExerciseService.shared.getAllExercises()
-            let sessionExercises = plannedSession.exerciseIds.compactMap { id in
-                exercises.first(where: { $0.id == id })
-            }
-            let focusAreas = Array(Set(sessionExercises.flatMap { $0.focusAreas }))
-
-            ProgressStore.shared.recordSessionCompletion(
-                durationSeconds: plannedSession.durationSeconds,
-                focusAreas: focusAreas,
-                profile: snapshot,
-                currentStreak: profile.currentStreak
-            )
+        // IMPORTANT: Do this synchronously BEFORE dismissing to ensure Progress tab updates
+        let snapshot = OnboardingProfileSnapshot.from(profile: profile)
+        let exercises = ExerciseService.shared.getAllExercises()
+        let sessionExercises = plannedSession.exerciseIds.compactMap { id in
+            exercises.first(where: { $0.id == id })
         }
+        let focusAreas = Array(Set(sessionExercises.flatMap { $0.focusAreas }))
+
+        ProgressStore.shared.recordSessionCompletion(
+            durationSeconds: plannedSession.durationSeconds,
+            focusAreas: focusAreas,
+            profile: snapshot,
+            currentStreak: profile.currentStreak
+        )
 
         AnalyticsService.shared.track(.sessionCompleted(
             sessionId: plannedSession.id.uuidString,

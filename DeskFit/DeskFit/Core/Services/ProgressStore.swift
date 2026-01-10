@@ -142,12 +142,16 @@ final class ProgressStore: ObservableObject {
 
         saveEntry(newEntry)
 
-        // Track analytics
-        AnalyticsService.shared.track(.sessionCompleted(
-            sessionId: UUID().uuidString,
-            durationSeconds: durationSeconds,
-            feedback: nil
+        // Track progress update analytics
+        AnalyticsService.shared.track(.progressUpdated(
+            todayScore: newEntry.score,
+            weeklyAverage: currentSummary.weeklyAverageScore,
+            sessionsToday: newEntry.sessionsCompleted
         ))
+
+        #if DEBUG
+        print("ProgressStore: Progress updated - score=\(newEntry.score), weeklyAvg=\(currentSummary.weeklyAverageScore)")
+        #endif
     }
 
     // MARK: - Summary Generation

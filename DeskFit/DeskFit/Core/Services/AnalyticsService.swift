@@ -72,6 +72,7 @@ final class AnalyticsService: Sendable {
         // Progress
         case progressViewed
         case progressDayOpened(dayIndex: Int, date: String)
+        case progressUpdated(todayScore: Int, weeklyAverage: Int, sessionsToday: Int)
 
         // Upgrade Prompts
         case upgradeCardViewed(source: String)
@@ -306,6 +307,13 @@ final class AnalyticsService: Sendable {
             return ("progress_day_opened", [
                 "day_index": dayIndex,
                 "date": date
+            ])
+
+        case .progressUpdated(let todayScore, let weeklyAverage, let sessionsToday):
+            return ("progress_updated", [
+                "today_score": todayScore,
+                "weekly_average": weeklyAverage,
+                "sessions_today": sessionsToday
             ])
 
         case .upgradeCardViewed(let source):

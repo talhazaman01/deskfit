@@ -226,6 +226,8 @@ struct MainTabView: View {
                     sourceTab: homeCoordinator.sourceTab,
                     onDismiss: { homeCoordinator.endSession() }
                 )
+                .environmentObject(progressStore)
+                .environmentObject(appState)
             }
 
             // MARK: - Training Tab
@@ -245,6 +247,8 @@ struct MainTabView: View {
                     sourceTab: trainingCoordinator.sourceTab,
                     onDismiss: { trainingCoordinator.endSession() }
                 )
+                .environmentObject(progressStore)
+                .environmentObject(appState)
             }
 
             // MARK: - Progress Tab
