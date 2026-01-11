@@ -1,5 +1,6 @@
 import SwiftUI
 
+/// Premium selectable card container with Sky Blue theme
 struct SelectableCard<Content: View>: View {
     let isSelected: Bool
     let action: () -> Void
@@ -11,21 +12,29 @@ struct SelectableCard<Content: View>: View {
                 .padding()
                 .frame(maxWidth: .infinity)
                 .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.secondaryBackground)
+                    RoundedRectangle(cornerRadius: Theme.Radius.medium)
+                        .fill(isSelected ? Color.surfaceSelected : Color.surface)
                         .overlay(
-                            RoundedRectangle(cornerRadius: 12)
+                            RoundedRectangle(cornerRadius: Theme.Radius.medium)
                                 .strokeBorder(
-                                    isSelected ? Color.brandPrimary : Color.clear,
-                                    lineWidth: 2
+                                    isSelected ? Color.appPrimary : Color.borderSubtle,
+                                    lineWidth: isSelected ? 2 : 1
                                 )
                         )
                 )
+                .shadow(
+                    color: isSelected ? Color.appPrimary.opacity(0.15) : Theme.Shadow.card,
+                    radius: Theme.Shadow.cardRadius,
+                    x: Theme.Shadow.cardX,
+                    y: Theme.Shadow.cardY
+                )
         }
         .buttonStyle(.plain)
+        .animation(Theme.Animation.quick, value: isSelected)
     }
 }
 
+/// Premium selectable row with icon and checkbox
 struct SelectableRow: View {
     let title: String
     let subtitle: String?
@@ -49,36 +58,37 @@ struct SelectableRow: View {
 
     var body: some View {
         SelectableCard(isSelected: isSelected, action: action) {
-            HStack(spacing: 12) {
+            HStack(spacing: Theme.Spacing.md) {
                 if let icon = icon {
                     Image(systemName: icon)
-                        .font(.title2)
-                        .foregroundStyle(isSelected ? .brandPrimary : .secondary)
+                        .font(.system(size: Theme.IconSize.large))
+                        .foregroundStyle(isSelected ? .appPrimary : .textSecondary)
                         .frame(width: 32)
                 }
 
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
                     Text(title)
-                        .font(.headline)
-                        .foregroundStyle(.primary)
+                        .font(Theme.Typography.headline)
+                        .foregroundStyle(.textPrimary)
 
                     if let subtitle = subtitle {
                         Text(subtitle)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(Theme.Typography.caption)
+                            .foregroundStyle(.textSecondary)
                     }
                 }
 
                 Spacer()
 
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .foregroundStyle(isSelected ? .brandPrimary : .secondary)
-                    .font(.title2)
+                    .foregroundStyle(isSelected ? .appPrimary : .textTertiary)
+                    .font(.system(size: Theme.IconSize.large))
             }
         }
     }
 }
 
+/// Premium multi-selectable row with checkbox
 struct MultiSelectableRow: View {
     let title: String
     let icon: String?
@@ -87,43 +97,50 @@ struct MultiSelectableRow: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 12) {
+            HStack(spacing: Theme.Spacing.md) {
                 if let icon = icon {
                     Image(systemName: icon)
-                        .font(.title3)
-                        .foregroundStyle(isSelected ? .brandPrimary : .secondary)
+                        .font(.system(size: Theme.IconSize.medium))
+                        .foregroundStyle(isSelected ? .appPrimary : .textSecondary)
                         .frame(width: 28)
                 }
 
                 Text(title)
-                    .font(.body)
-                    .foregroundStyle(.primary)
+                    .font(Theme.Typography.body)
+                    .foregroundStyle(.textPrimary)
 
                 Spacer()
 
                 Image(systemName: isSelected ? "checkmark.square.fill" : "square")
-                    .foregroundStyle(isSelected ? .brandPrimary : .secondary)
-                    .font(.title3)
+                    .foregroundStyle(isSelected ? .appPrimary : .textTertiary)
+                    .font(.system(size: Theme.IconSize.medium))
             }
             .padding()
             .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.secondaryBackground)
+                RoundedRectangle(cornerRadius: Theme.Radius.medium)
+                    .fill(isSelected ? Color.surfaceSelected : Color.surface)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 12)
+                        RoundedRectangle(cornerRadius: Theme.Radius.medium)
                             .strokeBorder(
-                                isSelected ? Color.brandPrimary : Color.clear,
-                                lineWidth: 2
+                                isSelected ? Color.appPrimary : Color.borderSubtle,
+                                lineWidth: isSelected ? 2 : 1
                             )
                     )
             )
+            .shadow(
+                color: Theme.Shadow.card,
+                radius: Theme.Shadow.cardRadius,
+                x: Theme.Shadow.cardX,
+                y: Theme.Shadow.cardY
+            )
         }
         .buttonStyle(.plain)
+        .animation(Theme.Animation.quick, value: isSelected)
     }
 }
 
 #Preview {
-    VStack(spacing: 16) {
+    VStack(spacing: Theme.Spacing.lg) {
         SelectableRow(
             title: "Move More",
             subtitle: "Get more movement into your day",
@@ -145,4 +162,5 @@ struct MultiSelectableRow: View {
         ) {}
     }
     .padding()
+    .background(Color.background)
 }

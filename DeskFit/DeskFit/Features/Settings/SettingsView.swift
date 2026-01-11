@@ -26,7 +26,7 @@ struct SettingsView: View {
                     } label: {
                         HStack {
                             Label("Upgrade to Pro", systemImage: "star.fill")
-                                .foregroundStyle(.primary)
+                                .foregroundStyle(.appPrimary)
                             Spacer()
                             Image(systemName: "chevron.right")
                                 .foregroundStyle(.secondary)
@@ -43,7 +43,7 @@ struct SettingsView: View {
                 } label: {
                     HStack {
                         Label("Restore Purchases", systemImage: "arrow.clockwise")
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(.appPrimary)
                         if isRestoringPurchases {
                             Spacer()
                             ProgressView()
@@ -131,22 +131,22 @@ struct SettingsView: View {
                     SafetyDisclaimerView()
                 } label: {
                     Label("Safety & Disclaimer", systemImage: "heart.text.square")
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(.appPrimary)
                 }
 
                 Link(destination: URL(string: "mailto:support@deskfit.app")!) {
                     Label("Contact Support", systemImage: "envelope")
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(.appPrimary)
                 }
 
                 Link(destination: URL(string: "https://deskfit.app/privacy")!) {
                     Label("Privacy Policy", systemImage: "lock.shield")
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(.appPrimary)
                 }
 
                 Link(destination: URL(string: "https://deskfit.app/terms")!) {
                     Label("Terms of Service", systemImage: "doc.text")
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(.appPrimary)
                 }
             } header: {
                 Text("Support")
@@ -164,7 +164,7 @@ struct SettingsView: View {
             } footer: {
                 Text("Version 1.0.0")
                     .frame(maxWidth: .infinity)
-                    .padding(.top, 16)
+                    .padding(.top, Theme.Spacing.lg)
             }
         }
         .navigationTitle("Settings")
@@ -207,8 +207,8 @@ struct SubscriptionStatusRow: View {
             Label(statusLabel, systemImage: statusIcon)
             Spacer()
             Text(statusText)
+                .font(Theme.Typography.bodyMedium)
                 .foregroundStyle(statusColor)
-                .fontWeight(.medium)
         }
     }
 
@@ -315,7 +315,7 @@ struct ReminderFrequencyEditView: View {
                         Spacer()
                         if profile.reminderFrequency == frequency.rawValue {
                             Image(systemName: "checkmark")
-                                .foregroundStyle(.appTeal)
+                                .foregroundStyle(.appPrimary)
                         }
                     }
                 }
@@ -346,14 +346,14 @@ struct FocusAreasEditView: View {
                 } label: {
                     HStack {
                         Image(systemName: area.icon)
-                            .foregroundStyle(.appTeal)
-                            .frame(width: 24)
+                            .foregroundStyle(.appPrimary)
+                            .frame(width: Theme.IconSize.large)
                         Text(area.displayName)
                             .foregroundStyle(.textPrimary)
                         Spacer()
                         if selectedAreas.contains(area.rawValue) {
                             Image(systemName: "checkmark")
-                                .foregroundStyle(.appTeal)
+                                .foregroundStyle(.appPrimary)
                         }
                     }
                 }

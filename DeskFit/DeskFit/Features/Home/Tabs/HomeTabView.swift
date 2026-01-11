@@ -80,7 +80,7 @@ struct HomeTabView: View {
             .padding(.top, Theme.Spacing.lg)
             .padding(.bottom, Theme.Spacing.bottomArea)
         }
-        .background(Color.appBackground)
+        .background(Color.background)
         .navigationTitle("DeskFit")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
@@ -173,7 +173,7 @@ struct HomeTabView: View {
             .padding(Theme.Spacing.lg)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.large)
-                    .fill(Color.cardBackground)
+                    .fill(Color.surface)
             )
         }
     }
@@ -226,7 +226,7 @@ struct HomeTabView: View {
         .padding(.vertical, Theme.Spacing.xl)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.large)
-                .fill(Color.cardBackground)
+                .fill(Color.surface)
         )
     }
 
@@ -237,7 +237,7 @@ struct HomeTabView: View {
         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
             HStack {
                 Image(systemName: "bell.badge.fill")
-                    .foregroundStyle(.appTeal)
+                    .foregroundStyle(.appPrimary)
                 Text("Smart Nudges")
                     .font(Theme.Typography.headline)
                     .foregroundStyle(.textPrimary)
@@ -264,7 +264,7 @@ struct HomeTabView: View {
                     } label: {
                         Text("Set up smart reminders")
                             .font(Theme.Typography.body)
-                            .foregroundStyle(.appTeal)
+                            .foregroundStyle(.appPrimary)
                     }
                 }
             } else {
@@ -279,14 +279,14 @@ struct HomeTabView: View {
                 } label: {
                     Text("Unlock with Pro")
                         .font(Theme.Typography.caption)
-                        .foregroundStyle(.appTeal)
+                        .foregroundStyle(.appPrimary)
                 }
             }
         }
         .padding(Theme.Spacing.lg)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.large)
-                .fill(Color.cardBackground)
+                .fill(Color.surface)
         )
     }
 
@@ -297,7 +297,7 @@ struct HomeTabView: View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
             HStack {
                 Image(systemName: insight.icon)
-                    .foregroundStyle(.appTeal)
+                    .foregroundStyle(.appPrimary)
                 Text("Today's Insight")
                     .font(Theme.Typography.headline)
                     .foregroundStyle(.textPrimary)
@@ -316,7 +316,7 @@ struct HomeTabView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.large)
-                .fill(Color.cardBackground)
+                .fill(Color.surface)
         )
     }
 
@@ -346,14 +346,14 @@ struct HomeTabView: View {
                     .font(Theme.Typography.button)
                     .padding(.horizontal, Theme.Spacing.lg)
                     .padding(.vertical, Theme.Spacing.sm)
-                    .background(Color.appTeal)
-                    .foregroundStyle(.textOnDark)
+                    .background(Color.appPrimary)
+                    .foregroundStyle(.textOnPrimary)
                     .clipShape(Capsule())
             }
             .padding(Theme.Spacing.lg)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.large)
-                    .fill(Color.cardBackground)
+                    .fill(Color.surface)
             )
         }
         .buttonStyle(.plain)
@@ -456,12 +456,12 @@ struct NextSessionCard: View {
                     }
                 }
                 .font(Theme.Typography.button)
-                .foregroundStyle(.textOnDark)
+                .foregroundStyle(.textOnPrimary)
                 .frame(maxWidth: .infinity)
                 .frame(height: Theme.Height.primaryButton)
                 .background(
                     RoundedRectangle(cornerRadius: Theme.Radius.pill)
-                        .fill(isLocked ? Color.textSecondary : Color.appTeal)
+                        .fill(isLocked ? Color.textSecondary : Color.appPrimary)
                 )
             }
             .buttonStyle(.plain)
@@ -469,7 +469,7 @@ struct NextSessionCard: View {
         .padding(Theme.Spacing.lg)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.large)
-                .fill(Color.cardBackground)
+                .fill(Color.surface)
         )
     }
 
@@ -496,7 +496,7 @@ struct ProBadge: View {
             .padding(.vertical, 2)
             .background(
                 Capsule()
-                    .fill(Color.appTeal)
+                    .fill(Color.appPrimary)
             )
     }
 }

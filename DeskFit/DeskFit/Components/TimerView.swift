@@ -1,5 +1,6 @@
 import SwiftUI
 
+/// Timer display with circular progress and Montserrat typography
 struct TimerView: View {
     let timeRemaining: Int
     let totalTime: Int
@@ -14,12 +15,18 @@ struct TimerView: View {
             ProgressRing(progress: progress, lineWidth: 12, size: 150)
 
             Text("\(timeRemaining)")
-                .font(.system(size: 48, weight: .bold, design: .rounded))
+                .font(Theme.Typography.stat)
+                .monospacedDigit()
                 .foregroundStyle(.textPrimary)
         }
     }
 }
 
 #Preview {
-    TimerView(timeRemaining: 15, totalTime: 30)
+    VStack(spacing: Theme.Spacing.xl) {
+        TimerView(timeRemaining: 15, totalTime: 30)
+        TimerView(timeRemaining: 45, totalTime: 60)
+    }
+    .padding()
+    .background(Color.background)
 }

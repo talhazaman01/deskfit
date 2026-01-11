@@ -1,22 +1,24 @@
 import SwiftUI
 
+/// Text button for minor actions
 struct TextButton: View {
     let title: String
-    var color: Color = .brandPrimary
+    var color: Color = .primary
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             Text(title)
-                .fontWeight(.medium)
+                .font(Theme.Typography.subbodyMedium)
                 .foregroundStyle(color)
         }
     }
 }
 
+/// Icon-only button
 struct IconButton: View {
     let systemName: String
-    var size: CGFloat = 24
+    var size: CGFloat = Theme.IconSize.large
     var color: Color = .primary
     let action: () -> Void
 
@@ -30,12 +32,14 @@ struct IconButton: View {
 }
 
 #Preview {
-    VStack(spacing: 16) {
+    VStack(spacing: Theme.Spacing.lg) {
         PrimaryButton(title: "Continue") {}
         PrimaryButton(title: "Loading...", isLoading: true) {}
         PrimaryButton(title: "Disabled", isEnabled: false) {}
         SecondaryButton(title: "Back") {}
         TextButton(title: "Skip") {}
+        IconButton(systemName: "gearshape.fill") {}
     }
     .padding()
+    .background(Color.background)
 }

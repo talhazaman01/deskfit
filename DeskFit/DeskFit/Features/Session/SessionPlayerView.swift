@@ -65,7 +65,7 @@ struct SessionPlayerView: View {
                     // MARK: - Top Section (Fixed)
                     VStack(spacing: Theme.Spacing.sm) {
                         ProgressView(value: viewModel.overallProgress)
-                            .tint(.appTeal)
+                            .tint(.appPrimary)
                             .padding(.horizontal, Theme.Spacing.screenHorizontal)
 
                         Text("\(viewModel.currentExerciseIndex + 1) of \(viewModel.exercises.count)")
@@ -101,7 +101,7 @@ struct SessionPlayerView: View {
                             } label: {
                                 Image(systemName: "pause.circle.fill")
                                     .font(.system(size: 60))
-                                    .foregroundStyle(.appTeal)
+                                    .foregroundStyle(.appPrimary)
                             }
 
                             // Next/Finish button

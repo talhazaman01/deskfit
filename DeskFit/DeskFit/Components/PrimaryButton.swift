@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Cal AI style primary button - full width pill, black when enabled
+/// Premium Sky Blue primary button - full width pill with shadow
 struct PrimaryButton: View {
     let title: String
     var isEnabled: Bool = true
@@ -16,7 +16,7 @@ struct PrimaryButton: View {
             HStack(spacing: Theme.Spacing.sm) {
                 if isLoading {
                     ProgressView()
-                        .tint(.textOnDark)
+                        .tint(.textOnPrimary)
                 } else {
                     Text(title)
                         .font(Theme.Typography.button)
@@ -26,11 +26,18 @@ struct PrimaryButton: View {
             .frame(height: Theme.Height.primaryButton)
             .background(
                 Capsule()
-                    .fill(isEnabled ? Color.buttonEnabled : Color.buttonDisabled)
+                    .fill(isEnabled ? Color.appPrimary : Color.buttonDisabled)
             )
-            .foregroundStyle(.textOnDark)
+            .foregroundStyle(isEnabled ? .textOnPrimary : .buttonDisabledText)
+            .shadow(
+                color: isEnabled ? Color.appPrimary.opacity(0.3) : Color.clear,
+                radius: 8,
+                x: 0,
+                y: 4
+            )
         }
         .disabled(!isEnabled || isLoading)
+        .animation(Theme.Animation.quick, value: isEnabled)
     }
 }
 
@@ -41,4 +48,5 @@ struct PrimaryButton: View {
         PrimaryButton(title: "Loading...", isLoading: true) {}
     }
     .padding()
+    .background(Color.background)
 }

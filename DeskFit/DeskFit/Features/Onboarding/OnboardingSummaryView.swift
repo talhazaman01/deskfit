@@ -25,7 +25,7 @@ struct OnboardingSummaryView: View {
 
             ctaSection
         }
-        .background(Color.appBackground)
+        .background(Color.background)
         .onAppear {
             AnalyticsService.shared.track(.onboardingSummaryViewed)
         }
@@ -37,12 +37,12 @@ struct OnboardingSummaryView: View {
         VStack(spacing: Theme.Spacing.md) {
             ZStack {
                 Circle()
-                    .fill(Color.appTeal.opacity(0.15))
+                    .fill(Color.appPrimary.opacity(0.15))
                     .frame(width: 80, height: 80)
 
                 Image(systemName: "checkmark.seal.fill")
-                    .font(.system(size: 40))
-                    .foregroundStyle(.appTeal)
+                    .font(Theme.Typography.stat)
+                    .foregroundStyle(.appPrimary)
             }
 
             Text("Your plan is ready")
@@ -57,18 +57,17 @@ struct OnboardingSummaryView: View {
             if hasPersonalInfo {
                 HStack(spacing: Theme.Spacing.xs) {
                     Image(systemName: "sparkles")
-                        .font(.system(size: 12, weight: .medium))
+                        .font(Theme.Typography.captionMedium)
 
                     Text("Personalized for you")
-                        .font(Theme.Typography.caption)
-                        .fontWeight(.medium)
+                        .font(Theme.Typography.captionMedium)
                 }
-                .foregroundStyle(.appTeal)
+                .foregroundStyle(.appPrimary)
                 .padding(.horizontal, Theme.Spacing.md)
                 .padding(.vertical, Theme.Spacing.sm)
                 .background(
                     Capsule()
-                        .fill(Color.appTeal.opacity(0.1))
+                        .fill(Color.appPrimary.opacity(0.1))
                 )
             }
         }
@@ -153,7 +152,7 @@ struct OnboardingSummaryView: View {
         .padding(.bottom, Theme.Spacing.bottomArea)
         .padding(.top, Theme.Spacing.lg)
         .background(
-            Color.appBackground
+            Color.background
                 .shadow(color: .black.opacity(0.05), radius: 10, y: -5)
         )
     }
@@ -170,12 +169,12 @@ private struct SummaryRow: View {
         HStack(spacing: Theme.Spacing.md) {
             ZStack {
                 Circle()
-                    .fill(Color.cardBackground)
+                    .fill(Color.surface)
                     .frame(width: 44, height: 44)
 
                 Image(systemName: icon)
-                    .font(.system(size: 18))
-                    .foregroundStyle(.appTeal)
+                    .font(Theme.Typography.headline)
+                    .foregroundStyle(.appPrimary)
             }
 
             VStack(alignment: .leading, spacing: 2) {
@@ -193,7 +192,7 @@ private struct SummaryRow: View {
         .padding(Theme.Spacing.md)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                .fill(Color.cardBackground)
+                .fill(Color.surface)
         )
     }
 }

@@ -270,7 +270,7 @@ struct MainTabView: View {
                 Label(MainTab.progress.title, systemImage: MainTab.progress.icon)
             }
         }
-        .tint(.appTeal)
+        .tint(.appPrimary)
         .environmentObject(progressStore)
         .onAppear {
             configureTabBarAppearance()
@@ -313,11 +313,30 @@ struct MainTabView: View {
     }
 
     private func configureTabBarAppearance() {
-        let appearance = UITabBarAppearance()
-        appearance.configureWithDefaultBackground()
-        appearance.backgroundColor = UIColor.systemBackground
+        // Tab Bar appearance
+        let tabAppearance = UITabBarAppearance()
+        tabAppearance.configureWithDefaultBackground()
+        tabAppearance.backgroundColor = UIColor(Color.surfaceElevated)
 
-        UITabBar.appearance().standardAppearance = appearance
-        UITabBar.appearance().scrollEdgeAppearance = appearance
+        UITabBar.appearance().standardAppearance = tabAppearance
+        UITabBar.appearance().scrollEdgeAppearance = tabAppearance
+
+        // Navigation Bar appearance with Montserrat
+        let navAppearance = UINavigationBarAppearance()
+        navAppearance.configureWithDefaultBackground()
+        navAppearance.backgroundColor = UIColor(Color.background)
+        navAppearance.titleTextAttributes = [
+            .font: Theme.Typography.uiFont(size: 17, weight: .semibold),
+            .foregroundColor: UIColor(Color.textPrimary)
+        ]
+        navAppearance.largeTitleTextAttributes = [
+            .font: Theme.Typography.uiFont(size: 34, weight: .bold),
+            .foregroundColor: UIColor(Color.textPrimary)
+        ]
+
+        UINavigationBar.appearance().standardAppearance = navAppearance
+        UINavigationBar.appearance().scrollEdgeAppearance = navAppearance
+        UINavigationBar.appearance().compactAppearance = navAppearance
+        UINavigationBar.appearance().tintColor = UIColor(Color.appPrimary)
     }
 }

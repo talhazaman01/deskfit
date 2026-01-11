@@ -13,18 +13,18 @@ struct ExerciseDisplayView: View {
             // Exercise illustration
             ZStack {
                 Circle()
-                    .fill(Color.appTeal.opacity(0.1))
+                    .fill(Color.appPrimary.opacity(0.1))
                     .frame(width: 200, height: 200)
 
                 Image(systemName: exercise.iconName)
                     .font(.system(size: 80))
-                    .foregroundStyle(.appTeal)
+                    .foregroundStyle(.appPrimary)
                     .accessibilityLabel(exercise.iconAccessibilityLabel)
             }
 
             // Exercise name - full text, no truncation
             Text(exercise.name)
-                .font(.system(size: 22, weight: .bold))
+                .font(Theme.Typography.title2)
                 .foregroundStyle(.textPrimary)
                 .multilineTextAlignment(.center)
                 .lineLimit(nil)
@@ -34,7 +34,7 @@ struct ExerciseDisplayView: View {
 
             // Exercise instruction/cue - FULL TEXT, NO TRUNCATION
             Text(exercise.cue)
-                .font(.system(size: 20, weight: .regular))
+                .font(Theme.Typography.body)
                 .foregroundStyle(.textSecondary)
                 .multilineTextAlignment(.center)
                 .lineLimit(nil)

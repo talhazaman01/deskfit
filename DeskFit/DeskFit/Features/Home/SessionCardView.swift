@@ -34,7 +34,7 @@ struct SessionCardView: View {
                     // Icon circle
                     ZStack {
                         Circle()
-                            .fill(session.isCompleted ? Color.success.opacity(0.2) : Color.appTeal.opacity(0.1))
+                            .fill(session.isCompleted ? Color.success.opacity(0.2) : Color.appPrimary.opacity(0.1))
                             .frame(width: 48, height: 48)
 
                         if session.isCompleted {
@@ -45,7 +45,7 @@ struct SessionCardView: View {
                                 .foregroundStyle(.textSecondary)
                         } else {
                             Image(systemName: session.type.icon)
-                                .foregroundStyle(.appTeal)
+                                .foregroundStyle(.appPrimary)
                         }
                     }
 
@@ -82,8 +82,8 @@ struct SessionCardView: View {
                             .fontWeight(.bold)
                             .padding(.horizontal, Theme.Spacing.sm)
                             .padding(.vertical, Theme.Spacing.xs)
-                            .background(Color.appTeal)
-                            .foregroundStyle(.textOnDark)
+                            .background(Color.appPrimary)
+                            .foregroundStyle(.textOnPrimary)
                             .clipShape(Capsule())
                     } else if !session.isCompleted {
                         Image(systemName: "chevron.right")
@@ -103,7 +103,7 @@ struct SessionCardView: View {
             .padding(Theme.Spacing.lg)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.large)
-                    .fill(Color.cardBackground)
+                    .fill(Color.surface)
             )
             .opacity(session.isCompleted ? 0.7 : 1)
         }

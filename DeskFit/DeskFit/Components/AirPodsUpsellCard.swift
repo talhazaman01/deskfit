@@ -1,16 +1,9 @@
 import SwiftUI
 
-/// A lightweight upsell card for users who don't have AirPods enabled.
-/// Shows when `FeatureFlags.shouldShowAirPodsUpsell` is true.
-/// This is NOT a paywall - it's an education/conversion card.
+/// AirPods upsell card with Sky Blue theme
 struct AirPodsUpsellCard: View {
-    /// Called when user taps "I have AirPods"
     var onEnableAirPods: (() -> Void)?
-
-    /// Called when user taps "Learn more"
     var onLearnMore: (() -> Void)?
-
-    /// Source for analytics tracking
     var analyticsSource: String = "home"
 
     var body: some View {
@@ -18,8 +11,8 @@ struct AirPodsUpsellCard: View {
             // Header with icon
             HStack(spacing: Theme.Spacing.sm) {
                 Image(systemName: "airpodspro")
-                    .font(.system(size: 20))
-                    .foregroundStyle(.appTeal)
+                    .font(.system(size: Theme.IconSize.medium))
+                    .foregroundStyle(.appPrimary)
 
                 Text("Unlock AirPods posture nudges")
                     .font(Theme.Typography.headline)
@@ -45,12 +38,12 @@ struct AirPodsUpsellCard: View {
                 } label: {
                     Text("I have AirPods")
                         .font(Theme.Typography.button)
-                        .foregroundStyle(.textOnDark)
+                        .foregroundStyle(.textOnPrimary)
                         .padding(.horizontal, Theme.Spacing.lg)
                         .padding(.vertical, Theme.Spacing.md)
                         .background(
                             Capsule()
-                                .fill(Color.cardSelected)
+                                .fill(Color.appPrimary)
                         )
                 }
 
@@ -62,8 +55,8 @@ struct AirPodsUpsellCard: View {
                         onLearnMore?()
                     } label: {
                         Text("Learn more")
-                            .font(Theme.Typography.button)
-                            .foregroundStyle(.textSecondary)
+                            .font(Theme.Typography.subbodyMedium)
+                            .foregroundStyle(.appPrimary)
                     }
                 }
 
@@ -73,15 +66,20 @@ struct AirPodsUpsellCard: View {
         .padding(Theme.Spacing.lg)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                .fill(Color.cardBackground)
+                .fill(Color.surface)
         )
+        .overlay(
+            RoundedRectangle(cornerRadius: Theme.Radius.medium)
+                .strokeBorder(Color.borderSubtle, lineWidth: 1)
+        )
+        .shadow(color: Theme.Shadow.card, radius: Theme.Shadow.cardRadius, x: Theme.Shadow.cardX, y: Theme.Shadow.cardY)
         .onAppear {
             AnalyticsService.shared.track(.airpodsUpsellViewed(source: analyticsSource))
         }
     }
 }
 
-/// A compact inline version for settings or other constrained spaces
+/// Compact inline version for settings
 struct AirPodsUpsellRow: View {
     var onTap: () -> Void
 
@@ -92,8 +90,8 @@ struct AirPodsUpsellRow: View {
         } label: {
             HStack(spacing: Theme.Spacing.md) {
                 Image(systemName: "airpodspro")
-                    .font(.system(size: 20))
-                    .foregroundStyle(.appTeal)
+                    .font(.system(size: Theme.IconSize.medium))
+                    .foregroundStyle(.appPrimary)
                     .frame(width: 32)
 
                 VStack(alignment: .leading, spacing: 2) {
@@ -109,7 +107,7 @@ struct AirPodsUpsellRow: View {
                 Spacer()
 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.system(size: Theme.IconSize.small, weight: .medium))
                     .foregroundStyle(.textTertiary)
             }
             .padding(.vertical, Theme.Spacing.md)
@@ -126,7 +124,7 @@ struct AirPodsUpsellRow: View {
         )
         .padding()
     }
-    .background(Color.appBackground)
+    .background(Color.background)
 }
 
 #Preview("Row") {
@@ -134,5 +132,5 @@ struct AirPodsUpsellRow: View {
         AirPodsUpsellRow(onTap: { print("Row tapped") })
             .padding()
     }
-    .background(Color.appBackground)
+    .background(Color.background)
 }
