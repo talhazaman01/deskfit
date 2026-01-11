@@ -1,27 +1,19 @@
 import SwiftUI
 
-/// Progress ring with Sky Blue gradient
 struct ProgressRing: View {
     let progress: Double
     var lineWidth: CGFloat = 8
     var size: CGFloat = 100
-    var useGradient: Bool = true
 
     var body: some View {
         ZStack {
             Circle()
-                .stroke(Color.progressBackground, lineWidth: lineWidth)
+                .stroke(Color.cardBackground, lineWidth: lineWidth)
 
             Circle()
-                .trim(from: 0, to: min(progress, 1.0))
+                .trim(from: 0, to: progress)
                 .stroke(
-                    useGradient ?
-                        AnyShapeStyle(LinearGradient(
-                            colors: [Color.appPrimary, Color.tertiary],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )) :
-                        AnyShapeStyle(Color.appPrimary),
+                    Color.appTeal,
                     style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
                 )
                 .rotationEffect(.degrees(-90))
@@ -32,11 +24,9 @@ struct ProgressRing: View {
 }
 
 #Preview {
-    HStack(spacing: Theme.Spacing.xl) {
+    HStack(spacing: 20) {
         ProgressRing(progress: 0.25)
         ProgressRing(progress: 0.5)
-        ProgressRing(progress: 0.75, useGradient: false)
+        ProgressRing(progress: 0.75)
     }
-    .padding()
-    .background(Color.background)
 }

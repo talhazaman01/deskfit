@@ -66,7 +66,7 @@ struct RemindersView: View {
                             }
                         }
                         .font(Theme.Typography.subtitle)
-                        .foregroundStyle(.appPrimary)
+                        .foregroundStyle(.appTeal)
                     }
                 }
             }

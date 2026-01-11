@@ -16,7 +16,7 @@ struct StarterResetCompletionView: View {
                     .frame(width: 100, height: 100)
 
                 Image(systemName: "checkmark")
-                    .font(Theme.Typography.stat)
+                    .font(.system(size: 44, weight: .bold))
                     .foregroundStyle(.success)
             }
 
@@ -46,7 +46,7 @@ struct StarterResetCompletionView: View {
             ctaSection
         }
         .padding(.horizontal, Theme.Spacing.screenHorizontal)
-        .background(Color.background)
+        .background(Color.appBackground)
     }
 
     private var formattedDuration: String {
@@ -71,7 +71,7 @@ struct StarterResetCompletionView: View {
                     .frame(width: 56, height: 56)
 
                 Image(systemName: "flame.fill")
-                    .font(Theme.Typography.statSmall)
+                    .font(.system(size: 26))
                     .foregroundStyle(.streakFlame)
             }
 
@@ -88,13 +88,13 @@ struct StarterResetCompletionView: View {
             Spacer()
 
             Text("1")
-                .font(Theme.Typography.statMedium)
+                .font(.system(size: 32, weight: .bold, design: .rounded))
                 .foregroundStyle(.streakFlame)
         }
         .padding(Theme.Spacing.lg)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.large)
-                .fill(Color.surface)
+                .fill(Color.cardBackground)
         )
     }
 
@@ -131,8 +131,8 @@ struct StarterResetCompletionView: View {
     private func benefitRow(icon: String, text: String) -> some View {
         HStack(spacing: Theme.Spacing.sm) {
             Image(systemName: icon)
-                .font(Theme.Typography.subbody)
-                .foregroundStyle(.appPrimary)
+                .font(.system(size: 14))
+                .foregroundStyle(.appTeal)
                 .frame(width: 20)
 
             Text(text)

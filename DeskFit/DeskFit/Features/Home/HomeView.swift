@@ -65,7 +65,7 @@ struct HomeView: View {
             .padding(.top, Theme.Spacing.lg)
             .padding(.bottom, Theme.Spacing.bottomArea)
         }
-        .background(Color.background)
+        .background(Color.appBackground)
         .navigationTitle("DeskFit")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
@@ -223,14 +223,14 @@ struct DynamicProBannerView: View {
                     .font(Theme.Typography.button)
                     .padding(.horizontal, Theme.Spacing.lg)
                     .padding(.vertical, Theme.Spacing.sm)
-                    .background(Color.appPrimary)
-                    .foregroundStyle(.textOnPrimary)
+                    .background(Color.appTeal)
+                    .foregroundStyle(.textOnDark)
                     .clipShape(Capsule())
             }
             .padding(Theme.Spacing.lg)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.large)
-                    .fill(Color.surface)
+                    .fill(Color.cardBackground)
             )
         }
         .buttonStyle(.plain)
@@ -261,7 +261,7 @@ struct ReminderInfoLine: View {
                     onEnableReminders()
                 }
                 .font(Theme.Typography.caption)
-                .foregroundStyle(.appPrimary)
+                .foregroundStyle(.appTeal)
             }
         }
         .frame(maxWidth: .infinity)
@@ -277,17 +277,17 @@ struct LockedCTAView: View {
         Button(action: action) {
             HStack {
                 Image(systemName: "lock.fill")
-                    .font(Theme.Typography.subbody)
+                    .font(.system(size: 14))
 
                 Text("Unlock \(sessionTitle)")
                     .font(Theme.Typography.button)
             }
-            .foregroundStyle(.textOnPrimary)
+            .foregroundStyle(.textOnDark)
             .frame(maxWidth: .infinity)
             .frame(height: Theme.Height.primaryButton)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.pill)
-                    .fill(Color.appPrimary)
+                    .fill(Color.appTeal)
             )
         }
         .buttonStyle(.plain)
@@ -298,7 +298,7 @@ struct CompletionBadgeView: View {
     var body: some View {
         VStack(spacing: Theme.Spacing.md) {
             Image(systemName: "checkmark.circle.fill")
-                .font(Theme.Typography.stat)
+                .font(.system(size: 48))
                 .foregroundStyle(.success)
 
             Text("All done for today!")

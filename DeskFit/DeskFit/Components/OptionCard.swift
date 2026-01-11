@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Premium option card with Sky Blue selected state
+/// Cal AI style option card - black fill when selected, gray when not
 struct OptionCard: View {
     let title: String
     var subtitle: String? = nil
@@ -17,8 +17,8 @@ struct OptionCard: View {
                 // Leading icon
                 if let icon = icon {
                     Image(systemName: icon)
-                        .font(Theme.Typography.bodyMedium)
-                        .foregroundStyle(isSelected ? .textOnPrimary : .appPrimary)
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundStyle(isSelected ? .textOnDark : .textPrimary)
                         .frame(width: 24)
                 }
 
@@ -26,48 +26,30 @@ struct OptionCard: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(Theme.Typography.option)
-                        .foregroundStyle(isSelected ? .textOnPrimary : .textPrimary)
+                        .foregroundStyle(isSelected ? .textOnDark : .textPrimary)
 
                     if let subtitle = subtitle {
                         Text(subtitle)
                             .font(Theme.Typography.optionDescription)
-                            .foregroundStyle(isSelected ? Color.textOnPrimary.opacity(0.8) : .textSecondary)
+                            .foregroundStyle(isSelected ? .textOnDark.opacity(0.7) : .textSecondary)
                     }
                 }
 
                 Spacer()
-
-                // Checkmark for selected state
-                if isSelected {
-                    Image(systemName: "checkmark")
-                        .font(Theme.Typography.bodyMedium)
-                        .foregroundStyle(.textOnPrimary)
-                }
             }
             .padding(.horizontal, Theme.Spacing.lg)
             .frame(maxWidth: .infinity)
             .frame(height: subtitle != nil ? Theme.Height.optionCardWithDescription : Theme.Height.optionCard)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                    .fill(isSelected ? Color.appPrimary : Color.surface)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                    .strokeBorder(isSelected ? Color.clear : Color.borderSubtle, lineWidth: 1)
-            )
-            .shadow(
-                color: isSelected ? Color.appPrimary.opacity(0.2) : Theme.Shadow.card,
-                radius: isSelected ? 8 : Theme.Shadow.cardRadius,
-                x: Theme.Shadow.cardX,
-                y: isSelected ? 4 : Theme.Shadow.cardY
+                    .fill(isSelected ? Color.cardSelected : Color.cardBackground)
             )
         }
         .buttonStyle(.plain)
-        .animation(Theme.Animation.quick, value: isSelected)
     }
 }
 
-/// Multi-select chip style (2-column grid) with Sky Blue theme
+/// Multi-select chip style (2-column grid)
 struct SelectionChip: View {
     let title: String
     var icon: String? = nil
@@ -82,33 +64,22 @@ struct SelectionChip: View {
             VStack(spacing: Theme.Spacing.sm) {
                 if let icon = icon {
                     Image(systemName: icon)
-                        .font(.system(size: Theme.IconSize.large))
-                        .foregroundStyle(isSelected ? .textOnPrimary : .appPrimary)
+                        .font(.system(size: 24))
+                        .foregroundStyle(isSelected ? .textOnDark : .appTeal)
                 }
 
                 Text(title)
                     .font(Theme.Typography.option)
-                    .foregroundStyle(isSelected ? .textOnPrimary : .textPrimary)
+                    .foregroundStyle(isSelected ? .textOnDark : .textPrimary)
             }
             .frame(maxWidth: .infinity)
             .frame(height: 80)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                    .fill(isSelected ? Color.appPrimary : Color.surface)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                    .strokeBorder(isSelected ? Color.clear : Color.borderSubtle, lineWidth: 1)
-            )
-            .shadow(
-                color: isSelected ? Color.appPrimary.opacity(0.2) : Theme.Shadow.card,
-                radius: isSelected ? 8 : Theme.Shadow.cardRadius,
-                x: Theme.Shadow.cardX,
-                y: isSelected ? 4 : Theme.Shadow.cardY
+                    .fill(isSelected ? Color.cardSelected : Color.cardBackground)
             )
         }
         .buttonStyle(.plain)
-        .animation(Theme.Animation.quick, value: isSelected)
     }
 }
 
@@ -129,5 +100,4 @@ struct SelectionChip: View {
         }
     }
     .padding()
-    .background(Color.background)
 }

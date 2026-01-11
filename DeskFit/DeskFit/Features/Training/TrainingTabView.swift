@@ -136,12 +136,12 @@ struct PlanView: View {
 
                 Image(systemName: "bolt.fill")
                     .font(.title2)
-                    .foregroundStyle(.appPrimary)
+                    .foregroundStyle(.appTeal)
             }
             .padding(Theme.Spacing.lg)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.large)
-                    .fill(Color.surface)
+                    .fill(Color.cardBackground)
             )
         }
         .buttonStyle(.plain)
@@ -204,7 +204,7 @@ struct PlanView: View {
                 Spacer()
                 Text("Go Pro")
                     .font(Theme.Typography.caption)
-                    .foregroundStyle(.appPrimary)
+                    .foregroundStyle(.appTeal)
             }
             .padding(Theme.Spacing.md)
             .background(
@@ -314,30 +314,30 @@ struct DayCard: View {
             VStack(spacing: Theme.Spacing.xs) {
                 Text(dayName)
                     .font(Theme.Typography.caption)
-                    .foregroundStyle(isToday ? .textOnPrimary : .textSecondary)
+                    .foregroundStyle(isToday ? .textOnDark : .textSecondary)
 
                 Text("Day \(dayIndex + 1)")
                     .font(Theme.Typography.headline)
-                    .foregroundStyle(isToday ? .textOnPrimary : .textPrimary)
+                    .foregroundStyle(isToday ? .textOnDark : .textPrimary)
 
                 if let plan = dayPlan {
                     if plan.isFullyCompleted {
                         Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(isToday ? .textOnPrimary : .success)
+                            .foregroundStyle(isToday ? .textOnDark : .success)
                     } else if isLocked {
                         Image(systemName: "lock.fill")
-                            .foregroundStyle(isToday ? .textOnPrimary.opacity(0.7) : .textTertiary)
+                            .foregroundStyle(isToday ? .textOnDark.opacity(0.7) : .textTertiary)
                     } else {
                         Text("\(plan.sessions.count) sessions")
-                            .font(Theme.Typography.micro)
-                            .foregroundStyle(isToday ? .textOnPrimary.opacity(0.8) : .textTertiary)
+                            .font(.system(size: 10))
+                            .foregroundStyle(isToday ? .textOnDark.opacity(0.8) : .textTertiary)
                     }
                 }
             }
             .frame(width: 70, height: 90)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                    .fill(isToday ? Color.appPrimary : Color.surface)
+                    .fill(isToday ? Color.appTeal : Color.cardBackground)
             )
         }
         .buttonStyle(.plain)
@@ -391,7 +391,7 @@ struct SessionRow: View {
             .padding(Theme.Spacing.md)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                    .fill(Color.surface)
+                    .fill(Color.cardBackground)
             )
         }
         .buttonStyle(.plain)
@@ -414,7 +414,7 @@ struct SessionRow: View {
         } else if isLocked {
             return .textTertiary
         } else {
-            return .appPrimary
+            return .appTeal
         }
     }
 }
@@ -529,12 +529,12 @@ struct CategoryChip: View {
         Button(action: onTap) {
             Text(category.displayName)
                 .font(Theme.Typography.caption)
-                .foregroundStyle(isSelected ? .textOnPrimary : .textPrimary)
+                .foregroundStyle(isSelected ? .textOnDark : .textPrimary)
                 .padding(.horizontal, Theme.Spacing.md)
                 .padding(.vertical, Theme.Spacing.sm)
                 .background(
                     Capsule()
-                        .fill(isSelected ? Color.textPrimary : Color.surface)
+                        .fill(isSelected ? Color.appBlack : Color.cardBackground)
                 )
         }
         .buttonStyle(.plain)
@@ -552,7 +552,7 @@ struct ExerciseRow: View {
             HStack(spacing: Theme.Spacing.md) {
                 // Exercise Icon/Image placeholder
                 RoundedRectangle(cornerRadius: Theme.Radius.small)
-                    .fill(Color.surface)
+                    .fill(Color.cardBackground)
                     .frame(width: 60, height: 60)
                     .overlay(
                         Image(systemName: exercise.iconName)
@@ -588,7 +588,7 @@ struct ExerciseRow: View {
             .padding(Theme.Spacing.md)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                    .fill(Color.surface)
+                    .fill(Color.cardBackground)
             )
         }
         .buttonStyle(.plain)

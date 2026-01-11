@@ -1,181 +1,96 @@
 import SwiftUI
-import UIKit
 
-// MARK: - DeskFit Design System (Premium Sky Blue Theme)
-// Inspired by Reactive Markets style - clean, technical, calm
+// MARK: - DeskFit Design System (Hybrid: Cal AI layout + Wellness colors)
 
 extension Color {
-    // MARK: - Primary Brand Colors
+    // MARK: - Core Palette
 
-    /// Primary Sky Blue - main CTAs, key highlights, active states
-    /// A premium, calm blue that conveys trust and modernity
-    static let appPrimary = Color(light: Color(hex: "0A84FF"), dark: Color(hex: "0A84FF"))
+    /// Pure white background - clean, minimalist
+    static let appBackground = Color.white
 
-    /// Secondary Deep Navy - headers, emphasis text, outlines on light mode
-    static let appSecondary = Color(light: Color(hex: "1C3D5A"), dark: Color(hex: "A8C5E2"))
+    /// Primary brand color - calming teal for wellness
+    static let appTeal = Color(hex: "2A9D8F")
 
-    /// Tertiary Cool Teal - secondary highlights, success states, PRO badges
-    static let tertiary = Color(light: Color(hex: "34C3C0"), dark: Color(hex: "5FD4D1"))
+    /// Pure black for selected states and strong emphasis
+    static let appBlack = Color.black
 
-    // MARK: - Backgrounds & Surfaces
-
-    /// Main screen background
-    static let background = Color(light: Color(hex: "FAFBFC"), dark: Color(hex: "0D1117"))
-
-    /// Card/container surface
-    static let surface = Color(light: Color(hex: "FFFFFF"), dark: Color(hex: "161B22"))
-
-    /// Elevated surface (modals, sheets, popovers)
-    static let surfaceElevated = Color(light: Color(hex: "FFFFFF"), dark: Color(hex: "21262D"))
-
-    /// Selected card state - uses appPrimary with opacity for subtle highlight
-    static let surfaceSelected = Color(light: Color(hex: "0A84FF").opacity(0.08), dark: Color(hex: "0A84FF").opacity(0.15))
+    /// Warm coral for accents, streaks, celebrations
+    static let appCoral = Color(hex: "E07A5F")
 
     // MARK: - Text Colors
 
-    /// Primary text - main content
-    static let textPrimary = Color(light: Color(hex: "1C2128"), dark: Color(hex: "F0F6FC"))
-
-    /// Secondary text - supporting info
-    static let textSecondary = Color(light: Color(hex: "57606A"), dark: Color(hex: "8B949E"))
-
-    /// Tertiary text - placeholders, hints
-    static let textTertiary = Color(light: Color(hex: "8B949E"), dark: Color(hex: "6E7681"))
-
-    /// Text on primary colored backgrounds
-    static let textOnPrimary = Color.white
-
-    /// Inverted text for dark surfaces in light mode
+    static let textPrimary = Color.black
+    static let textSecondary = Color(hex: "666666")
+    static let textTertiary = Color(hex: "999999")
     static let textOnDark = Color.white
+
+    // MARK: - Card & Surface Colors
+
+    /// Light gray for unselected cards/options
+    static let cardBackground = Color(hex: "F5F5F5")
+
+    /// Black fill for selected state (Cal AI style)
+    static let cardSelected = Color.black
 
     // MARK: - Button Colors
 
-    /// Primary button background
-    static let buttonPrimary = Color.appPrimary
+    /// Primary CTA - teal for wellness actions
+    static let buttonPrimary = Color(hex: "2A9D8F")
 
-    /// Button text on primary
-    static let buttonPrimaryText = Color.white
+    /// Enabled continue button - black (Cal AI style)
+    static let buttonEnabled = Color.black
 
-    /// Disabled button background
-    static let buttonDisabled = Color(light: Color(hex: "E1E4E8"), dark: Color(hex: "30363D"))
-
-    /// Disabled button text
-    static let buttonDisabledText = Color(light: Color(hex: "8B949E"), dark: Color(hex: "6E7681"))
-
-    // MARK: - Card & Border Colors
-
-    /// Subtle border for cards and dividers
-    static let borderSubtle = Color(light: Color(hex: "D0D7DE"), dark: Color(hex: "30363D"))
-
-    /// Selected state border
-    static let borderSelected = Color.appPrimary
-
-    /// Divider/separator lines
-    static let divider = Color(light: Color(hex: "D8DEE4"), dark: Color(hex: "21262D"))
+    /// Disabled button state
+    static let buttonDisabled = Color(hex: "CCCCCC")
 
     // MARK: - Status Colors
 
-    /// Success state
-    static let success = Color(light: Color(hex: "1A7F37"), dark: Color(hex: "3FB950"))
+    static let success = Color(hex: "2A9D8F")  // Teal
+    static let warning = Color(hex: "E07A5F")  // Coral
+    static let streakFlame = Color(hex: "F4A261")  // Warm orange
 
-    /// Warning state
-    static let warning = Color(light: Color(hex: "BF8700"), dark: Color(hex: "D29922"))
+    // MARK: - Progress & Dividers
 
-    /// Danger/error state
-    static let danger = Color(light: Color(hex: "CF222E"), dark: Color(hex: "F85149"))
+    static let progressBackground = Color(hex: "E5E5E5")
+    static let progressFill = Color.black
+    static let divider = Color(hex: "EEEEEE")
 
-    /// Info state (uses tertiary)
-    static let info = Color.tertiary
+    // MARK: - Legacy Compatibility
 
-    /// Streak flame color
-    static let streakFlame = Color(light: Color(hex: "F4A261"), dark: Color(hex: "FFA657"))
-
-    // MARK: - Progress Colors
-
-    /// Progress bar background track
-    static let progressBackground = Color(light: Color(hex: "E1E4E8"), dark: Color(hex: "30363D"))
-
-    /// Progress bar fill - uses appPrimary
-    static let progressFill = Color.appPrimary
-
-    // MARK: - PRO Badge
-
-    /// PRO badge background
-    static let proBadge = Color.tertiary
-
-    /// PRO badge text
-    static let proBadgeText = Color(light: Color(hex: "FFFFFF"), dark: Color(hex: "0D1117"))
-
-    // MARK: - Legacy Compatibility (maps old names to new)
-
-    static let appBackground = Color.background
-    static let appTeal = Color.appPrimary
-    static let appBlack = Color.textPrimary
-    static let appCoral = Color.streakFlame
-    static let cardBackground = Color.surface
-    static let cardSelected = Color.surfaceSelected
-    static let buttonEnabled = Color.appPrimary
-    static let brandPrimary = Color.appPrimary
-    static let brandSecondary = Color.appSecondary
-    static let secondaryBackground = Color.surface
-    static let accent = Color.appPrimary
+    static let brandPrimary = appTeal
+    static let brandSecondary = appCoral
+    static let secondaryBackground = cardBackground
+    static let accent = appTeal
 }
 
 // MARK: - ShapeStyle Extension for foregroundStyle() support
 
 extension ShapeStyle where Self == Color {
-    // Primary palette
-    static var appPrimary: Color { Color.appPrimary }
-    static var appSecondary: Color { Color.appSecondary }
-    static var tertiary: Color { Color.tertiary }
-
-    // Backgrounds
-    static var background: Color { Color.background }
-    static var surface: Color { Color.surface }
-    static var surfaceElevated: Color { Color.surfaceElevated }
-    static var surfaceSelected: Color { Color.surfaceSelected }
-
-    // Text
-    static var textPrimary: Color { Color.textPrimary }
-    static var textSecondary: Color { Color.textSecondary }
-    static var textTertiary: Color { Color.textTertiary }
-    static var textOnPrimary: Color { Color.textOnPrimary }
-    static var textOnDark: Color { Color.textOnDark }
-
-    // Buttons
-    static var buttonPrimary: Color { Color.buttonPrimary }
-    static var buttonPrimaryText: Color { Color.buttonPrimaryText }
-    static var buttonDisabled: Color { Color.buttonDisabled }
-    static var buttonDisabledText: Color { Color.buttonDisabledText }
-
-    // Borders
-    static var borderSubtle: Color { Color.borderSubtle }
-    static var borderSelected: Color { Color.borderSelected }
-    static var divider: Color { Color.divider }
-
-    // Status
-    static var success: Color { Color.success }
-    static var warning: Color { Color.warning }
-    static var danger: Color { Color.danger }
-    static var info: Color { Color.info }
-    static var streakFlame: Color { Color.streakFlame }
-
-    // Progress
-    static var progressBackground: Color { Color.progressBackground }
-    static var progressFill: Color { Color.progressFill }
-
-    // PRO badge
-    static var proBadge: Color { Color.proBadge }
-    static var proBadgeText: Color { Color.proBadgeText }
-
-    // Legacy compatibility
     static var appTeal: Color { Color.appTeal }
     static var appCoral: Color { Color.appCoral }
     static var appBlack: Color { Color.appBlack }
     static var appBackground: Color { Color.appBackground }
+
+    static var textPrimary: Color { Color.textPrimary }
+    static var textSecondary: Color { Color.textSecondary }
+    static var textTertiary: Color { Color.textTertiary }
+    static var textOnDark: Color { Color.textOnDark }
+
     static var cardBackground: Color { Color.cardBackground }
     static var cardSelected: Color { Color.cardSelected }
+
+    static var buttonPrimary: Color { Color.buttonPrimary }
     static var buttonEnabled: Color { Color.buttonEnabled }
+    static var buttonDisabled: Color { Color.buttonDisabled }
+
+    static var success: Color { Color.success }
+    static var warning: Color { Color.warning }
+    static var streakFlame: Color { Color.streakFlame }
+
+    static var progressBackground: Color { Color.progressBackground }
+    static var progressFill: Color { Color.progressFill }
+    static var divider: Color { Color.divider }
+
     static var brandPrimary: Color { Color.brandPrimary }
     static var brandSecondary: Color { Color.brandSecondary }
     static var secondaryBackground: Color { Color.secondaryBackground }
@@ -207,17 +122,5 @@ extension Color {
             blue: Double(b) / 255,
             opacity: Double(a) / 255
         )
-    }
-
-    /// Creates a color that automatically adapts to light and dark mode
-    init(light: Color, dark: Color) {
-        self.init(uiColor: UIColor { traitCollection in
-            switch traitCollection.userInterfaceStyle {
-            case .dark:
-                return UIColor(dark)
-            default:
-                return UIColor(light)
-            }
-        })
     }
 }

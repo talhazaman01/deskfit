@@ -61,18 +61,18 @@ struct TimeCard: View {
         }) {
             VStack(spacing: Theme.Spacing.xs) {
                 Text(label)
-                    .font(Theme.Typography.title2)
-                    .foregroundStyle(isSelected ? .textOnPrimary : .textPrimary)
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundStyle(isSelected ? .textOnDark : .textPrimary)
 
                 Text(description)
                     .font(Theme.Typography.caption)
-                    .foregroundStyle(isSelected ? .textOnPrimary.opacity(0.7) : .textSecondary)
+                    .foregroundStyle(isSelected ? .textOnDark.opacity(0.7) : .textSecondary)
             }
             .frame(maxWidth: .infinity)
             .frame(height: 90)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                    .fill(isSelected ? Color.appPrimary : Color.surface)
+                    .fill(isSelected ? Color.cardSelected : Color.cardBackground)
             )
         }
         .buttonStyle(.plain)

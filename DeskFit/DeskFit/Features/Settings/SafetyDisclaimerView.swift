@@ -28,12 +28,12 @@ struct SafetyDisclaimerView: View {
         VStack(spacing: Theme.Spacing.md) {
             ZStack {
                 Circle()
-                    .fill(Color.appPrimary.opacity(0.15))
+                    .fill(Color.appTeal.opacity(0.15))
                     .frame(width: 80, height: 80)
 
                 Image(systemName: "figure.mind.and.body")
                     .font(.system(size: 40))
-                    .foregroundStyle(.appPrimary)
+                    .foregroundStyle(.appTeal)
             }
             .frame(maxWidth: .infinity)
 
@@ -61,7 +61,7 @@ struct SafetyDisclaimerView: View {
         .padding(Theme.Spacing.lg)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                .fill(Color.surface)
+                .fill(Color.cardBackground)
         )
     }
 
@@ -84,7 +84,7 @@ struct SafetyDisclaimerView: View {
         .padding(Theme.Spacing.lg)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                .fill(Color.surface)
+                .fill(Color.cardBackground)
         )
     }
 
@@ -102,7 +102,7 @@ struct SafetyDisclaimerView: View {
         .padding(Theme.Spacing.lg)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                .fill(Color.surface)
+                .fill(Color.cardBackground)
         )
     }
 
@@ -111,8 +111,8 @@ struct SafetyDisclaimerView: View {
     private func sectionHeader(icon: String, title: String) -> some View {
         HStack(spacing: Theme.Spacing.sm) {
             Image(systemName: icon)
-                .font(Theme.Typography.bodyMedium)
-                .foregroundStyle(.appPrimary)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundStyle(.appTeal)
 
             Text(title)
                 .font(Theme.Typography.headline)
@@ -123,7 +123,7 @@ struct SafetyDisclaimerView: View {
     private func bulletPoint(_ text: String) -> some View {
         HStack(alignment: .top, spacing: Theme.Spacing.sm) {
             Circle()
-                .fill(Color.appPrimary)
+                .fill(Color.appTeal)
                 .frame(width: 6, height: 6)
                 .padding(.top, 7)
 

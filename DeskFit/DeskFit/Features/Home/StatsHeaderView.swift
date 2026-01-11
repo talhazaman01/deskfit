@@ -24,7 +24,7 @@ struct StatsHeaderView: View {
                 icon: "clock.fill",
                 value: "\(todayMinutes)",
                 label: "min today",
-                color: .primary
+                color: .appTeal
             )
 
             Spacer()
@@ -44,7 +44,7 @@ struct StatsHeaderView: View {
         .padding(Theme.Spacing.lg)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.large)
-                .fill(Color.surface)
+                .fill(Color.cardBackground)
         )
     }
 }
@@ -62,7 +62,7 @@ struct StatItem: View {
                     .foregroundStyle(color)
 
                 Text(value)
-                    .font(Theme.Typography.statSmall)
+                    .font(.system(size: 20, weight: .bold))
                     .foregroundStyle(.textPrimary)
             }
 

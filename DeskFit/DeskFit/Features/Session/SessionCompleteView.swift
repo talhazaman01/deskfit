@@ -16,7 +16,7 @@ struct SessionCompleteView: View {
                     .frame(width: 120, height: 120)
 
                 Image(systemName: "checkmark")
-                    .font(Theme.Typography.stat)
+                    .font(.system(size: 50, weight: .bold))
                     .foregroundStyle(.success)
             }
 

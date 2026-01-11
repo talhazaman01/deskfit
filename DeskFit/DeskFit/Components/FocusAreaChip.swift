@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Focus area selection chip for onboarding with Sky Blue theme
+/// Focus area selection chip for onboarding (2-column grid)
 struct FocusAreaChip: View {
     let area: FocusArea
     let isSelected: Bool
@@ -13,42 +13,30 @@ struct FocusAreaChip: View {
         }) {
             VStack(spacing: Theme.Spacing.sm) {
                 Image(systemName: area.icon)
-                    .font(.system(size: Theme.IconSize.extraLarge))
-                    .foregroundStyle(isSelected ? .textOnPrimary : .appPrimary)
+                    .font(.system(size: 28))
+                    .foregroundStyle(isSelected ? .textOnDark : .appTeal)
 
                 Text(area.displayName)
                     .font(Theme.Typography.option)
-                    .foregroundStyle(isSelected ? .textOnPrimary : .textPrimary)
+                    .foregroundStyle(isSelected ? .textOnDark : .textPrimary)
             }
             .frame(maxWidth: .infinity)
             .frame(height: 90)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                    .fill(isSelected ? Color.appPrimary : Color.surface)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                    .strokeBorder(isSelected ? Color.clear : Color.borderSubtle, lineWidth: 1)
-            )
-            .shadow(
-                color: isSelected ? Color.appPrimary.opacity(0.2) : Theme.Shadow.card,
-                radius: isSelected ? 8 : Theme.Shadow.cardRadius,
-                x: Theme.Shadow.cardX,
-                y: isSelected ? 4 : Theme.Shadow.cardY
+                    .fill(isSelected ? Color.cardSelected : Color.cardBackground)
             )
         }
         .buttonStyle(.plain)
-        .animation(Theme.Animation.quick, value: isSelected)
     }
 }
 
 #Preview {
-    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: Theme.Spacing.md) {
+    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
         FocusAreaChip(area: .neck, isSelected: true) {}
         FocusAreaChip(area: .shoulders, isSelected: false) {}
         FocusAreaChip(area: .lowerBack, isSelected: false) {}
         FocusAreaChip(area: .wrists, isSelected: true) {}
     }
     .padding()
-    .background(Color.background)
 }

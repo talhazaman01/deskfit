@@ -66,9 +66,9 @@ struct ProgressTabView: View {
                     size: 160
                 )
 
-                VStack(spacing: Theme.Spacing.xs) {
+                VStack(spacing: 4) {
                     Text("\(summary.weeklyAverageScore)")
-                        .font(Theme.Typography.stat)
+                        .font(.system(size: 48, weight: .bold))
                         .foregroundStyle(.textPrimary)
 
                     Text("Weekly Avg")
@@ -91,7 +91,7 @@ struct ProgressTabView: View {
         .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.large)
-                .fill(Color.surface)
+                .fill(Color.cardBackground)
         )
     }
 
@@ -117,7 +117,7 @@ struct ProgressTabView: View {
         .padding(Theme.Spacing.lg)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.large)
-                .fill(Color.surface)
+                .fill(Color.cardBackground)
         )
     }
 
@@ -142,7 +142,7 @@ struct ProgressTabView: View {
 
             StatCard(
                 icon: "clock.fill",
-                iconColor: .appPrimary,
+                iconColor: .appTeal,
                 value: summary.minutesDisplay,
                 label: "Total Time"
             )
@@ -205,7 +205,7 @@ struct ProgressTabView: View {
         } label: {
             HStack {
                 Image(systemName: "calendar")
-                    .foregroundStyle(.appPrimary)
+                    .foregroundStyle(.appTeal)
                 Text("View full history with Pro")
                     .font(Theme.Typography.caption)
                     .foregroundStyle(.textSecondary)
@@ -267,7 +267,7 @@ struct ProgressTabView: View {
         .padding(Theme.Spacing.lg)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.large)
-                .fill(Color.surface)
+                .fill(Color.cardBackground)
         )
     }
 }
@@ -350,7 +350,7 @@ struct WeeklyChart: View {
             .padding(.vertical, Theme.Spacing.sm)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                    .fill(Color.surface)
+                    .fill(Color.cardBackground)
                     .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
             )
             .transition(.scale.combined(with: .opacity))
@@ -434,7 +434,7 @@ private struct ChartBar: View {
 
                 // Day label
                 Text(entry.shortDayName)
-                    .font(isSelected ? Theme.Typography.captionMedium : Theme.Typography.micro)
+                    .font(.system(size: isSelected ? 11 : 10, weight: isSelected ? .semibold : .regular))
                     .foregroundStyle(labelColor)
             }
         }
@@ -451,19 +451,19 @@ private struct ChartBar: View {
         if !entry.hasActivity {
             return .progressBackground
         } else if isSelected {
-            return .appPrimary
+            return .appTeal
         } else if entry.isToday {
-            return .appPrimary
+            return .appTeal
         } else {
-            return .appPrimary.opacity(0.6)
+            return .appTeal.opacity(0.6)
         }
     }
 
     private var labelColor: Color {
         if isSelected {
-            return .appPrimary
+            return .appTeal
         } else if entry.isToday {
-            return .appPrimary
+            return .appTeal
         } else {
             return .textTertiary
         }
@@ -496,7 +496,7 @@ struct StatCard: View {
         .padding(Theme.Spacing.md)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                .fill(Color.surface)
+                .fill(Color.cardBackground)
         )
     }
 }
@@ -510,7 +510,7 @@ struct WinCard: View {
         HStack(spacing: Theme.Spacing.md) {
             Image(systemName: win.icon)
                 .font(.title2)
-                .foregroundStyle(.appPrimary)
+                .foregroundStyle(.appTeal)
                 .frame(width: 40)
 
             VStack(alignment: .leading, spacing: 2) {
@@ -528,7 +528,7 @@ struct WinCard: View {
         .padding(Theme.Spacing.md)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                .fill(Color.surface)
+                .fill(Color.cardBackground)
         )
     }
 }
@@ -546,7 +546,7 @@ struct DayHistoryRow: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(entry.displayDate)
                         .font(Theme.Typography.body)
-                        .foregroundStyle(entry.isToday ? .appPrimary : .textPrimary)
+                        .foregroundStyle(entry.isToday ? .appTeal : .textPrimary)
 
                     if entry.hasActivity {
                         Text("\(entry.sessionsCompleted) sessions • \(entry.minutesCompleted) min")
@@ -578,7 +578,7 @@ struct DayHistoryRow: View {
             .padding(Theme.Spacing.md)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                    .fill(Color.surface)
+                    .fill(Color.cardBackground)
             )
         }
         .buttonStyle(.plain)
@@ -594,7 +594,7 @@ struct ScoreFactorRow: View {
     var body: some View {
         HStack(spacing: Theme.Spacing.sm) {
             Image(systemName: icon)
-                .foregroundStyle(.appPrimary)
+                .foregroundStyle(.appTeal)
                 .frame(width: 20)
 
             Text(text)

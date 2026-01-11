@@ -71,7 +71,7 @@ struct PaywallView: View {
         VStack(spacing: Theme.Spacing.md) {
             Image(systemName: "sparkles")
                 .font(.system(size: 50))
-                .foregroundStyle(.appPrimary)
+                .foregroundStyle(.appTeal)
 
             Text("Unlock Your Full Reset")
                 .font(Theme.Typography.largeTitle)
@@ -97,7 +97,7 @@ struct PaywallView: View {
         .padding(Theme.Spacing.lg)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.large)
-                .fill(Color.surface)
+                .fill(Color.cardBackground)
         )
     }
 
@@ -240,7 +240,7 @@ struct PaywallView: View {
                     Text("How the free trial works")
                 }
                 .font(Theme.Typography.caption)
-                .foregroundStyle(.appPrimary)
+                .foregroundStyle(.appTeal)
             }
         }
     }
@@ -432,7 +432,7 @@ struct BenefitRow: View {
     var body: some View {
         HStack(spacing: Theme.Spacing.md) {
             Image(systemName: icon)
-                .foregroundStyle(.appPrimary)
+                .foregroundStyle(.appTeal)
                 .frame(width: 24)
 
             Text(text)
@@ -473,7 +473,7 @@ struct PlanCard: View {
                                 .fontWeight(.bold)
                                 .padding(.horizontal, Theme.Spacing.sm)
                                 .padding(.vertical, 2)
-                                .background(isBestValue ? Color.appPrimary : Color.textTertiary.opacity(0.3))
+                                .background(isBestValue ? Color.appTeal : Color.textTertiary.opacity(0.3))
                                 .foregroundStyle(isBestValue ? .textOnDark : .textSecondary)
                                 .clipShape(Capsule())
                         }
@@ -481,7 +481,7 @@ struct PlanCard: View {
                         // Price row
                         HStack(spacing: Theme.Spacing.xs) {
                             Text(priceText)
-                                .font(Theme.Typography.title2)
+                                .font(.system(size: 20, weight: .bold))
                                 .foregroundStyle(.textPrimary)
                             Text(periodText)
                                 .font(Theme.Typography.caption)
@@ -524,16 +524,16 @@ struct PlanCard: View {
                 if let trial = trialText {
                     Text(trial)
                         .font(Theme.Typography.caption)
-                        .foregroundStyle(.appPrimary)
+                        .foregroundStyle(.appTeal)
                 }
             }
             .padding(Theme.Spacing.lg)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                    .fill(Color.surface)
+                    .fill(Color.cardBackground)
                     .overlay(
                         RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                            .strokeBorder(isSelected ? Color.appPrimary : Color.clear, lineWidth: 2)
+                            .strokeBorder(isSelected ? Color.appTeal : Color.clear, lineWidth: 2)
                     )
             )
         }
@@ -586,7 +586,7 @@ struct SkeletonPlanCard: View {
         .padding(Theme.Spacing.lg)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                .fill(Color.surface)
+                .fill(Color.cardBackground)
         )
         .shimmer()
     }
@@ -640,10 +640,10 @@ struct StoreUnavailableView: View {
                 Button(action: onTryAgain) {
                     Text("Try again")
                         .font(Theme.Typography.button)
-                        .foregroundStyle(.textOnPrimary)
+                        .foregroundStyle(.textOnDark)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, Theme.Spacing.md)
-                        .background(Color.appPrimary)
+                        .background(Color.appTeal)
                         .cornerRadius(Theme.Radius.medium)
                 }
 
@@ -653,7 +653,7 @@ struct StoreUnavailableView: View {
                         .foregroundStyle(.textPrimary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, Theme.Spacing.md)
-                        .background(Color.surface)
+                        .background(Color.cardBackground)
                         .cornerRadius(Theme.Radius.medium)
                 }
 
@@ -667,7 +667,7 @@ struct StoreUnavailableView: View {
         .padding(Theme.Spacing.lg)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.large)
-                .fill(Color.surface)
+                .fill(Color.cardBackground)
         )
     }
 
@@ -704,7 +704,7 @@ struct FreeTrialInfoModal: View {
                     VStack(spacing: Theme.Spacing.md) {
                         Image(systemName: "gift.fill")
                             .font(.system(size: 50))
-                            .foregroundStyle(.appPrimary)
+                            .foregroundStyle(.appTeal)
 
                         Text("How your free trial works")
                             .font(Theme.Typography.largeTitle)
@@ -814,7 +814,7 @@ struct TrialTimelineRow: View {
                 Text(day)
                     .font(Theme.Typography.caption)
                     .fontWeight(.semibold)
-                    .foregroundStyle(.appPrimary)
+                    .foregroundStyle(.appTeal)
 
                 Text(title)
                     .font(Theme.Typography.headline)
