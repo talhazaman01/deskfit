@@ -9,11 +9,31 @@ class StarterResetViewModel: ObservableObject {
 
     @Published var currentExerciseIndex = 0
     @Published var timeRemaining: Int = 0
-    @Published var isPaused = false
-    @Published var isComplete = false
+    @Published private(set) var playbackState: PlaybackState = .ready
+
+    /// Tracks whether starter_reset_started event has been fired (only fires once)
+    private var hasFiredStartedEvent = false
 
     private var timer: Timer?
     private var startTime: Date?
+
+    // MARK: - Computed Properties for backward compatibility
+
+    var isPaused: Bool {
+        playbackState == .paused
+    }
+
+    var isComplete: Bool {
+        playbackState == .finished
+    }
+
+    var isReady: Bool {
+        playbackState == .ready
+    }
+
+    var isPlaying: Bool {
+        playbackState == .playing
+    }
 
     var currentExercise: Exercise? {
         guard currentExerciseIndex < exercises.count else { return nil }
@@ -44,6 +64,10 @@ class StarterResetViewModel: ObservableObject {
         )
         self.sessionTitle = starterReset.title
         self.exercises = starterReset.exercises
+        // Pre-load first exercise duration so UI shows correct time in ready state
+        if let firstExercise = exercises.first {
+            self.timeRemaining = firstExercise.durationSeconds
+        }
     }
 
     private static func selectExercises(
@@ -80,18 +104,26 @@ class StarterResetViewModel: ObservableObject {
         return selected
     }
 
+    /// Called when user taps Play button. Transitions from ready/paused to playing.
     func start() {
         guard !exercises.isEmpty else {
-            isComplete = true
+            playbackState = .finished
             return
         }
 
-        startTime = Date()
-        timeRemaining = exercises[0].durationSeconds
+        // Only transition from ready or paused states
+        guard playbackState == .ready || playbackState == .paused else { return }
+
+        // Fire starter_reset_started analytics only on first play
+        if !hasFiredStartedEvent {
+            hasFiredStartedEvent = true
+            startTime = Date()
+            AnalyticsService.shared.track(.starterResetStarted)
+        }
+
+        playbackState = .playing
         HapticsService.shared.exerciseStart()
         startTimer()
-
-        AnalyticsService.shared.track(.starterResetStarted)
     }
 
     func stop() {
@@ -100,13 +132,16 @@ class StarterResetViewModel: ObservableObject {
     }
 
     func pause() {
-        isPaused = true
+        guard playbackState == .playing else { return }
+
+        playbackState = .paused
         timer?.invalidate()
+        timer = nil
     }
 
+    /// Resume is now handled by start() - keeping for API compatibility
     func resume() {
-        isPaused = false
-        startTimer()
+        start()
     }
 
     private func startTimer() {
@@ -119,7 +154,8 @@ class StarterResetViewModel: ObservableObject {
     }
 
     private func tick() {
-        guard !isPaused else { return }
+        // Only tick when actively playing
+        guard playbackState == .playing else { return }
 
         timeRemaining -= 1
 
@@ -146,7 +182,8 @@ class StarterResetViewModel: ObservableObject {
 
         if currentExerciseIndex >= exercises.count {
             timer?.invalidate()
-            isComplete = true
+            timer = nil
+            playbackState = .finished
             trackCompletion()
         } else {
             timeRemaining = exercises[currentExerciseIndex].durationSeconds

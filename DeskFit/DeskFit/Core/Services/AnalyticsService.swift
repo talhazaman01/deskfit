@@ -20,10 +20,12 @@ final class AnalyticsService: Sendable {
         case onboardingCompleted(durationSeconds: Int, goal: String, focusAreas: [String], dailyMinutes: Int, stiffnessTime: String?)
         case onboardingSummaryViewed
         case onboardingSafetyAcknowledged(action: String)
+        case starterResetViewed
         case starterResetStarted
         case starterResetCompleted(durationSeconds: Int, exerciseCount: Int)
         case starterResetSkipped
 
+        case sessionViewed(sessionId: String, sessionType: String, source: String)
         case sessionStarted(sessionId: String, sessionType: String, durationSeconds: Int, exerciseCount: Int)
         case sessionPaused(sessionId: String, elapsedSeconds: Int)
         case sessionResumed(sessionId: String, pauseDurationSeconds: Int)
@@ -165,6 +167,9 @@ final class AnalyticsService: Sendable {
         case .onboardingSafetyAcknowledged(let action):
             return ("onboarding_safety_acknowledged", ["action": action])
 
+        case .starterResetViewed:
+            return ("starter_reset_viewed", [:])
+
         case .starterResetStarted:
             return ("starter_reset_started", [:])
 
@@ -176,6 +181,13 @@ final class AnalyticsService: Sendable {
 
         case .starterResetSkipped:
             return ("starter_reset_skipped", [:])
+
+        case .sessionViewed(let sessionId, let sessionType, let source):
+            return ("session_viewed", [
+                "session_id": sessionId,
+                "session_type": sessionType,
+                "source": source
+            ])
 
         case .sessionStarted(let sessionId, let sessionType, let duration, let exerciseCount):
             return ("session_started", [

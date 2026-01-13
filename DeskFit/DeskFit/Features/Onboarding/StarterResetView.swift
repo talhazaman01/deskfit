@@ -30,6 +30,9 @@ struct StarterResetView: View {
 
             if viewModel.isComplete {
                 completedState
+            } else if viewModel.isReady {
+                // Ready state - waiting for user to press Play
+                readyState
             } else if viewModel.isPaused {
                 pausedState
             } else {
@@ -37,10 +40,87 @@ struct StarterResetView: View {
             }
         }
         .onAppear {
-            viewModel.start()
+            // Track that user viewed the starter reset screen (does NOT auto-start)
+            AnalyticsService.shared.track(.starterResetViewed)
         }
         .onDisappear {
             viewModel.stop()
+        }
+    }
+
+    // MARK: - Ready State
+
+    private var readyState: some View {
+        VStack(spacing: Theme.Spacing.md) {
+            // MARK: - Top Section
+            VStack(spacing: Theme.Spacing.sm) {
+                // Top bar with skip
+                HStack {
+                    Button {
+                        viewModel.stop()
+                        AnalyticsService.shared.track(.starterResetSkipped)
+                        onSkip()
+                    } label: {
+                        Text("Skip")
+                            .font(Theme.Typography.subtitle)
+                            .foregroundStyle(.textSecondary)
+                    }
+
+                    Spacer()
+
+                    Text(viewModel.sessionTitle)
+                        .font(Theme.Typography.headline)
+                        .foregroundStyle(.textPrimary)
+
+                    Spacer()
+
+                    // Invisible button for balance
+                    Text("Skip")
+                        .font(Theme.Typography.subtitle)
+                        .foregroundStyle(.clear)
+                }
+                .padding(.horizontal, Theme.Spacing.screenHorizontal)
+                .padding(.top, Theme.Spacing.md)
+
+                Text("\(viewModel.exercises.count) exercises • ~1 min")
+                    .font(Theme.Typography.caption)
+                    .foregroundStyle(.textSecondary)
+            }
+
+            // MARK: - Exercise Preview
+            ScrollView(.vertical, showsIndicators: false) {
+                if let exercise = viewModel.currentExercise {
+                    SessionExerciseContentView(
+                        exercise: exercise,
+                        isCompact: true
+                    )
+                    .padding(.vertical, Theme.Spacing.sm)
+                }
+            }
+            .frame(maxHeight: .infinity)
+
+            // MARK: - Timer (Static) and Play Button
+            VStack(spacing: Theme.Spacing.lg) {
+                TimerView(
+                    timeRemaining: viewModel.timeRemaining,
+                    totalTime: viewModel.currentExercise?.durationSeconds ?? 0
+                )
+
+                Text("Ready")
+                    .font(Theme.Typography.subtitle)
+                    .foregroundStyle(.textSecondary)
+
+                // Play button
+                Button {
+                    viewModel.start()
+                } label: {
+                    Image(systemName: "play.circle.fill")
+                        .font(.system(size: 80))
+                        .foregroundStyle(.appTeal)
+                }
+                .accessibilityLabel("Start starter reset")
+            }
+            .padding(.bottom, Theme.Spacing.xl)
         }
     }
 
@@ -102,20 +182,26 @@ struct StarterResetView: View {
             }
             .frame(maxHeight: .infinity)
 
-            // MARK: - Bottom Section (Fixed - Timer & Pause)
+            // MARK: - Bottom Section (Fixed - Timer & Play/Pause)
             VStack(spacing: Theme.Spacing.lg) {
                 TimerView(
                     timeRemaining: viewModel.timeRemaining,
                     totalTime: viewModel.currentExercise?.durationSeconds ?? 0
                 )
 
+                // Play/Pause toggle button
                 Button {
-                    viewModel.pause()
+                    if viewModel.isPlaying {
+                        viewModel.pause()
+                    } else {
+                        viewModel.start()
+                    }
                 } label: {
-                    Image(systemName: "pause.circle.fill")
+                    Image(systemName: viewModel.isPlaying ? "pause.circle.fill" : "play.circle.fill")
                         .font(.system(size: 60))
                         .foregroundStyle(.appTeal)
                 }
+                .accessibilityLabel(viewModel.isPlaying ? "Pause" : "Play")
             }
             .padding(.bottom, Theme.Spacing.xl)
         }

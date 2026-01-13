@@ -45,6 +45,9 @@ struct SessionPlayerView: View {
                         handleSessionComplete(feedback: feedback)
                     }
                 )
+            } else if viewModel.isReady {
+                // Ready state - waiting for user to press Play
+                readyStateView
             } else if viewModel.isPaused {
                 VStack(spacing: Theme.Spacing.xl) {
                     Text("Paused")
@@ -93,25 +96,25 @@ struct SessionPlayerView: View {
                             totalTime: viewModel.currentExercise?.durationSeconds ?? 0
                         )
 
-                        // Control buttons: Pause and Next
+                        // Control buttons: Play/Pause and Next
                         HStack(spacing: Theme.Spacing.xl) {
-                            // Pause button
+                            // Play/Pause toggle button
                             Button {
-                                viewModel.pause()
+                                if viewModel.isPlaying {
+                                    viewModel.pause()
+                                } else {
+                                    viewModel.start()
+                                }
                             } label: {
-                                Image(systemName: "pause.circle.fill")
+                                Image(systemName: viewModel.isPlaying ? "pause.circle.fill" : "play.circle.fill")
                                     .font(.system(size: 60))
                                     .foregroundStyle(.appTeal)
                             }
+                            .accessibilityLabel(viewModel.isPlaying ? "Pause" : "Play")
 
                             // Next/Finish button
                             Button {
-                                if viewModel.isLastExercise {
-                                    // Skip to completion
-                                    viewModel.skipToNext()
-                                } else {
-                                    viewModel.skipToNext()
-                                }
+                                viewModel.skipToNext()
                             } label: {
                                 VStack(spacing: Theme.Spacing.xs) {
                                     Image(systemName: viewModel.isLastExercise ? "checkmark.circle.fill" : "forward.fill")
@@ -121,6 +124,7 @@ struct SessionPlayerView: View {
                                 }
                                 .foregroundStyle(.textSecondary)
                             }
+                            .accessibilityLabel(viewModel.isLastExercise ? "Finish session" : "Skip to next exercise")
                         }
                     }
                     .padding(.bottom, Theme.Spacing.xl)
@@ -143,16 +147,69 @@ struct SessionPlayerView: View {
             }
         }
         .onAppear {
-            viewModel.start()
-            AnalyticsService.shared.track(.sessionStarted(
+            // Track that user viewed the session screen (does NOT auto-start)
+            AnalyticsService.shared.track(.sessionViewed(
                 sessionId: plannedSession.id.uuidString,
                 sessionType: plannedSession.type.rawValue,
-                durationSeconds: plannedSession.durationSeconds,
-                exerciseCount: plannedSession.exerciseIds.count
+                source: sourceTab
             ))
         }
         .onDisappear {
             viewModel.stop()
+        }
+    }
+
+    // MARK: - Ready State View
+
+    private var readyStateView: some View {
+        VStack(spacing: Theme.Spacing.md) {
+            // MARK: - Top Section
+            VStack(spacing: Theme.Spacing.sm) {
+                Text(plannedSession.title)
+                    .font(Theme.Typography.headline)
+                    .foregroundStyle(.textPrimary)
+
+                Text("\(viewModel.exercises.count) exercises • \(plannedSession.durationSeconds / 60) min")
+                    .font(Theme.Typography.caption)
+                    .foregroundStyle(.textSecondary)
+            }
+            .padding(.top, Theme.Spacing.xl)
+
+            // MARK: - Exercise Preview
+            ScrollView(.vertical, showsIndicators: false) {
+                if let exercise = viewModel.currentExercise {
+                    ExerciseDisplayView(
+                        exercise: exercise,
+                        timeRemaining: viewModel.timeRemaining
+                    )
+                    .padding(.vertical, Theme.Spacing.md)
+                }
+            }
+            .frame(maxHeight: .infinity)
+
+            // MARK: - Timer (Static) and Play Button
+            VStack(spacing: Theme.Spacing.lg) {
+                // Static timer showing initial time
+                TimerView(
+                    timeRemaining: viewModel.timeRemaining,
+                    totalTime: viewModel.currentExercise?.durationSeconds ?? 0
+                )
+
+                Text("Ready")
+                    .font(Theme.Typography.subtitle)
+                    .foregroundStyle(.textSecondary)
+
+                // Play button
+                Button {
+                    viewModel.start()
+                } label: {
+                    Image(systemName: "play.circle.fill")
+                        .font(.system(size: 80))
+                        .foregroundStyle(.appTeal)
+                }
+                .accessibilityLabel("Start session")
+            }
+            .padding(.bottom, Theme.Spacing.xl)
         }
     }
 

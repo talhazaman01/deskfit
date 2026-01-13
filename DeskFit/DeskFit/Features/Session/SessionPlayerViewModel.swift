@@ -1,6 +1,14 @@
 import Foundation
 import Combine
 
+/// Playback state machine for session lifecycle
+enum PlaybackState: Equatable {
+    case ready      // Session loaded but not started - waiting for user to press Play
+    case playing    // Timer actively counting down
+    case paused     // User paused the session
+    case finished   // All exercises completed
+}
+
 @MainActor
 class SessionPlayerViewModel: ObservableObject {
     let session: PlannedSession
@@ -8,11 +16,31 @@ class SessionPlayerViewModel: ObservableObject {
 
     @Published var currentExerciseIndex = 0
     @Published var timeRemaining: Int = 0
-    @Published var isPaused = false
-    @Published var isComplete = false
+    @Published private(set) var playbackState: PlaybackState = .ready
+
+    /// Tracks whether session_started event has been fired (only fires once per session)
+    private var hasFiredSessionStartedEvent = false
 
     private var timer: Timer?
     private var pauseStartTime: Date?
+
+    // MARK: - Computed Properties for backward compatibility
+
+    var isPaused: Bool {
+        playbackState == .paused
+    }
+
+    var isComplete: Bool {
+        playbackState == .finished
+    }
+
+    var isReady: Bool {
+        playbackState == .ready
+    }
+
+    var isPlaying: Bool {
+        playbackState == .playing
+    }
 
     var currentExercise: Exercise? {
         guard currentExerciseIndex < exercises.count else { return nil }
@@ -33,15 +61,44 @@ class SessionPlayerViewModel: ObservableObject {
     init(session: PlannedSession) {
         self.session = session
         self.exercises = ExerciseService.shared.getExercises(ids: session.exerciseIds)
+        // Pre-load first exercise duration so UI shows correct time in ready state
+        if let firstExercise = exercises.first {
+            self.timeRemaining = firstExercise.durationSeconds
+        }
     }
 
+    /// Called when user taps Play button. Transitions from ready/paused to playing.
     func start() {
         guard !exercises.isEmpty else {
-            isComplete = true
+            playbackState = .finished
             return
         }
 
-        timeRemaining = exercises[0].durationSeconds
+        // Only transition from ready or paused states
+        guard playbackState == .ready || playbackState == .paused else { return }
+
+        // Fire session_started analytics only on first play
+        if !hasFiredSessionStartedEvent {
+            hasFiredSessionStartedEvent = true
+            AnalyticsService.shared.track(.sessionStarted(
+                sessionId: session.id.uuidString,
+                sessionType: session.type.rawValue,
+                durationSeconds: session.durationSeconds,
+                exerciseCount: session.exerciseIds.count
+            ))
+        }
+
+        // If resuming from pause, track it
+        if playbackState == .paused, let pauseStart = pauseStartTime {
+            let pauseDuration = Int(Date().timeIntervalSince(pauseStart))
+            AnalyticsService.shared.track(.sessionResumed(
+                sessionId: session.id.uuidString,
+                pauseDurationSeconds: pauseDuration
+            ))
+            pauseStartTime = nil
+        }
+
+        playbackState = .playing
         HapticsService.shared.exerciseStart()
         startTimer()
     }
@@ -52,9 +109,12 @@ class SessionPlayerViewModel: ObservableObject {
     }
 
     func pause() {
-        isPaused = true
+        guard playbackState == .playing else { return }
+
+        playbackState = .paused
         pauseStartTime = Date()
         timer?.invalidate()
+        timer = nil
 
         AnalyticsService.shared.track(.sessionPaused(
             sessionId: session.id.uuidString,
@@ -62,18 +122,9 @@ class SessionPlayerViewModel: ObservableObject {
         ))
     }
 
+    /// Resume is now handled by start() - keeping for API compatibility
     func resume() {
-        if let pauseStart = pauseStartTime {
-            let pauseDuration = Int(Date().timeIntervalSince(pauseStart))
-            AnalyticsService.shared.track(.sessionResumed(
-                sessionId: session.id.uuidString,
-                pauseDurationSeconds: pauseDuration
-            ))
-        }
-
-        isPaused = false
-        pauseStartTime = nil
-        startTimer()
+        start()
     }
 
     private func startTimer() {
@@ -86,7 +137,8 @@ class SessionPlayerViewModel: ObservableObject {
     }
 
     private func tick() {
-        guard !isPaused else { return }
+        // Only tick when actively playing
+        guard playbackState == .playing else { return }
 
         timeRemaining -= 1
 
@@ -120,11 +172,14 @@ class SessionPlayerViewModel: ObservableObject {
         currentExerciseIndex += 1
 
         if currentExerciseIndex >= exercises.count {
-            isComplete = true
+            playbackState = .finished
         } else {
             timeRemaining = exercises[currentExerciseIndex].durationSeconds
             HapticsService.shared.exerciseStart()
-            startTimer()
+            // Only restart timer if we were playing
+            if playbackState == .playing {
+                startTimer()
+            }
         }
     }
 
@@ -147,7 +202,8 @@ class SessionPlayerViewModel: ObservableObject {
 
         if currentExerciseIndex >= exercises.count {
             timer?.invalidate()
-            isComplete = true
+            timer = nil
+            playbackState = .finished
         } else {
             timeRemaining = exercises[currentExerciseIndex].durationSeconds
             HapticsService.shared.exerciseStart()
