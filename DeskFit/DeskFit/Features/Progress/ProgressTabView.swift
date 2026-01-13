@@ -49,7 +49,16 @@ struct ProgressTabView: View {
         .navigationBarTitleDisplayMode(.large)
         .onAppear {
             AnalyticsService.shared.track(.progressViewed)
+            // Force refresh summary when tab appears
             progressStore.updateSummary()
+
+            #if DEBUG
+            print("ProgressTabView: onAppear")
+            print("  - hasEnoughData: \(summary.hasEnoughData)")
+            print("  - weeklyAverage: \(summary.weeklyAverageScore)")
+            print("  - sessionsThisWeek: \(summary.weeklySessionsCompleted)")
+            print("  - activeDays: \(summary.last7Days.filter { $0.hasActivity }.count)")
+            #endif
         }
     }
 

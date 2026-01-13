@@ -33,8 +33,12 @@ final class ProgressStore: ObservableObject {
     // MARK: - Public API
 
     /// Save or update a daily score entry
+    /// Automatically notifies SwiftUI observers and persists to disk
     func saveEntry(_ entry: DailyScoreEntry) {
         let entryDate = Calendar.current.startOfDay(for: entry.date)
+
+        // Notify observers that state is about to change
+        objectWillChange.send()
 
         // Remove existing entry for the same date
         entries.removeAll { Calendar.current.isDate($0.date, inSameDayAs: entryDate) }
@@ -51,6 +55,7 @@ final class ProgressStore: ObservableObject {
 
         #if DEBUG
         print("ProgressStore: Saved entry for \(entry.displayDate) with score \(entry.score)")
+        print("  - Total entries after save: \(entries.count)")
         #endif
     }
 
@@ -107,12 +112,17 @@ final class ProgressStore: ObservableObject {
     // MARK: - Session Recording Integration
 
     /// Record a completed session and update today's score
+    /// This method explicitly notifies SwiftUI observers to ensure UI refresh
     func recordSessionCompletion(
         durationSeconds: Int,
         focusAreas: [String],
         profile: OnboardingProfileSnapshot?,
         currentStreak: Int
     ) {
+        #if DEBUG
+        print("ProgressStore: recordSessionCompletion called - duration=\(durationSeconds)s, focusAreas=\(focusAreas)")
+        #endif
+
         let today = Date()
         let sessionTime = ScoreEngine.shared.sessionTimeCategory(for: today)
 
@@ -140,6 +150,10 @@ final class ProgressStore: ObservableObject {
             currentStreak: currentStreak
         )
 
+        // Explicitly notify observers BEFORE making changes
+        // This ensures SwiftUI picks up the change
+        objectWillChange.send()
+
         saveEntry(newEntry)
 
         // Track progress update analytics
@@ -150,14 +164,24 @@ final class ProgressStore: ObservableObject {
         ))
 
         #if DEBUG
-        print("ProgressStore: Progress updated - score=\(newEntry.score), weeklyAvg=\(currentSummary.weeklyAverageScore)")
+        print("ProgressStore: Session recorded successfully")
+        print("  - Today's score: \(newEntry.score)")
+        print("  - Sessions today: \(newEntry.sessionsCompleted)")
+        print("  - Weekly average: \(currentSummary.weeklyAverageScore)")
+        print("  - Total stored entries: \(entries.count)")
+        print("  - Last 7 days with activity: \(currentSummary.last7Days.filter { $0.hasActivity }.count)")
+        print("  - hasEnoughData: \(currentSummary.hasEnoughData)")
         #endif
     }
 
     // MARK: - Summary Generation
 
     /// Update the current progress summary
+    /// Called automatically after saving entries, but can also be called manually
     func updateSummary() {
+        // Notify observers before updating
+        objectWillChange.send()
+
         let last7Days = entries(forLastDays: 7)
 
         // Calculate week start (Monday)

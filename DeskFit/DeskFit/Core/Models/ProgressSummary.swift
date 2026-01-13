@@ -29,8 +29,9 @@ struct ProgressSummary: Codable, Sendable {
     // MARK: - Computed Properties
 
     /// Whether there's enough data to show meaningful progress
+    /// Shows progress UI if user has completed at least 1 session (any day with activity)
     var hasEnoughData: Bool {
-        last7Days.filter { $0.hasActivity }.count >= 2
+        last7Days.contains { $0.hasActivity }
     }
 
     /// Days with activity this week

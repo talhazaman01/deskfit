@@ -9,6 +9,7 @@ struct SessionPlayerView: View {
 
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var progressStore: ProgressStore
     @Query private var profiles: [UserProfile]
     @Query private var weeklyPlans: [WeeklyPlan]
 
@@ -237,6 +238,7 @@ struct SessionPlayerView: View {
 
         // Record to ProgressStore for Progress tab tracking
         // IMPORTANT: Do this synchronously BEFORE dismissing to ensure Progress tab updates
+        // Using injected environmentObject to ensure SwiftUI observes changes properly
         let snapshot = OnboardingProfileSnapshot.from(profile: profile)
         let exercises = ExerciseService.shared.getAllExercises()
         let sessionExercises = plannedSession.exerciseIds.compactMap { id in
@@ -244,7 +246,7 @@ struct SessionPlayerView: View {
         }
         let focusAreas = Array(Set(sessionExercises.flatMap { $0.focusAreas }))
 
-        ProgressStore.shared.recordSessionCompletion(
+        progressStore.recordSessionCompletion(
             durationSeconds: plannedSession.durationSeconds,
             focusAreas: focusAreas,
             profile: snapshot,
