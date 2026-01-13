@@ -314,12 +314,13 @@ struct MainTabView: View {
     }
 
     private func configureTabBarAppearance() {
-        // Tab Bar Appearance - uses AppTheme tokens for light/dark mode support
+        // Tab Bar Appearance - uses AppTheme tokens for premium teal theme
         let tabBarAppearance = UITabBarAppearance()
         tabBarAppearance.configureWithOpaqueBackground()
-        tabBarAppearance.backgroundColor = AppTheme.appBackgroundUI
+        tabBarAppearance.backgroundColor = AppTheme.tabBarBgUI
 
         // Configure item colors using adaptive theme tokens
+        // Selected uses accent teal for visibility, unselected uses secondary text
         let normalAttributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: AppTheme.tabBarUnselectedUI
         ]
@@ -335,7 +336,7 @@ struct MainTabView: View {
         UITabBar.appearance().standardAppearance = tabBarAppearance
         UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
 
-        // Navigation Bar Appearance - uses AppTheme tokens
+        // Navigation Bar Appearance - uses AppTheme tokens for premium teal theme
         let navBarAppearance = UINavigationBarAppearance()
         navBarAppearance.configureWithOpaqueBackground()
         navBarAppearance.backgroundColor = AppTheme.appBackgroundUI

@@ -1,7 +1,7 @@
 import SwiftUI
 
 // MARK: - Theme Preview Gallery
-// Visual QA tool to verify theme tokens work correctly in both Light and Dark modes
+// Visual QA tool to verify premium teal theme tokens in both Light and Dark modes
 
 struct ThemePreviewGallery: View {
     var body: some View {
@@ -135,7 +135,7 @@ struct ThemePreviewGallery: View {
             }
 
             // Contrast note
-            Text("Selection: Celeste fill + Navy stroke (light) / Teal stroke (dark)")
+            Text("Selection: Accent teal fill (20%) + Teal stroke (2px) in both modes")
                 .font(Theme.Typography.caption)
                 .foregroundStyle(AppTheme.textTertiary)
         }

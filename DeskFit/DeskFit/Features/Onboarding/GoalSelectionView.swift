@@ -42,6 +42,22 @@ struct GoalSelectionView: View {
     }
 }
 
-#Preview {
+// MARK: - Previews
+
+#Preview("Goal Selection - Dark") {
     GoalSelectionView(selectedGoal: .constant(.reduceStiffness))
+        .deskFitScreenBackground()
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Goal Selection - Light") {
+    GoalSelectionView(selectedGoal: .constant(.improvePosture))
+        .deskFitScreenBackground()
+        .preferredColorScheme(.light)
+}
+
+#Preview("Goal Selection - Unselected") {
+    GoalSelectionView(selectedGoal: .constant(nil))
+        .deskFitScreenBackground()
+        .preferredColorScheme(.dark)
 }

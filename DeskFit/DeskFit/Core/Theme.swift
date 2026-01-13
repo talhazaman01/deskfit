@@ -8,17 +8,23 @@ import UIKit
 enum ThemeColor {
     // MARK: - Core Colors (Now Dynamic via AppTheme)
 
-    /// Brand Celeste highlight color
+    /// Brand highlight color - now accent teal
     static let brandCeleste = AppTheme.brandCeleste
 
-    /// App background - Celeste tint (light) / Deep navy (dark)
+    /// App background - Deep teal (dark) / Light teal tint (light)
     static let background = AppTheme.appBackground
 
     /// Card/surface background
     static let surface = AppTheme.cardBackground
 
-    /// Primary accent - teal
+    /// Elevated surface for modals/sheets
+    static let surfaceElevated = AppTheme.surfaceElevated
+
+    /// Primary accent - bright teal
     static let accent = AppTheme.accent
+
+    /// Muted accent
+    static let accentMuted = AppTheme.accentMuted
 
     /// Primary text color (adapts to mode)
     static let textPrimary = AppTheme.textPrimary
@@ -44,10 +50,14 @@ enum ThemeColor {
     /// Border color for selected cards
     static let borderSelected = AppTheme.selectionStroke
 
+    /// Default border
+    static let border = AppTheme.border
+
     // MARK: - UIColor Versions (for UIKit APIs)
 
     static var backgroundUI: UIColor { AppTheme.appBackgroundUI }
     static var surfaceUI: UIColor { AppTheme.cardBackgroundUI }
+    static var surfaceElevatedUI: UIColor { AppTheme.surfaceElevatedUI }
     static var accentUI: UIColor { AppTheme.accentUI }
     static var textPrimaryUI: UIColor { AppTheme.textPrimaryUI }
 }
@@ -162,33 +172,6 @@ extension View {
                         isSelected ? AppTheme.selectionStroke : AppTheme.strokeSubtle,
                         lineWidth: isSelected ? 2 : 1
                     )
-            )
-    }
-
-    /// Apply DeskFit screen background (adapts to light/dark mode)
-    /// Uses ZStack pattern to guarantee edge-to-edge coverage on all devices
-    func deskFitScreenBackground() -> some View {
-        ZStack {
-            AppTheme.appBackground
-                .ignoresSafeArea()
-            self
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
-    }
-
-    /// Apply DeskFit card style (surface background, rounded corners, subtle shadow)
-    func deskFitCardStyle() -> some View {
-        self
-            .padding(Theme.Spacing.lg)
-            .background(
-                RoundedRectangle(cornerRadius: Theme.Radius.large)
-                    .fill(AppTheme.cardBackground)
-            )
-            .shadow(
-                color: AppTheme.shadowColor,
-                radius: AppTheme.shadowRadius,
-                x: 0,
-                y: AppTheme.shadowY
             )
     }
 }

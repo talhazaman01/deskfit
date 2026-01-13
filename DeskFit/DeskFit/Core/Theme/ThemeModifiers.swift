@@ -34,7 +34,7 @@ struct DeskFitCardStyleModifier: ViewModifier {
     }
 }
 
-// MARK: - Selectable Row Modifier
+// MARK: - Selectable Row Modifier (High Contrast Selection)
 
 struct DeskFitSelectableRowModifier: ViewModifier {
     let isSelected: Bool
@@ -62,17 +62,32 @@ struct DeskFitSelectableRowModifier: ViewModifier {
 // MARK: - View Extensions
 
 extension View {
-    /// Apply Celeste-theme screen background (adapts to light/dark mode)
+    /// Apply DeskFit screen background (adapts to light/dark mode)
+    func deskFitScreenBackground() -> some View {
+        modifier(DeskFitScreenBackgroundModifier())
+    }
+
+    /// Legacy alias for screen background
     func celesteScreenBackground() -> some View {
         modifier(DeskFitScreenBackgroundModifier())
     }
 
     /// Apply card container style with shadow
+    func deskFitCardStyle(padding: CGFloat = Theme.Spacing.lg) -> some View {
+        modifier(DeskFitCardStyleModifier(padding: padding))
+    }
+
+    /// Legacy alias for card style
     func celesteCardStyle(padding: CGFloat = Theme.Spacing.lg) -> some View {
         modifier(DeskFitCardStyleModifier(padding: padding))
     }
 
     /// Apply selectable row/card style with selection state
+    func deskFitSelectableRow(isSelected: Bool, height: CGFloat? = nil) -> some View {
+        modifier(DeskFitSelectableRowModifier(isSelected: isSelected, height: height))
+    }
+
+    /// Legacy alias for selectable row
     func celesteSelectableRow(isSelected: Bool, height: CGFloat? = nil) -> some View {
         modifier(DeskFitSelectableRowModifier(isSelected: isSelected, height: height))
     }
@@ -80,7 +95,7 @@ extension View {
 
 // MARK: - Primary Button Style
 
-struct CelestePrimaryButtonStyle: ButtonStyle {
+struct DeskFitPrimaryButtonStyle: ButtonStyle {
     var isEnabled: Bool = true
 
     func makeBody(configuration: Configuration) -> some View {
@@ -98,9 +113,12 @@ struct CelestePrimaryButtonStyle: ButtonStyle {
     }
 }
 
+/// Legacy alias
+typealias CelestePrimaryButtonStyle = DeskFitPrimaryButtonStyle
+
 // MARK: - Secondary Button Style
 
-struct CelesteSecondaryButtonStyle: ButtonStyle {
+struct DeskFitSecondaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(Theme.Typography.button)
@@ -115,6 +133,9 @@ struct CelesteSecondaryButtonStyle: ButtonStyle {
             .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
     }
 }
+
+/// Legacy alias
+typealias CelesteSecondaryButtonStyle = DeskFitSecondaryButtonStyle
 
 // MARK: - Selection Checkmark Component
 
@@ -138,13 +159,183 @@ struct SelectionCheckmark: View {
 // MARK: - Button Style Extensions
 
 extension View {
-    /// Apply primary CTA button style (mint action background)
+    /// Apply primary CTA button style (accent teal background)
+    func deskFitPrimaryButton(isEnabled: Bool = true) -> some View {
+        self.buttonStyle(DeskFitPrimaryButtonStyle(isEnabled: isEnabled))
+    }
+
+    /// Legacy alias
     func celestePrimaryButton(isEnabled: Bool = true) -> some View {
-        self.buttonStyle(CelestePrimaryButtonStyle(isEnabled: isEnabled))
+        self.buttonStyle(DeskFitPrimaryButtonStyle(isEnabled: isEnabled))
     }
 
     /// Apply secondary outline button style
-    func celesteSecondaryButton() -> some View {
-        self.buttonStyle(CelesteSecondaryButtonStyle())
+    func deskFitSecondaryButton() -> some View {
+        self.buttonStyle(DeskFitSecondaryButtonStyle())
     }
+
+    /// Legacy alias
+    func celesteSecondaryButton() -> some View {
+        self.buttonStyle(DeskFitSecondaryButtonStyle())
+    }
+}
+
+// MARK: - Theme Preview Gallery
+
+#Preview("Theme Gallery - Dark") {
+    ScrollView {
+        VStack(spacing: 24) {
+            // Background colors
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Backgrounds")
+                    .font(Theme.Typography.headline)
+                    .foregroundStyle(AppTheme.textPrimary)
+
+                HStack(spacing: 12) {
+                    colorSwatch("App BG", AppTheme.appBackground)
+                    colorSwatch("Card", AppTheme.cardBackground)
+                    colorSwatch("Elevated", AppTheme.surfaceElevated)
+                }
+            }
+
+            // Text colors
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Text Colors")
+                    .font(Theme.Typography.headline)
+                    .foregroundStyle(AppTheme.textPrimary)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Primary Text")
+                        .foregroundStyle(AppTheme.textPrimary)
+                    Text("Secondary Text")
+                        .foregroundStyle(AppTheme.textSecondary)
+                    Text("Tertiary Text")
+                        .foregroundStyle(AppTheme.textTertiary)
+                }
+            }
+
+            // Accent colors
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Accents")
+                    .font(Theme.Typography.headline)
+                    .foregroundStyle(AppTheme.textPrimary)
+
+                HStack(spacing: 12) {
+                    colorSwatch("Accent", AppTheme.accent)
+                    colorSwatch("Muted", AppTheme.accentMuted)
+                    colorSwatch("Soft", AppTheme.accentSoft)
+                }
+            }
+
+            // Selection states
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Selection States")
+                    .font(Theme.Typography.headline)
+                    .foregroundStyle(AppTheme.textPrimary)
+
+                VStack(spacing: 12) {
+                    selectionRowPreview(isSelected: false, title: "Unselected Row")
+                    selectionRowPreview(isSelected: true, title: "Selected Row")
+                }
+            }
+
+            // Buttons
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Buttons")
+                    .font(Theme.Typography.headline)
+                    .foregroundStyle(AppTheme.textPrimary)
+
+                Button("Primary Button") {}
+                    .deskFitPrimaryButton()
+
+                Button("Disabled Button") {}
+                    .deskFitPrimaryButton(isEnabled: false)
+
+                Button("Secondary Button") {}
+                    .deskFitSecondaryButton()
+            }
+        }
+        .padding()
+    }
+    .deskFitScreenBackground()
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Theme Gallery - Light") {
+    ScrollView {
+        VStack(spacing: 24) {
+            // Background colors
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Backgrounds")
+                    .font(Theme.Typography.headline)
+                    .foregroundStyle(AppTheme.textPrimary)
+
+                HStack(spacing: 12) {
+                    colorSwatch("App BG", AppTheme.appBackground)
+                    colorSwatch("Card", AppTheme.cardBackground)
+                    colorSwatch("Elevated", AppTheme.surfaceElevated)
+                }
+            }
+
+            // Selection states
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Selection States")
+                    .font(Theme.Typography.headline)
+                    .foregroundStyle(AppTheme.textPrimary)
+
+                VStack(spacing: 12) {
+                    selectionRowPreview(isSelected: false, title: "Unselected Row")
+                    selectionRowPreview(isSelected: true, title: "Selected Row")
+                }
+            }
+
+            // Buttons
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Buttons")
+                    .font(Theme.Typography.headline)
+                    .foregroundStyle(AppTheme.textPrimary)
+
+                Button("Primary Button") {}
+                    .deskFitPrimaryButton()
+
+                Button("Secondary Button") {}
+                    .deskFitSecondaryButton()
+            }
+        }
+        .padding()
+    }
+    .deskFitScreenBackground()
+    .preferredColorScheme(.light)
+}
+
+// MARK: - Preview Helpers
+
+@ViewBuilder
+private func colorSwatch(_ name: String, _ color: Color) -> some View {
+    VStack(spacing: 4) {
+        RoundedRectangle(cornerRadius: 8)
+            .fill(color)
+            .frame(width: 60, height: 40)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(AppTheme.strokeSubtle, lineWidth: 1)
+            )
+        Text(name)
+            .font(.caption2)
+            .foregroundStyle(AppTheme.textSecondary)
+    }
+}
+
+@ViewBuilder
+private func selectionRowPreview(isSelected: Bool, title: String) -> some View {
+    HStack {
+        Text(title)
+            .font(Theme.Typography.option)
+            .foregroundStyle(AppTheme.textPrimary)
+        Spacer()
+        if isSelected {
+            SelectionCheckmark()
+        }
+    }
+    .deskFitSelectableRow(isSelected: isSelected, height: 56)
 }
