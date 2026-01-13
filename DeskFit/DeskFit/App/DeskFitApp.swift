@@ -162,7 +162,7 @@ struct RootView: View {
         .onReceive(NotificationCenter.default.publisher(for: .notificationTapped)) { notification in
             handleNotificationAction(notification)
         }
-        .preferredColorScheme(.dark)
+        // Light/Dark mode now adapts automatically via AppTheme tokens
     }
 
     private func createInitialProfile() {
@@ -314,37 +314,37 @@ struct MainTabView: View {
     }
 
     private func configureTabBarAppearance() {
-        // Tab Bar Appearance
+        // Tab Bar Appearance - uses AppTheme tokens for light/dark mode support
         let tabBarAppearance = UITabBarAppearance()
         tabBarAppearance.configureWithOpaqueBackground()
-        tabBarAppearance.backgroundColor = ThemeColor.backgroundUI
+        tabBarAppearance.backgroundColor = AppTheme.appBackgroundUI
 
-        // Configure item colors
+        // Configure item colors using adaptive theme tokens
         let normalAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: ThemeColor.textPrimaryUI.withAlphaComponent(0.6)
+            .foregroundColor: AppTheme.tabBarUnselectedUI
         ]
         let selectedAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: ThemeColor.accentUI
+            .foregroundColor: AppTheme.tabBarSelectedUI
         ]
 
-        tabBarAppearance.stackedLayoutAppearance.normal.iconColor = ThemeColor.textPrimaryUI.withAlphaComponent(0.6)
+        tabBarAppearance.stackedLayoutAppearance.normal.iconColor = AppTheme.tabBarUnselectedUI
         tabBarAppearance.stackedLayoutAppearance.normal.titleTextAttributes = normalAttributes
-        tabBarAppearance.stackedLayoutAppearance.selected.iconColor = ThemeColor.accentUI
+        tabBarAppearance.stackedLayoutAppearance.selected.iconColor = AppTheme.tabBarSelectedUI
         tabBarAppearance.stackedLayoutAppearance.selected.titleTextAttributes = selectedAttributes
 
         UITabBar.appearance().standardAppearance = tabBarAppearance
         UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
 
-        // Navigation Bar Appearance
+        // Navigation Bar Appearance - uses AppTheme tokens
         let navBarAppearance = UINavigationBarAppearance()
         navBarAppearance.configureWithOpaqueBackground()
-        navBarAppearance.backgroundColor = ThemeColor.backgroundUI
-        navBarAppearance.titleTextAttributes = [.foregroundColor: ThemeColor.textPrimaryUI]
-        navBarAppearance.largeTitleTextAttributes = [.foregroundColor: ThemeColor.textPrimaryUI]
+        navBarAppearance.backgroundColor = AppTheme.appBackgroundUI
+        navBarAppearance.titleTextAttributes = [.foregroundColor: AppTheme.textPrimaryUI]
+        navBarAppearance.largeTitleTextAttributes = [.foregroundColor: AppTheme.textPrimaryUI]
 
         UINavigationBar.appearance().standardAppearance = navBarAppearance
         UINavigationBar.appearance().scrollEdgeAppearance = navBarAppearance
         UINavigationBar.appearance().compactAppearance = navBarAppearance
-        UINavigationBar.appearance().tintColor = ThemeColor.accentUI
+        UINavigationBar.appearance().tintColor = AppTheme.accentUI
     }
 }

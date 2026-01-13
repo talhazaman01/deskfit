@@ -491,12 +491,12 @@ struct ProBadge: View {
     var body: some View {
         Text("PRO")
             .font(.system(size: 10, weight: .bold))
-            .foregroundStyle(.white)
+            .foregroundStyle(AppTheme.textOnAccent)
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
             .background(
                 Capsule()
-                    .fill(Color.appTeal)
+                    .fill(AppTheme.accent)
             )
     }
 }

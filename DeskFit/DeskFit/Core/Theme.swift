@@ -1,54 +1,55 @@
 import SwiftUI
 import UIKit
 
-// MARK: - DeskFit Theme Colors (Single Source of Truth)
+// MARK: - DeskFit Theme Colors (Bridging Layer)
+// ThemeColor now bridges to AppTheme tokens for backward compatibility.
+// All new code should use AppTheme directly.
 
 enum ThemeColor {
-    // Core colors from Assets
-    static let brandCeleste = Color("Theme/BrandCeleste")
-    static let background = Color("Theme/BackgroundPrimary")
-    static let surface = Color("Theme/Surface")
-    static let accent = Color("Theme/Accent")
-    static let textPrimary = Color("Theme/TextPrimary")
-    static let textOnAccent = Color("Theme/TextOnAccent")
+    // MARK: - Core Colors (Now Dynamic via AppTheme)
 
-    // Derived colors (using opacity)
-    static let textSecondary = textPrimary.opacity(0.75)
-    static let textTertiary = textPrimary.opacity(0.55)
-    static let separator = textPrimary.opacity(0.18)
-    static let surfaceHighlight = textPrimary.opacity(0.08)
+    /// Brand Celeste highlight color
+    static let brandCeleste = AppTheme.brandCeleste
+
+    /// App background - Celeste tint (light) / Deep navy (dark)
+    static let background = AppTheme.appBackground
+
+    /// Card/surface background
+    static let surface = AppTheme.cardBackground
+
+    /// Primary accent - teal
+    static let accent = AppTheme.accent
+
+    /// Primary text color (adapts to mode)
+    static let textPrimary = AppTheme.textPrimary
+
+    /// Text on accent backgrounds
+    static let textOnAccent = AppTheme.textOnAccent
+
+    // MARK: - Derived Text Colors
+
+    static let textSecondary = AppTheme.textSecondary
+    static let textTertiary = AppTheme.textTertiary
+    static let separator = AppTheme.divider
+    static let surfaceHighlight = AppTheme.accentSoft
 
     // MARK: - Selection State Colors
-    // Uses dynamic colors that adapt to light/dark mode via UIColor
 
-    /// Card background when selected - higher contrast than unselected
-    static let cardSelectedBackground = Color(UIColor { traits in
-        if traits.userInterfaceStyle == .dark {
-            // Dark mode: accent with 18% opacity for visible tint
-            return UIColor(accent.opacity(0.18))
-        } else {
-            // Light mode: accent with 12% opacity
-            return UIColor(accent.opacity(0.12))
-        }
-    })
+    /// Card background when selected
+    static let cardSelectedBackground = AppTheme.selectionFill
 
-    /// Border color for unselected cards - subtle
-    static let borderDefault = Color(UIColor { traits in
-        if traits.userInterfaceStyle == .dark {
-            return UIColor(textPrimary.opacity(0.15))
-        } else {
-            return UIColor(Color.black.opacity(0.12))
-        }
-    })
+    /// Border color for unselected cards
+    static let borderDefault = AppTheme.strokeSubtle
 
-    /// Border color for selected cards - prominent
-    static let borderSelected = accent
+    /// Border color for selected cards
+    static let borderSelected = AppTheme.selectionStroke
 
-    // UIColor versions for UIKit configuration
-    static var backgroundUI: UIColor { UIColor(background) }
-    static var surfaceUI: UIColor { UIColor(surface) }
-    static var accentUI: UIColor { UIColor(accent) }
-    static var textPrimaryUI: UIColor { UIColor(textPrimary) }
+    // MARK: - UIColor Versions (for UIKit APIs)
+
+    static var backgroundUI: UIColor { AppTheme.appBackgroundUI }
+    static var surfaceUI: UIColor { AppTheme.cardBackgroundUI }
+    static var accentUI: UIColor { AppTheme.accentUI }
+    static var textPrimaryUI: UIColor { AppTheme.textPrimaryUI }
 }
 
 // MARK: - DeskFit Theme Constants
@@ -116,8 +117,8 @@ enum Theme {
     // MARK: - Shadows
 
     enum Shadow {
-        static let card = SwiftUI.Color.black.opacity(0.05)
-        static let cardRadius: CGFloat = 8
+        static let card = AppTheme.shadowColor
+        static let cardRadius: CGFloat = AppTheme.shadowRadius
     }
 
     // MARK: - Animation
@@ -153,22 +154,22 @@ extension View {
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                    .fill(isSelected ? ThemeColor.cardSelectedBackground : ThemeColor.surface)
+                    .fill(isSelected ? AppTheme.selectionFill : AppTheme.cardBackground)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.Radius.medium)
                     .strokeBorder(
-                        isSelected ? ThemeColor.borderSelected : ThemeColor.borderDefault,
+                        isSelected ? AppTheme.selectionStroke : AppTheme.strokeSubtle,
                         lineWidth: isSelected ? 2 : 1
                     )
             )
     }
 
-    /// Apply DeskFit screen background (dark blue-teal, ignores safe area)
+    /// Apply DeskFit screen background (adapts to light/dark mode)
     /// Uses ZStack pattern to guarantee edge-to-edge coverage on all devices
     func deskFitScreenBackground() -> some View {
         ZStack {
-            ThemeColor.background
+            AppTheme.appBackground
                 .ignoresSafeArea()
             self
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -181,9 +182,14 @@ extension View {
             .padding(Theme.Spacing.lg)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.large)
-                    .fill(ThemeColor.surface)
+                    .fill(AppTheme.cardBackground)
             )
-            .shadow(color: Color.black.opacity(0.3), radius: 8, x: 0, y: 4)
+            .shadow(
+                color: AppTheme.shadowColor,
+                radius: AppTheme.shadowRadius,
+                x: 0,
+                y: AppTheme.shadowY
+            )
     }
 }
 
@@ -195,12 +201,12 @@ struct PrimaryCTAButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(Theme.Typography.button)
-            .foregroundStyle(isEnabled ? ThemeColor.textOnAccent : ThemeColor.textPrimary.opacity(0.5))
+            .foregroundStyle(isEnabled ? AppTheme.primaryActionFg : AppTheme.disabledFg)
             .frame(maxWidth: .infinity)
             .frame(height: Theme.Height.primaryButton)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.pill)
-                    .fill(isEnabled ? ThemeColor.accent : ThemeColor.surface)
+                    .fill(isEnabled ? AppTheme.primaryActionBg : AppTheme.disabledBg)
             )
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
@@ -213,12 +219,12 @@ struct SecondaryCTAButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(Theme.Typography.button)
-            .foregroundStyle(ThemeColor.textPrimary)
+            .foregroundStyle(AppTheme.secondaryActionFg)
             .frame(maxWidth: .infinity)
             .frame(height: Theme.Height.primaryButton)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.pill)
-                    .stroke(ThemeColor.separator, lineWidth: 1)
+                    .stroke(AppTheme.secondaryActionStroke, lineWidth: 1.5)
             )
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .animation(.easeOut(duration: 0.15), value: configuration.isPressed)

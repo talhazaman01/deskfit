@@ -188,12 +188,12 @@ private struct DayPlanCard: View {
     private var dayBadge: some View {
         ZStack {
             Circle()
-                .fill(dayPlan.dayIndex == 0 ? Color.appTeal : Color.appTeal.opacity(0.15))
+                .fill(dayPlan.dayIndex == 0 ? AppTheme.accent : AppTheme.accent.opacity(0.15))
                 .frame(width: 44, height: 44)
 
             Text("\(dayNumber)")
                 .font(.system(size: 18, weight: .bold, design: .rounded))
-                .foregroundStyle(dayPlan.dayIndex == 0 ? .white : .appTeal)
+                .foregroundStyle(dayPlan.dayIndex == 0 ? AppTheme.textOnAccent : AppTheme.accent)
         }
     }
 }

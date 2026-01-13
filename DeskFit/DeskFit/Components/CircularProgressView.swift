@@ -4,8 +4,8 @@ struct CircularProgressView: View {
     let progress: Double
     var lineWidth: CGFloat = 8
     var size: CGFloat = 100
-    var backgroundColor: Color = Color.gray.opacity(0.2)
-    var foregroundColor: Color = .brandPrimary
+    var backgroundColor: Color = AppTheme.progressRingTrack
+    var foregroundColor: Color = AppTheme.progressRingFill
 
     var body: some View {
         ZStack {
@@ -73,16 +73,17 @@ struct StreakBadge: View {
         HStack(spacing: 4) {
             if showFlame {
                 Image(systemName: "flame.fill")
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(Color.streakFlame)
             }
             Text("\(count)")
                 .fontWeight(.bold)
+                .foregroundStyle(AppTheme.textPrimary)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
         .background(
             Capsule()
-                .fill(Color.orange.opacity(0.15))
+                .fill(Color.streakFlame.opacity(0.15))
         )
     }
 }

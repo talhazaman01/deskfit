@@ -126,7 +126,7 @@ struct PersonalizedAnalysisView: View {
             Text(report.score.category.displayName)
                 .font(Theme.Typography.caption)
                 .fontWeight(.semibold)
-                .foregroundStyle(.white)
+                .foregroundStyle(AppTheme.textOnAccent)
                 .padding(.horizontal, Theme.Spacing.md)
                 .padding(.vertical, Theme.Spacing.xs)
                 .background(

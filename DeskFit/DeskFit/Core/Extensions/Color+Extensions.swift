@@ -1,81 +1,82 @@
 import SwiftUI
 
 // MARK: - DeskFit Design System (Celeste Theme)
+// Color extensions that bridge to AppTheme tokens for backward compatibility.
 
 extension Color {
-    // MARK: - Core Palette (From ThemeColor)
+    // MARK: - Core Palette (From AppTheme)
 
-    /// Dark blue-teal app background
-    static let appBackground = ThemeColor.background
+    /// App background - adapts to light/dark mode
+    static let appBackground = AppTheme.appBackground
 
     /// Brand highlight color - Celeste
-    static let brandCeleste = ThemeColor.brandCeleste
+    static let brandCeleste = AppTheme.brandCeleste
 
-    /// Primary accent color - cyan
-    static let appTeal = ThemeColor.accent
+    /// Primary accent color - teal
+    static let appTeal = AppTheme.accent
 
-    /// Pure black for compatibility (rarely used)
+    /// Pure black for compatibility
     static let appBlack = Color.black
 
     /// Warm coral for accents, streaks, celebrations
-    static let appCoral = Color(hex: "E07A5F")
+    static let appCoral = BrandColors.coral
 
     // MARK: - Text Colors
 
-    static let textPrimary = ThemeColor.textPrimary
-    static let textSecondary = ThemeColor.textSecondary
-    static let textTertiary = ThemeColor.textTertiary
-    static let textOnDark = ThemeColor.textPrimary
-    static let textOnAccent = ThemeColor.textOnAccent
+    static let textPrimary = AppTheme.textPrimary
+    static let textSecondary = AppTheme.textSecondary
+    static let textTertiary = AppTheme.textTertiary
+    static let textOnDark = BrandColors.white
+    static let textOnAccent = AppTheme.textOnAccent
 
     // MARK: - Card & Surface Colors
 
     /// Surface color for cards/panels
-    static let cardBackground = ThemeColor.surface
+    static let cardBackground = AppTheme.cardBackground
 
-    /// Selected state background - improved contrast
-    static let cardSelected = ThemeColor.cardSelectedBackground
+    /// Selected state background
+    static let cardSelected = AppTheme.selectionFill
 
-    /// Selected state with even higher visibility (for chips/badges)
-    static let cardSelectedStrong = ThemeColor.accent.opacity(0.25)
+    /// Selected state with higher visibility (for chips/badges)
+    static let cardSelectedStrong = AppTheme.accentSoft
 
     // MARK: - Border Colors
 
     /// Default border for unselected cards - subtle
-    static let borderDefault = ThemeColor.borderDefault
+    static let borderDefault = AppTheme.strokeSubtle
 
-    /// Selected border - prominent accent color
-    static let borderSelected = ThemeColor.borderSelected
+    /// Selected border - prominent
+    static let borderSelected = AppTheme.selectionStroke
 
     // MARK: - Button Colors
 
-    /// Primary CTA - accent color
-    static let buttonPrimary = ThemeColor.accent
+    /// Primary CTA - mint action
+    static let buttonPrimary = AppTheme.primaryActionBg
 
-    /// Enabled continue button - accent
-    static let buttonEnabled = ThemeColor.accent
+    /// Enabled continue button
+    static let buttonEnabled = AppTheme.primaryActionBg
 
     /// Disabled button state
-    static let buttonDisabled = ThemeColor.surface
+    static let buttonDisabled = AppTheme.disabledBg
 
     // MARK: - Status Colors
 
-    static let success = ThemeColor.accent
-    static let warning = Color(hex: "E07A5F")  // Coral
-    static let streakFlame = Color(hex: "F4A261")  // Warm orange
+    static let success = AppTheme.success
+    static let warning = AppTheme.warning
+    static let streakFlame = AppTheme.streakFlame
 
     // MARK: - Progress & Dividers
 
-    static let progressBackground = ThemeColor.surface
-    static let progressFill = ThemeColor.accent
-    static let divider = ThemeColor.separator
+    static let progressBackground = AppTheme.progressRingTrack
+    static let progressFill = AppTheme.progressRingFill
+    static let divider = AppTheme.divider
 
     // MARK: - Legacy Compatibility
 
-    static let brandPrimary = ThemeColor.accent
+    static let brandPrimary = AppTheme.accent
     static let brandSecondary = appCoral
-    static let secondaryBackground = ThemeColor.surface
-    static let accent = ThemeColor.accent
+    static let secondaryBackground = AppTheme.cardBackground
+    static let accent = AppTheme.accent
 }
 
 // MARK: - ShapeStyle Extension for foregroundStyle() support

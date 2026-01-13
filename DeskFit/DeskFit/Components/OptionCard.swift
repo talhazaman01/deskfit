@@ -19,7 +19,7 @@ struct OptionCard: View {
                 if let icon = icon {
                     Image(systemName: icon)
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundStyle(isSelected ? .appTeal : .textPrimary)
+                        .foregroundStyle(isSelected ? AppTheme.selectionCheck : AppTheme.textPrimary)
                         .frame(width: 24)
                 }
 
@@ -27,12 +27,12 @@ struct OptionCard: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(Theme.Typography.option)
-                        .foregroundStyle(.textPrimary)
+                        .foregroundStyle(AppTheme.textPrimary)
 
                     if let subtitle = subtitle {
                         Text(subtitle)
                             .font(Theme.Typography.optionDescription)
-                            .foregroundStyle(.textSecondary)
+                            .foregroundStyle(AppTheme.textSecondary)
                     }
                 }
 
@@ -40,16 +40,8 @@ struct OptionCard: View {
 
                 // Checkmark indicator for selected state
                 if isSelected {
-                    ZStack {
-                        Circle()
-                            .fill(Color.appTeal)
-                            .frame(width: 24, height: 24)
-
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 12, weight: .bold))
-                            .foregroundStyle(.textOnAccent)
-                    }
-                    .transition(.scale.combined(with: .opacity))
+                    SelectionCheckmark()
+                        .transition(.scale.combined(with: .opacity))
                 }
             }
             .padding(.horizontal, Theme.Spacing.lg)
@@ -57,12 +49,12 @@ struct OptionCard: View {
             .frame(height: subtitle != nil ? Theme.Height.optionCardWithDescription : Theme.Height.optionCard)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                    .fill(isSelected ? Color.cardSelected : Color.cardBackground)
+                    .fill(isSelected ? AppTheme.selectionFill : AppTheme.cardBackground)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.Radius.medium)
                     .strokeBorder(
-                        isSelected ? Color.borderSelected : Color.borderDefault,
+                        isSelected ? AppTheme.selectionStroke : AppTheme.strokeSubtle,
                         lineWidth: isSelected ? 2 : 1
                     )
             )
@@ -90,40 +82,32 @@ struct SelectionChip: View {
                     if let icon = icon {
                         Image(systemName: icon)
                             .font(.system(size: 24))
-                            .foregroundStyle(isSelected ? .appTeal : .appTeal.opacity(0.7))
+                            .foregroundStyle(isSelected ? AppTheme.selectionCheck : AppTheme.accent.opacity(0.7))
                     }
 
                     Text(title)
                         .font(Theme.Typography.option)
-                        .foregroundStyle(.textPrimary)
+                        .foregroundStyle(AppTheme.textPrimary)
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 80)
                 .background(
                     RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                        .fill(isSelected ? Color.cardSelected : Color.cardBackground)
+                        .fill(isSelected ? AppTheme.selectionFill : AppTheme.cardBackground)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: Theme.Radius.medium)
                         .strokeBorder(
-                            isSelected ? Color.borderSelected : Color.borderDefault,
+                            isSelected ? AppTheme.selectionStroke : AppTheme.strokeSubtle,
                             lineWidth: isSelected ? 2 : 1
                         )
                 )
 
                 // Selection checkmark badge
                 if isSelected {
-                    ZStack {
-                        Circle()
-                            .fill(Color.appTeal)
-                            .frame(width: 20, height: 20)
-
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 10, weight: .bold))
-                            .foregroundStyle(.textOnAccent)
-                    }
-                    .offset(x: -8, y: 8)
-                    .transition(.scale.combined(with: .opacity))
+                    SelectionCheckmark(size: 20, iconSize: 10)
+                        .offset(x: -8, y: 8)
+                        .transition(.scale.combined(with: .opacity))
                 }
             }
             .contentShape(Rectangle())
@@ -138,7 +122,7 @@ struct SelectionChip: View {
         VStack(spacing: 16) {
             Text("Option Cards")
                 .font(Theme.Typography.headline)
-                .foregroundStyle(.textPrimary)
+                .foregroundStyle(AppTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             OptionCard(title: "Unselected Option", isSelected: false) {}
@@ -158,7 +142,7 @@ struct SelectionChip: View {
 
             Text("Selection Chips")
                 .font(Theme.Typography.headline)
-                .foregroundStyle(.textPrimary)
+                .foregroundStyle(AppTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, 8)
 
