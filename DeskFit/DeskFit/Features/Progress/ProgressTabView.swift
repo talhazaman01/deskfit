@@ -44,7 +44,7 @@ struct ProgressTabView: View {
             .padding(.top, Theme.Spacing.lg)
             .padding(.bottom, Theme.Spacing.bottomArea)
         }
-        .background(Color.appBackground)
+        .deskFitScreenBackground()
         .navigationTitle("Progress")
         .navigationBarTitleDisplayMode(.large)
         .onAppear {

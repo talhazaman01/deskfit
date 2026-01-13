@@ -36,7 +36,7 @@ struct OnboardingFlowView: View {
                 completionPhase
             }
         }
-        .background(Color.appBackground)
+        .deskFitScreenBackground()
         .onAppear {
             AnalyticsService.shared.track(.onboardingStarted)
             viewModel.startTime = Date()

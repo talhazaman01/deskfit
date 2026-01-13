@@ -1,17 +1,20 @@
 import SwiftUI
 
-// MARK: - DeskFit Design System (Hybrid: Cal AI layout + Wellness colors)
+// MARK: - DeskFit Design System (Celeste Theme)
 
 extension Color {
-    // MARK: - Core Palette
+    // MARK: - Core Palette (From ThemeColor)
 
-    /// Pure white background - clean, minimalist
-    static let appBackground = Color.white
+    /// Dark blue-teal app background
+    static let appBackground = ThemeColor.background
 
-    /// Primary brand color - calming teal for wellness
-    static let appTeal = Color(hex: "2A9D8F")
+    /// Brand highlight color - Celeste
+    static let brandCeleste = ThemeColor.brandCeleste
 
-    /// Pure black for selected states and strong emphasis
+    /// Primary accent color - cyan
+    static let appTeal = ThemeColor.accent
+
+    /// Pure black for compatibility (rarely used)
     static let appBlack = Color.black
 
     /// Warm coral for accents, streaks, celebrations
@@ -19,48 +22,49 @@ extension Color {
 
     // MARK: - Text Colors
 
-    static let textPrimary = Color.black
-    static let textSecondary = Color(hex: "666666")
-    static let textTertiary = Color(hex: "999999")
-    static let textOnDark = Color.white
+    static let textPrimary = ThemeColor.textPrimary
+    static let textSecondary = ThemeColor.textSecondary
+    static let textTertiary = ThemeColor.textTertiary
+    static let textOnDark = ThemeColor.textPrimary
+    static let textOnAccent = ThemeColor.textOnAccent
 
     // MARK: - Card & Surface Colors
 
-    /// Light gray for unselected cards/options
-    static let cardBackground = Color(hex: "F5F5F5")
+    /// Surface color for cards/panels
+    static let cardBackground = ThemeColor.surface
 
-    /// Black fill for selected state (Cal AI style)
-    static let cardSelected = Color.black
+    /// Selected state - accent with transparency
+    static let cardSelected = ThemeColor.accent.opacity(0.2)
 
     // MARK: - Button Colors
 
-    /// Primary CTA - teal for wellness actions
-    static let buttonPrimary = Color(hex: "2A9D8F")
+    /// Primary CTA - accent color
+    static let buttonPrimary = ThemeColor.accent
 
-    /// Enabled continue button - black (Cal AI style)
-    static let buttonEnabled = Color.black
+    /// Enabled continue button - accent
+    static let buttonEnabled = ThemeColor.accent
 
     /// Disabled button state
-    static let buttonDisabled = Color(hex: "CCCCCC")
+    static let buttonDisabled = ThemeColor.surface
 
     // MARK: - Status Colors
 
-    static let success = Color(hex: "2A9D8F")  // Teal
+    static let success = ThemeColor.accent
     static let warning = Color(hex: "E07A5F")  // Coral
     static let streakFlame = Color(hex: "F4A261")  // Warm orange
 
     // MARK: - Progress & Dividers
 
-    static let progressBackground = Color(hex: "E5E5E5")
-    static let progressFill = Color.black
-    static let divider = Color(hex: "EEEEEE")
+    static let progressBackground = ThemeColor.surface
+    static let progressFill = ThemeColor.accent
+    static let divider = ThemeColor.separator
 
     // MARK: - Legacy Compatibility
 
-    static let brandPrimary = appTeal
+    static let brandPrimary = ThemeColor.accent
     static let brandSecondary = appCoral
-    static let secondaryBackground = cardBackground
-    static let accent = appTeal
+    static let secondaryBackground = ThemeColor.surface
+    static let accent = ThemeColor.accent
 }
 
 // MARK: - ShapeStyle Extension for foregroundStyle() support
@@ -70,11 +74,13 @@ extension ShapeStyle where Self == Color {
     static var appCoral: Color { Color.appCoral }
     static var appBlack: Color { Color.appBlack }
     static var appBackground: Color { Color.appBackground }
+    static var brandCeleste: Color { Color.brandCeleste }
 
     static var textPrimary: Color { Color.textPrimary }
     static var textSecondary: Color { Color.textSecondary }
     static var textTertiary: Color { Color.textTertiary }
     static var textOnDark: Color { Color.textOnDark }
+    static var textOnAccent: Color { Color.textOnAccent }
 
     static var cardBackground: Color { Color.cardBackground }
     static var cardSelected: Color { Color.cardSelected }

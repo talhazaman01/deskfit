@@ -46,7 +46,7 @@ struct TrainingTabView: View {
                 LibraryView()
             }
         }
-        .background(Color.appBackground)
+        .deskFitScreenBackground()
         .navigationTitle("Training")
         .navigationBarTitleDisplayMode(.large)
         .onAppear {
@@ -529,12 +529,12 @@ struct CategoryChip: View {
         Button(action: onTap) {
             Text(category.displayName)
                 .font(Theme.Typography.caption)
-                .foregroundStyle(isSelected ? .textOnDark : .textPrimary)
+                .foregroundStyle(isSelected ? .textOnAccent : .textPrimary)
                 .padding(.horizontal, Theme.Spacing.md)
                 .padding(.vertical, Theme.Spacing.sm)
                 .background(
                     Capsule()
-                        .fill(isSelected ? Color.appBlack : Color.cardBackground)
+                        .fill(isSelected ? Color.accent : Color.cardBackground)
                 )
         }
         .buttonStyle(.plain)

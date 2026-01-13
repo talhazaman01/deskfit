@@ -162,6 +162,7 @@ struct RootView: View {
         .onReceive(NotificationCenter.default.publisher(for: .notificationTapped)) { notification in
             handleNotificationAction(notification)
         }
+        .preferredColorScheme(.dark)
     }
 
     private func createInitialProfile() {
@@ -270,7 +271,7 @@ struct MainTabView: View {
                 Label(MainTab.progress.title, systemImage: MainTab.progress.icon)
             }
         }
-        .tint(.appTeal)
+        .tint(ThemeColor.accent)
         .environmentObject(progressStore)
         .onAppear {
             configureTabBarAppearance()
@@ -313,11 +314,37 @@ struct MainTabView: View {
     }
 
     private func configureTabBarAppearance() {
-        let appearance = UITabBarAppearance()
-        appearance.configureWithDefaultBackground()
-        appearance.backgroundColor = UIColor.systemBackground
+        // Tab Bar Appearance
+        let tabBarAppearance = UITabBarAppearance()
+        tabBarAppearance.configureWithOpaqueBackground()
+        tabBarAppearance.backgroundColor = ThemeColor.backgroundUI
 
-        UITabBar.appearance().standardAppearance = appearance
-        UITabBar.appearance().scrollEdgeAppearance = appearance
+        // Configure item colors
+        let normalAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: ThemeColor.textPrimaryUI.withAlphaComponent(0.6)
+        ]
+        let selectedAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: ThemeColor.accentUI
+        ]
+
+        tabBarAppearance.stackedLayoutAppearance.normal.iconColor = ThemeColor.textPrimaryUI.withAlphaComponent(0.6)
+        tabBarAppearance.stackedLayoutAppearance.normal.titleTextAttributes = normalAttributes
+        tabBarAppearance.stackedLayoutAppearance.selected.iconColor = ThemeColor.accentUI
+        tabBarAppearance.stackedLayoutAppearance.selected.titleTextAttributes = selectedAttributes
+
+        UITabBar.appearance().standardAppearance = tabBarAppearance
+        UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
+
+        // Navigation Bar Appearance
+        let navBarAppearance = UINavigationBarAppearance()
+        navBarAppearance.configureWithOpaqueBackground()
+        navBarAppearance.backgroundColor = ThemeColor.backgroundUI
+        navBarAppearance.titleTextAttributes = [.foregroundColor: ThemeColor.textPrimaryUI]
+        navBarAppearance.largeTitleTextAttributes = [.foregroundColor: ThemeColor.textPrimaryUI]
+
+        UINavigationBar.appearance().standardAppearance = navBarAppearance
+        UINavigationBar.appearance().scrollEdgeAppearance = navBarAppearance
+        UINavigationBar.appearance().compactAppearance = navBarAppearance
+        UINavigationBar.appearance().tintColor = ThemeColor.accentUI
     }
 }

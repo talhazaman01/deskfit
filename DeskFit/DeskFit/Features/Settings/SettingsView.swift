@@ -26,10 +26,10 @@ struct SettingsView: View {
                     } label: {
                         HStack {
                             Label("Upgrade to Pro", systemImage: "star.fill")
-                                .foregroundStyle(.primary)
+                                .foregroundStyle(.textPrimary)
                             Spacer()
                             Image(systemName: "chevron.right")
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(.textSecondary)
                         }
                     }
                 }
@@ -43,7 +43,7 @@ struct SettingsView: View {
                 } label: {
                     HStack {
                         Label("Restore Purchases", systemImage: "arrow.clockwise")
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(.textPrimary)
                         if isRestoringPurchases {
                             Spacer()
                             ProgressView()
@@ -90,7 +90,7 @@ struct SettingsView: View {
                             Label("Work Hours", systemImage: "clock")
                             Spacer()
                             Text(workHoursText(profile: profile))
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(.textSecondary)
                         }
                     }
 
@@ -101,7 +101,7 @@ struct SettingsView: View {
                             Label("Reminder Frequency", systemImage: "bell")
                             Spacer()
                             Text(reminderFrequencyText(profile: profile))
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(.textSecondary)
                         }
                     }
                 } header: {
@@ -117,7 +117,7 @@ struct SettingsView: View {
                             Label("Focus Areas", systemImage: "figure.flexibility")
                             Spacer()
                             Text("\(profile.focusAreas.count) selected")
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(.textSecondary)
                         }
                     }
                 } header: {
@@ -131,22 +131,22 @@ struct SettingsView: View {
                     SafetyDisclaimerView()
                 } label: {
                     Label("Safety & Disclaimer", systemImage: "heart.text.square")
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(.textPrimary)
                 }
 
                 Link(destination: URL(string: "mailto:support@deskfit.app")!) {
                     Label("Contact Support", systemImage: "envelope")
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(.textPrimary)
                 }
 
                 Link(destination: URL(string: "https://deskfit.app/privacy")!) {
                     Label("Privacy Policy", systemImage: "lock.shield")
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(.textPrimary)
                 }
 
                 Link(destination: URL(string: "https://deskfit.app/terms")!) {
                     Label("Terms of Service", systemImage: "doc.text")
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(.textPrimary)
                 }
             } header: {
                 Text("Support")
@@ -167,6 +167,8 @@ struct SettingsView: View {
                     .padding(.top, 16)
             }
         }
+        .scrollContentBackground(.hidden)
+        .deskFitScreenBackground()
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
         .alert("Reset Onboarding?", isPresented: $showResetAlert) {
@@ -263,6 +265,8 @@ struct WorkHoursEditView: View {
             DatePicker("Start Time", selection: $startTime, displayedComponents: .hourAndMinute)
             DatePicker("End Time", selection: $endTime, displayedComponents: .hourAndMinute)
         }
+        .scrollContentBackground(.hidden)
+        .deskFitScreenBackground()
         .navigationTitle("Work Hours")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -321,6 +325,8 @@ struct ReminderFrequencyEditView: View {
                 }
             }
         }
+        .scrollContentBackground(.hidden)
+        .deskFitScreenBackground()
         .navigationTitle("Reminder Frequency")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -359,6 +365,8 @@ struct FocusAreasEditView: View {
                 }
             }
         }
+        .scrollContentBackground(.hidden)
+        .deskFitScreenBackground()
         .navigationTitle("Focus Areas")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

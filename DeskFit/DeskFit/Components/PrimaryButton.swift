@@ -16,7 +16,7 @@ struct PrimaryButton: View {
             HStack(spacing: Theme.Spacing.sm) {
                 if isLoading {
                     ProgressView()
-                        .tint(.textOnDark)
+                        .tint(isEnabled ? .textOnAccent : .textTertiary)
                 } else {
                     Text(title)
                         .font(Theme.Typography.button)
@@ -28,7 +28,7 @@ struct PrimaryButton: View {
                 Capsule()
                     .fill(isEnabled ? Color.buttonEnabled : Color.buttonDisabled)
             )
-            .foregroundStyle(.textOnDark)
+            .foregroundStyle(isEnabled ? .textOnAccent : .textTertiary)
         }
         .disabled(!isEnabled || isLoading)
     }

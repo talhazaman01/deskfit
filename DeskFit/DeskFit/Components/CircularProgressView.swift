@@ -59,7 +59,7 @@ struct TimerCircleView: View {
 
                 Text("remaining")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
             }
         }
     }

@@ -71,6 +71,8 @@ struct RemindersView: View {
                 }
             }
         }
+        .scrollContentBackground(.hidden)
+        .deskFitScreenBackground()
         .navigationTitle("Reminders")
         .onAppear {
             loadFromProfile()

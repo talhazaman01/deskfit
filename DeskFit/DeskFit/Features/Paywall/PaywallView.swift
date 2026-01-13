@@ -32,7 +32,7 @@ struct PaywallView: View {
                 .padding(.horizontal, Theme.Spacing.screenHorizontal)
                 .padding(.vertical, Theme.Spacing.lg)
             }
-            .background(Color.appBackground)
+            .deskFitScreenBackground()
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -758,7 +758,7 @@ struct FreeTrialInfoModal: View {
                 }
                 .padding(.horizontal, Theme.Spacing.screenHorizontal)
             }
-            .background(Color.appBackground)
+            .deskFitScreenBackground()
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
