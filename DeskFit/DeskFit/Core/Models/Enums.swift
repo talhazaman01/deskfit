@@ -127,10 +127,11 @@ enum SubscriptionStatus: String {
 
 // MARK: - Stiffness Time (When user typically feels stiff)
 
-enum StiffnessTime: String, CaseIterable, Identifiable {
+enum StiffnessTime: String, CaseIterable, Identifiable, Codable, Hashable {
     case morning
     case midday
     case evening
+    case allDay = "all_day"
 
     var id: String { rawValue }
 
@@ -139,6 +140,7 @@ enum StiffnessTime: String, CaseIterable, Identifiable {
         case .morning: return "Morning"
         case .midday: return "Midday"
         case .evening: return "Evening"
+        case .allDay: return "All day"
         }
     }
 
@@ -147,6 +149,7 @@ enum StiffnessTime: String, CaseIterable, Identifiable {
         case .morning: return "Right after I start work"
         case .midday: return "After a few hours at my desk"
         case .evening: return "Toward the end of the day"
+        case .allDay: return "It varies throughout my workday"
         }
     }
 
@@ -155,6 +158,7 @@ enum StiffnessTime: String, CaseIterable, Identifiable {
         case .morning: return "sunrise.fill"
         case .midday: return "sun.max.fill"
         case .evening: return "sunset.fill"
+        case .allDay: return "clock.fill"
         }
     }
 
@@ -164,6 +168,7 @@ enum StiffnessTime: String, CaseIterable, Identifiable {
         case .morning: return .morning
         case .midday: return .midday
         case .evening: return .afternoon
+        case .allDay: return .morning  // Default to morning for all-day coverage
         }
     }
 
@@ -173,6 +178,34 @@ enum StiffnessTime: String, CaseIterable, Identifiable {
         case .morning: return 30      // First reminder 30 min after work start
         case .midday: return 120      // First reminder 2 hours after work start
         case .evening: return 240     // First reminder 4 hours after work start
+        case .allDay: return 60       // First reminder 1 hour after work start (balanced)
+        }
+    }
+
+    /// Individual time cases (excludes allDay) for UI ordering
+    static var individualCases: [StiffnessTime] {
+        [.morning, .midday, .evening]
+    }
+
+    /// Pure function to toggle a stiffness time with proper mutual exclusivity rules
+    /// - If tapped == .allDay: returns [.allDay] (exclusive)
+    /// - If tapped is individual time: removes .allDay if present, then toggles the tapped time
+    static func toggle(_ tapped: StiffnessTime, in current: Set<StiffnessTime>) -> Set<StiffnessTime> {
+        if tapped == .allDay {
+            // Tapping "All day" always sets selection to just [.allDay]
+            return [.allDay]
+        } else {
+            // Tapping an individual time
+            var newSet = current
+            // Remove .allDay if present (individual times are mutually exclusive with .allDay)
+            newSet.remove(.allDay)
+            // Toggle the tapped time
+            if newSet.contains(tapped) {
+                newSet.remove(tapped)
+            } else {
+                newSet.insert(tapped)
+            }
+            return newSet
         }
     }
 }

@@ -30,7 +30,7 @@ final class InsightEngineTests: XCTestCase {
     private var activePersona: OnboardingProfileSnapshot {
         OnboardingProfileSnapshot(
             goal: UserGoal.improvePosture.rawValue,
-            focusAreas: [FocusArea.shoulders.rawValue, FocusArea.core.rawValue],
+            focusAreas: [FocusArea.shoulders.rawValue, FocusArea.upperBack.rawValue],
             painAreas: [PainArea.shoulders.rawValue],
             postureIssues: [PostureIssue.roundedShoulders.rawValue],
             stiffnessTimes: [StiffnessTime.evening.rawValue],

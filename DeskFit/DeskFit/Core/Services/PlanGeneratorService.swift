@@ -134,7 +134,7 @@ class PlanGeneratorService {
         let title: String
         if stiffnessTimes.isEmpty {
             title = "Your First Reset"
-        } else if stiffnessTimes.count == StiffnessTime.allCases.count {
+        } else if stiffnessTimes.contains(.allDay) {
             // All day selected
             title = "Your Daily Reset"
         } else if stiffnessTimes.count == 1, let singleTime = stiffnessTimes.first {
@@ -146,6 +146,8 @@ class PlanGeneratorService {
                 title = "Quick Desk Reset"
             case .evening:
                 title = "End-of-Day Unwind"
+            case .allDay:
+                title = "Your Daily Reset"
             }
         } else {
             // Multiple (but not all) times selected

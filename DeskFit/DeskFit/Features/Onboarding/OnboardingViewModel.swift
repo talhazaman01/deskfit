@@ -68,9 +68,9 @@ class OnboardingViewModel: ObservableObject {
     // MARK: - Computed Properties
 
     /// Analytics value for stiffness times selection
-    /// Returns "all_day" if all 3 selected, otherwise comma-separated sorted list
+    /// Returns "all_day" if .allDay is selected, otherwise comma-separated sorted list
     var stiffnessTimesAnalyticsValue: String {
-        if selectedStiffnessTimes.count == StiffnessTime.allCases.count {
+        if selectedStiffnessTimes.contains(.allDay) {
             return "all_day"
         }
         return selectedStiffnessTimes
