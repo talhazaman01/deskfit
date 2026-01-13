@@ -136,10 +136,14 @@ extension View {
     }
 
     /// Apply DeskFit screen background (dark blue-teal, ignores safe area)
+    /// Uses ZStack pattern to guarantee edge-to-edge coverage on all devices
     func deskFitScreenBackground() -> some View {
-        self
-            .background(ThemeColor.background)
-            .background(ThemeColor.background.ignoresSafeArea())
+        ZStack {
+            ThemeColor.background
+                .ignoresSafeArea()
+            self
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
     }
 
     /// Apply DeskFit card style (surface background, rounded corners, subtle shadow)

@@ -604,13 +604,62 @@ struct ScoreFactorRow: View {
     }
 }
 
-// MARK: - Preview
+// MARK: - Previews
 
-#Preview("With Data") {
+#Preview("iPhone 15 Pro") {
     NavigationStack {
         ProgressTabView()
     }
     .environmentObject(AppState())
     .environmentObject(SubscriptionManager.shared)
+    .environmentObject(EntitlementStore.shared)
     .environmentObject(ProgressStore.shared)
+}
+
+#Preview("iPhone SE - Light") {
+    NavigationStack {
+        ProgressTabView()
+    }
+    .environmentObject(AppState())
+    .environmentObject(SubscriptionManager.shared)
+    .environmentObject(EntitlementStore.shared)
+    .environmentObject(ProgressStore.shared)
+    .previewDevice(PreviewDevice(rawValue: "iPhone SE (3rd generation)"))
+    .preferredColorScheme(.light)
+}
+
+#Preview("iPhone SE - Dark") {
+    NavigationStack {
+        ProgressTabView()
+    }
+    .environmentObject(AppState())
+    .environmentObject(SubscriptionManager.shared)
+    .environmentObject(EntitlementStore.shared)
+    .environmentObject(ProgressStore.shared)
+    .previewDevice(PreviewDevice(rawValue: "iPhone SE (3rd generation)"))
+    .preferredColorScheme(.dark)
+}
+
+#Preview("iPhone 15 Pro Max - Light") {
+    NavigationStack {
+        ProgressTabView()
+    }
+    .environmentObject(AppState())
+    .environmentObject(SubscriptionManager.shared)
+    .environmentObject(EntitlementStore.shared)
+    .environmentObject(ProgressStore.shared)
+    .previewDevice(PreviewDevice(rawValue: "iPhone 15 Pro Max"))
+    .preferredColorScheme(.light)
+}
+
+#Preview("iPhone 15 Pro Max - Dark") {
+    NavigationStack {
+        ProgressTabView()
+    }
+    .environmentObject(AppState())
+    .environmentObject(SubscriptionManager.shared)
+    .environmentObject(EntitlementStore.shared)
+    .environmentObject(ProgressStore.shared)
+    .previewDevice(PreviewDevice(rawValue: "iPhone 15 Pro Max"))
+    .preferredColorScheme(.dark)
 }
