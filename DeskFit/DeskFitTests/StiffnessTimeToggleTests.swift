@@ -33,11 +33,11 @@ struct StiffnessTimeToggleTests {
         #expect(result == [.allDay])
     }
 
-    @Test("Tapping allDay when already selected returns just allDay (idempotent)")
+    @Test("Tapping allDay when already selected unselects it (returns empty)")
     func testTapAllDayWhenAlreadySelected() {
         let current: Set<StiffnessTime> = [.allDay]
         let result = StiffnessTime.toggle(.allDay, in: current)
-        #expect(result == [.allDay])
+        #expect(result.isEmpty)
     }
 
     // MARK: - Tapping Individual Times from allDay Tests

@@ -3,11 +3,6 @@ import SwiftUI
 struct StiffnessTimeView: View {
     @Binding var selectedStiffnessTimes: Set<StiffnessTime>
 
-    /// Whether "All day" is selected
-    private var isAllDaySelected: Bool {
-        selectedStiffnessTimes.contains(.allDay)
-    }
-
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
@@ -31,7 +26,6 @@ struct StiffnessTimeView: View {
                             StiffnessTimeCard(
                                 time: time,
                                 isSelected: selectedStiffnessTimes.contains(time),
-                                isDisabled: isAllDaySelected,
                                 onTap: {
                                     selectedStiffnessTimes = StiffnessTime.toggle(time, in: selectedStiffnessTimes)
                                 }
@@ -41,8 +35,7 @@ struct StiffnessTimeView: View {
                         // "All day" option at bottom (mutually exclusive with individual times)
                         StiffnessTimeCard(
                             time: .allDay,
-                            isSelected: isAllDaySelected,
-                            isDisabled: false,
+                            isSelected: selectedStiffnessTimes.contains(.allDay),
                             onTap: {
                                 selectedStiffnessTimes = StiffnessTime.toggle(.allDay, in: selectedStiffnessTimes)
                             }
@@ -59,58 +52,27 @@ struct StiffnessTimeView: View {
 struct StiffnessTimeCard: View {
     let time: StiffnessTime
     let isSelected: Bool
-    let isDisabled: Bool
     let onTap: () -> Void
 
-    /// Computed styling based on selection and disabled state
+    /// Computed styling based on selection state
     private var iconBackgroundColor: Color {
-        if isDisabled {
-            return Color.cardBackground.opacity(0.5)
-        }
-        return isSelected ? Color.appTeal.opacity(0.2) : Color.cardBackground
+        isSelected ? Color.appTeal.opacity(0.2) : Color.cardBackground
     }
 
     private var iconForegroundColor: Color {
-        if isDisabled {
-            return .textSecondary.opacity(0.4)
-        }
-        return isSelected ? .appTeal : .textSecondary
-    }
-
-    private var titleColor: Color {
-        if isDisabled {
-            return .textPrimary.opacity(0.4)
-        }
-        return .textPrimary
-    }
-
-    private var subtitleColor: Color {
-        if isDisabled {
-            return .textSecondary.opacity(0.4)
-        }
-        return .textSecondary
+        isSelected ? .appTeal : .textSecondary
     }
 
     private var borderColor: Color {
-        if isDisabled {
-            return Color.clear
-        }
-        return isSelected ? Color.appTeal : Color.borderDefault
+        isSelected ? Color.appTeal : Color.borderDefault
     }
 
     private var checkmarkColor: Color {
-        if isDisabled {
-            return .textSecondary.opacity(0.3)
-        }
-        return isSelected ? .appTeal : .textSecondary
+        isSelected ? .appTeal : .textSecondary
     }
 
     var body: some View {
-        Button(action: {
-            if !isDisabled {
-                onTap()
-            }
-        }) {
+        Button(action: onTap) {
             HStack(spacing: Theme.Spacing.lg) {
                 // Icon
                 ZStack {
@@ -127,11 +89,11 @@ struct StiffnessTimeCard: View {
                 VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
                     Text(time.displayName)
                         .font(Theme.Typography.headline)
-                        .foregroundStyle(titleColor)
+                        .foregroundStyle(.textPrimary)
 
                     Text(time.description)
                         .font(Theme.Typography.caption)
-                        .foregroundStyle(subtitleColor)
+                        .foregroundStyle(.textSecondary)
                 }
 
                 Spacer()
@@ -152,7 +114,6 @@ struct StiffnessTimeCard: View {
             )
         }
         .buttonStyle(.plain)
-        .allowsHitTesting(!isDisabled)
     }
 }
 

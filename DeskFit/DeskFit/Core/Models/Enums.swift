@@ -188,12 +188,19 @@ enum StiffnessTime: String, CaseIterable, Identifiable, Codable, Hashable {
     }
 
     /// Pure function to toggle a stiffness time with proper mutual exclusivity rules
-    /// - If tapped == .allDay: returns [.allDay] (exclusive)
+    /// - If tapped == .allDay:
+    ///   - If current contains .allDay: returns empty set (allows unselect)
+    ///   - Otherwise: returns [.allDay] (exclusive, clears other selections)
     /// - If tapped is individual time: removes .allDay if present, then toggles the tapped time
     static func toggle(_ tapped: StiffnessTime, in current: Set<StiffnessTime>) -> Set<StiffnessTime> {
         if tapped == .allDay {
-            // Tapping "All day" always sets selection to just [.allDay]
-            return [.allDay]
+            if current.contains(.allDay) {
+                // Tapping "All day" when already selected unselects it
+                return []
+            } else {
+                // Tapping "All day" when not selected clears others and selects only allDay
+                return [.allDay]
+            }
         } else {
             // Tapping an individual time
             var newSet = current
