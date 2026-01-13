@@ -48,6 +48,8 @@ struct TimePreferenceView: View {
     }
 }
 
+/// Time option card with clear selection indicator
+/// Features: border and background tint when selected
 struct TimeCard: View {
     let label: String
     let description: String
@@ -59,26 +61,63 @@ struct TimeCard: View {
             HapticsService.shared.light()
             action()
         }) {
-            VStack(spacing: Theme.Spacing.xs) {
-                Text(label)
-                    .font(.system(size: 22, weight: .bold))
-                    .foregroundStyle(isSelected ? .textOnDark : .textPrimary)
+            ZStack(alignment: .top) {
+                VStack(spacing: Theme.Spacing.xs) {
+                    Text(label)
+                        .font(.system(size: 22, weight: .bold))
+                        .foregroundStyle(.textPrimary)
 
-                Text(description)
-                    .font(Theme.Typography.caption)
-                    .foregroundStyle(isSelected ? .textOnDark.opacity(0.7) : .textSecondary)
+                    Text(description)
+                        .font(Theme.Typography.caption)
+                        .foregroundStyle(.textSecondary)
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 90)
+                .background(
+                    RoundedRectangle(cornerRadius: Theme.Radius.medium)
+                        .fill(isSelected ? Color.cardSelected : Color.cardBackground)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.Radius.medium)
+                        .strokeBorder(
+                            isSelected ? Color.borderSelected : Color.borderDefault,
+                            lineWidth: isSelected ? 2 : 1
+                        )
+                )
+
+                // Selection indicator at top
+                if isSelected {
+                    ZStack {
+                        Circle()
+                            .fill(Color.appTeal)
+                            .frame(width: 22, height: 22)
+
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(.textOnAccent)
+                    }
+                    .offset(y: -11)
+                    .transition(.scale.combined(with: .opacity))
+                }
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: 90)
-            .background(
-                RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                    .fill(isSelected ? Color.cardSelected : Color.cardBackground)
-            )
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .animation(.easeInOut(duration: 0.15), value: isSelected)
     }
 }
 
-#Preview {
+#Preview("Time Preference") {
     TimePreferenceView(selectedTime: .constant(5))
+        .deskFitScreenBackground()
+}
+
+#Preview("Time Cards Only") {
+    HStack(spacing: 12) {
+        TimeCard(label: "2 min", description: "Quick", isSelected: false) {}
+        TimeCard(label: "5 min", description: "Balanced", isSelected: true) {}
+        TimeCard(label: "10 min", description: "Thorough", isSelected: false) {}
+    }
+    .padding()
+    .deskFitScreenBackground()
 }

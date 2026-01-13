@@ -33,8 +33,19 @@ extension Color {
     /// Surface color for cards/panels
     static let cardBackground = ThemeColor.surface
 
-    /// Selected state - accent with transparency
-    static let cardSelected = ThemeColor.accent.opacity(0.2)
+    /// Selected state background - improved contrast
+    static let cardSelected = ThemeColor.cardSelectedBackground
+
+    /// Selected state with even higher visibility (for chips/badges)
+    static let cardSelectedStrong = ThemeColor.accent.opacity(0.25)
+
+    // MARK: - Border Colors
+
+    /// Default border for unselected cards - subtle
+    static let borderDefault = ThemeColor.borderDefault
+
+    /// Selected border - prominent accent color
+    static let borderSelected = ThemeColor.borderSelected
 
     // MARK: - Button Colors
 
@@ -84,6 +95,9 @@ extension ShapeStyle where Self == Color {
 
     static var cardBackground: Color { Color.cardBackground }
     static var cardSelected: Color { Color.cardSelected }
+    static var cardSelectedStrong: Color { Color.cardSelectedStrong }
+    static var borderDefault: Color { Color.borderDefault }
+    static var borderSelected: Color { Color.borderSelected }
 
     static var buttonPrimary: Color { Color.buttonPrimary }
     static var buttonEnabled: Color { Color.buttonEnabled }

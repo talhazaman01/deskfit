@@ -1,31 +1,38 @@
 import SwiftUI
 
+/// Generic selectable card container with clear selection styling
 struct SelectableCard<Content: View>: View {
     let isSelected: Bool
     let action: () -> Void
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        Button(action: action) {
+        Button(action: {
+            HapticsService.shared.light()
+            action()
+        }) {
             content()
                 .padding()
                 .frame(maxWidth: .infinity)
                 .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.secondaryBackground)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .strokeBorder(
-                                    isSelected ? Color.brandPrimary : Color.clear,
-                                    lineWidth: 2
-                                )
+                    RoundedRectangle(cornerRadius: Theme.Radius.medium)
+                        .fill(isSelected ? Color.cardSelected : Color.cardBackground)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.Radius.medium)
+                        .strokeBorder(
+                            isSelected ? Color.borderSelected : Color.borderDefault,
+                            lineWidth: isSelected ? 2 : 1
                         )
                 )
+                .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .animation(.easeInOut(duration: 0.15), value: isSelected)
     }
 }
 
+/// Row-style selectable item with icon and checkmark indicator
 struct SelectableRow: View {
     let title: String
     let subtitle: String?
@@ -49,36 +56,46 @@ struct SelectableRow: View {
 
     var body: some View {
         SelectableCard(isSelected: isSelected, action: action) {
-            HStack(spacing: 12) {
+            HStack(spacing: Theme.Spacing.md) {
                 if let icon = icon {
                     Image(systemName: icon)
                         .font(.title2)
-                        .foregroundStyle(isSelected ? .brandPrimary : .secondary)
+                        .foregroundStyle(isSelected ? .appTeal : .textSecondary)
                         .frame(width: 32)
                 }
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
-                        .font(.headline)
+                        .font(Theme.Typography.option)
                         .foregroundStyle(.textPrimary)
 
                     if let subtitle = subtitle {
                         Text(subtitle)
-                            .font(.caption)
+                            .font(Theme.Typography.optionDescription)
                             .foregroundStyle(.textSecondary)
                     }
                 }
 
                 Spacer()
 
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .foregroundStyle(isSelected ? .brandPrimary : .secondary)
-                    .font(.title2)
+                // Checkmark indicator
+                if isSelected {
+                    ZStack {
+                        Circle()
+                            .fill(Color.appTeal)
+                            .frame(width: 24, height: 24)
+
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(.textOnAccent)
+                    }
+                }
             }
         }
     }
 }
 
+/// Multi-select row with checkbox-style indicator
 struct MultiSelectableRow: View {
     let title: String
     let icon: String?
@@ -86,44 +103,67 @@ struct MultiSelectableRow: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
-            HStack(spacing: 12) {
+        Button(action: {
+            HapticsService.shared.light()
+            action()
+        }) {
+            HStack(spacing: Theme.Spacing.md) {
                 if let icon = icon {
                     Image(systemName: icon)
                         .font(.title3)
-                        .foregroundStyle(isSelected ? .brandPrimary : .secondary)
+                        .foregroundStyle(isSelected ? .appTeal : .textSecondary)
                         .frame(width: 28)
                 }
 
                 Text(title)
-                    .font(.body)
+                    .font(Theme.Typography.option)
                     .foregroundStyle(.textPrimary)
 
                 Spacer()
 
-                Image(systemName: isSelected ? "checkmark.square.fill" : "square")
-                    .foregroundStyle(isSelected ? .brandPrimary : .secondary)
-                    .font(.title3)
+                // Checkbox indicator
+                ZStack {
+                    RoundedRectangle(cornerRadius: 4)
+                        .strokeBorder(isSelected ? Color.appTeal : Color.borderDefault, lineWidth: isSelected ? 0 : 1.5)
+                        .frame(width: 22, height: 22)
+                        .background(
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(isSelected ? Color.appTeal : Color.clear)
+                        )
+
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(.textOnAccent)
+                    }
+                }
             }
             .padding()
             .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.secondaryBackground)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .strokeBorder(
-                                isSelected ? Color.brandPrimary : Color.clear,
-                                lineWidth: 2
-                            )
+                RoundedRectangle(cornerRadius: Theme.Radius.medium)
+                    .fill(isSelected ? Color.cardSelected : Color.cardBackground)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.Radius.medium)
+                    .strokeBorder(
+                        isSelected ? Color.borderSelected : Color.borderDefault,
+                        lineWidth: isSelected ? 2 : 1
                     )
             )
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .animation(.easeInOut(duration: 0.15), value: isSelected)
     }
 }
 
-#Preview {
+#Preview("Selectable Components") {
     VStack(spacing: 16) {
+        Text("SelectableRow")
+            .font(Theme.Typography.headline)
+            .foregroundStyle(.textPrimary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+
         SelectableRow(
             title: "Move More",
             subtitle: "Get more movement into your day",
@@ -138,11 +178,24 @@ struct MultiSelectableRow: View {
             isSelected: false
         ) {}
 
+        Text("MultiSelectableRow")
+            .font(Theme.Typography.headline)
+            .foregroundStyle(.textPrimary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 8)
+
         MultiSelectableRow(
             title: "Neck",
             icon: "figure.stand",
             isSelected: true
         ) {}
+
+        MultiSelectableRow(
+            title: "Shoulders",
+            icon: "figure.arms.open",
+            isSelected: false
+        ) {}
     }
     .padding()
+    .deskFitScreenBackground()
 }

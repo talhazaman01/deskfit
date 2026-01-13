@@ -18,6 +18,32 @@ enum ThemeColor {
     static let separator = textPrimary.opacity(0.18)
     static let surfaceHighlight = textPrimary.opacity(0.08)
 
+    // MARK: - Selection State Colors
+    // Uses dynamic colors that adapt to light/dark mode via UIColor
+
+    /// Card background when selected - higher contrast than unselected
+    static let cardSelectedBackground = Color(UIColor { traits in
+        if traits.userInterfaceStyle == .dark {
+            // Dark mode: accent with 18% opacity for visible tint
+            return UIColor(accent.opacity(0.18))
+        } else {
+            // Light mode: accent with 12% opacity
+            return UIColor(accent.opacity(0.12))
+        }
+    })
+
+    /// Border color for unselected cards - subtle
+    static let borderDefault = Color(UIColor { traits in
+        if traits.userInterfaceStyle == .dark {
+            return UIColor(textPrimary.opacity(0.15))
+        } else {
+            return UIColor(Color.black.opacity(0.12))
+        }
+    })
+
+    /// Border color for selected cards - prominent
+    static let borderSelected = accent
+
     // UIColor versions for UIKit configuration
     static var backgroundUI: UIColor { UIColor(background) }
     static var surfaceUI: UIColor { UIColor(surface) }
@@ -120,18 +146,21 @@ extension View {
         self.padding(.horizontal, Theme.Spacing.screenHorizontal)
     }
 
-    /// Apply card style (surface background, rounded corners)
+    /// Apply card style with selection state (surface background, rounded corners, border)
     func cardStyle(isSelected: Bool = false) -> some View {
         self
             .padding(Theme.Spacing.lg)
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                    .fill(isSelected ? ThemeColor.accent.opacity(0.2) : ThemeColor.surface)
+                    .fill(isSelected ? ThemeColor.cardSelectedBackground : ThemeColor.surface)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                    .stroke(isSelected ? ThemeColor.accent : Color.clear, lineWidth: 2)
+                    .strokeBorder(
+                        isSelected ? ThemeColor.borderSelected : ThemeColor.borderDefault,
+                        lineWidth: isSelected ? 2 : 1
+                    )
             )
     }
 
