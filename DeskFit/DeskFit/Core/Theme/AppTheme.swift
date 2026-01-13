@@ -2,181 +2,143 @@ import SwiftUI
 import UIKit
 
 // MARK: - DeskFit Semantic Color Tokens
-// Single source of truth for all UI colors. All tokens adapt to light/dark mode.
-// Premium Teal Theme with high-contrast selection states
+// Single source of truth for all UI colors.
+// Calm-Style Blue Gradient Theme with glass cards and white text.
 
 enum AppTheme {
     // MARK: - Background Tokens
 
-    /// Main app background - Light teal tint (light) / Deep teal (dark)
-    static let appBackground = BrandColors.adaptive(
-        light: BrandColors.lightBackground,
-        dark: BrandColors.tealDeep
-    )
+    /// The main app background gradient (use with dfScreenBackground modifier)
+    static var backgroundGradient: LinearGradient {
+        BrandColors.backgroundGradient
+    }
 
-    /// Card/surface background - White (light) / Teal surface (dark)
-    static let cardBackground = BrandColors.adaptive(
-        light: BrandColors.lightSurface,
-        dark: BrandColors.tealSurface
-    )
+    /// Solid background color fallback (mid-gradient color)
+    static let appBackground = BrandColors.gradientMid
 
-    /// Elevated surface for modals/sheets - Light elevated (light) / Teal elevated (dark)
-    static let surfaceElevated = BrandColors.adaptive(
-        light: BrandColors.lightElevated,
-        dark: BrandColors.tealElevated
-    )
+    /// Top of gradient for UIKit
+    static let gradientTop = BrandColors.gradientTop
+
+    /// Bottom of gradient for UIKit
+    static let gradientBottom = BrandColors.gradientBottom
+
+    // MARK: - Surface/Card Tokens (Glass effect)
+
+    /// Glass card background - subtle white translucency
+    static let cardBackground = BrandColors.surfaceGlass
+
+    /// Strong glass card - more prominent white translucency
+    static let cardBackgroundStrong = BrandColors.surfaceGlassStrong
+
+    /// Elevated surface for modals/sheets
+    static let surfaceElevated = BrandColors.surfaceElevated
 
     /// Alternate surface for nested cards
-    static let surfaceAlt = BrandColors.adaptive(
-        light: BrandColors.lightElevated,
-        dark: BrandColors.tealElevated
-    )
+    static let surfaceAlt = BrandColors.surfaceGlassStrong
 
     // MARK: - Text Tokens
 
-    /// Primary text - Deep teal (light) / White (dark)
-    static let textPrimary = BrandColors.adaptive(
-        light: BrandColors.textDark,
-        dark: BrandColors.textLight
-    )
+    /// Primary text - pure white
+    static let textPrimary = BrandColors.textPrimary
 
-    /// Secondary text - Teal secondary (light) / White at 75% (dark)
-    static let textSecondary = BrandColors.adaptive(
-        light: BrandColors.textDarkSecondary,
-        dark: BrandColors.textLight.opacity(0.75)
-    )
+    /// Secondary text - white at 75%
+    static let textSecondary = BrandColors.textSecondary
 
-    /// Tertiary text - Teal at 60% (light) / White at 55% (dark)
-    static let textTertiary = BrandColors.adaptive(
-        light: BrandColors.textDark.opacity(0.60),
-        dark: BrandColors.textLight.opacity(0.55)
-    )
+    /// Tertiary text - white at 55%
+    static let textTertiary = BrandColors.textTertiary
 
-    /// Text on accent backgrounds (teal buttons, selection fills)
-    static let textOnAccent = BrandColors.textDark
+    /// Placeholder text - white at 40%
+    static let textPlaceholder = BrandColors.textPlaceholder
+
+    /// Text on accent backgrounds (dark for contrast)
+    static let textOnAccent = BrandColors.textOnAccent
 
     /// Text on primary action buttons
-    static let textOnPrimary = BrandColors.textDark
+    static let textOnPrimary = BrandColors.textOnAccent
 
     // MARK: - Accent & Brand Tokens
 
-    /// Primary accent color - Bright aqua teal #2FE6E6
-    static let accent = BrandColors.accent
+    /// Primary accent color - bright cyan #37D6E6
+    static let accent = BrandColors.accentPrimary
 
-    /// Muted accent - #1BB9B9
+    /// Secondary accent - bright blue #2BB4FF
+    static let accentSecondary = BrandColors.accentSecondary
+
+    /// Muted accent for subtle highlights
     static let accentMuted = BrandColors.accentMuted
 
-    /// Soft accent for subtle highlights
-    static let accentSoft = BrandColors.adaptive(
-        light: BrandColors.accent.opacity(0.15),
-        dark: BrandColors.accent.opacity(0.20)
-    )
+    /// Soft accent for subtle highlights (cyan at 25%)
+    static let accentSoft = BrandColors.accentSoft
 
     /// Brand highlight (legacy support)
-    static let brandCeleste = BrandColors.accent
+    static let brandCeleste = BrandColors.accentPrimary
 
     // MARK: - Action Button Tokens
 
-    /// Primary CTA background (Start Session, Continue) - uses bright accent
-    static let primaryActionBg = BrandColors.accent
+    /// Primary CTA background - uses bright cyan accent
+    static let primaryActionBg = BrandColors.accentPrimary
 
-    /// Primary CTA text
-    static let primaryActionFg = BrandColors.textDark
+    /// Primary CTA text - dark for contrast
+    static let primaryActionFg = BrandColors.textOnAccent
 
-    /// Secondary action stroke color
-    static let secondaryActionStroke = BrandColors.adaptive(
-        light: BrandColors.textDark.opacity(0.25),
-        dark: BrandColors.textLight.opacity(0.30)
-    )
+    /// Secondary action stroke color - white at 30%
+    static let secondaryActionStroke = Color.white.opacity(0.30)
 
-    /// Secondary action text color
-    static let secondaryActionFg = BrandColors.adaptive(
-        light: BrandColors.textDark,
-        dark: BrandColors.textLight
-    )
+    /// Secondary action text color - white
+    static let secondaryActionFg = BrandColors.textPrimary
 
-    /// Disabled button background
-    static let disabledBg = BrandColors.adaptive(
-        light: Color(hex: "E0E8E8"),
-        dark: BrandColors.tealSurface
-    )
+    /// Disabled button background - white at 8%
+    static let disabledBg = Color.white.opacity(0.08)
 
-    /// Disabled button/text color
-    static let disabledFg = BrandColors.adaptive(
-        light: BrandColors.textDark.opacity(0.40),
-        dark: BrandColors.textLight.opacity(0.40)
-    )
+    /// Disabled button/text color - white at 40%
+    static let disabledFg = Color.white.opacity(0.40)
 
     // MARK: - Border/Stroke Tokens
 
-    /// Default border - Teal border (light) / White 15% (dark)
-    static let border = BrandColors.adaptive(
-        light: BrandColors.lightBorder,
-        dark: BrandColors.textLight.opacity(0.15)
-    )
+    /// Default border - subtle white stroke
+    static let border = BrandColors.strokeGlass
 
     /// Subtle stroke for unselected cards/borders
-    static let strokeSubtle = BrandColors.adaptive(
-        light: BrandColors.lightBorder,
-        dark: BrandColors.textLight.opacity(0.12)
-    )
+    static let strokeSubtle = BrandColors.strokeGlass
 
     /// Strong stroke for selected/emphasized elements
-    static let strokeStrong = BrandColors.adaptive(
-        light: BrandColors.accent,
-        dark: BrandColors.accent
-    )
+    static let strokeStrong = BrandColors.strokeGlassStrong
 
     /// Divider/separator color
-    static let divider = BrandColors.adaptive(
-        light: BrandColors.lightBorder,
-        dark: BrandColors.textLight.opacity(0.15)
-    )
+    static let divider = Color.white.opacity(0.12)
 
     // MARK: - Selection State Tokens (High Contrast)
 
     /// Selectable card default background (same as cardBackground)
     static let selectableDefault = cardBackground
 
-    /// Selectable card selected fill - accent at ~20% opacity
-    static let selectionFill = BrandColors.adaptive(
-        light: BrandColors.accent.opacity(0.18),
-        dark: BrandColors.accent.opacity(0.22)
-    )
+    /// Selectable card selected fill - accent at 22% opacity
+    static let selectionFill = BrandColors.accentPrimary.opacity(0.22)
 
-    /// Selectable card selected stroke - bright accent (2px)
-    static let selectionStroke = BrandColors.accent
+    /// Selectable card selected stroke - bright accent secondary
+    static let selectionStroke = BrandColors.accentSecondary
 
-    /// Selection checkmark/indicator color - bright accent
-    static let selectionCheck = BrandColors.accent
+    /// Selection checkmark/indicator color - bright cyan accent
+    static let selectionCheck = BrandColors.accentPrimary
 
     // MARK: - Tab Bar Tokens
 
-    /// Tab bar background
-    static let tabBarBg = BrandColors.adaptive(
-        light: BrandColors.lightSurface.opacity(0.95),
-        dark: BrandColors.tealElevated.opacity(0.95)
-    )
+    /// Tab bar background - glass effect on gradient
+    static let tabBarBg = Color.white.opacity(0.10)
 
     /// Tab bar selected icon/text - uses accent for visibility
-    static let tabBarSelected = BrandColors.accent
+    static let tabBarSelected = BrandColors.accentPrimary
 
-    /// Tab bar unselected icon/text
-    static let tabBarUnselected = BrandColors.adaptive(
-        light: BrandColors.textDarkSecondary,
-        dark: BrandColors.textLight.opacity(0.60)
-    )
+    /// Tab bar unselected icon/text - white at 60%
+    static let tabBarUnselected = Color.white.opacity(0.60)
 
     // MARK: - Progress Ring Tokens
 
-    /// Progress ring track (background)
-    static let progressRingTrack = BrandColors.adaptive(
-        light: BrandColors.lightBorder,
-        dark: BrandColors.textLight.opacity(0.12)
-    )
+    /// Progress ring track (background) - white at 15%
+    static let progressRingTrack = Color.white.opacity(0.15)
 
-    /// Progress ring fill (foreground)
-    static let progressRingFill = BrandColors.accent
+    /// Progress ring fill (foreground) - accent cyan
+    static let progressRingFill = BrandColors.accentPrimary
 
     // MARK: - Status Tokens
 
@@ -188,56 +150,54 @@ enum AppTheme {
 
     // MARK: - Shadow Tokens
 
-    static let shadowColor = Color.black.opacity(0.12)
-    static let shadowRadius: CGFloat = 8
-    static let shadowY: CGFloat = 4
+    static let shadowColor = Color.black.opacity(0.20)
+    static let shadowRadius: CGFloat = 12
+    static let shadowY: CGFloat = 6
 
     // MARK: - UIColor Versions (for UIKit APIs)
 
     static var appBackgroundUI: UIColor {
-        BrandColors.adaptiveUI(
-            light: BrandColors.lightBackgroundUI,
-            dark: BrandColors.tealDeepUI
-        )
+        BrandColors.gradientMidUI
+    }
+
+    static var gradientTopUI: UIColor {
+        BrandColors.gradientTopUI
+    }
+
+    static var gradientBottomUI: UIColor {
+        BrandColors.gradientBottomUI
     }
 
     static var cardBackgroundUI: UIColor {
-        BrandColors.adaptiveUI(
-            light: BrandColors.lightSurfaceUI,
-            dark: BrandColors.tealSurfaceUI
-        )
+        BrandColors.surfaceGlassUI
     }
 
     static var surfaceElevatedUI: UIColor {
-        BrandColors.adaptiveUI(
-            light: BrandColors.lightElevatedUI,
-            dark: BrandColors.tealElevatedUI
-        )
+        BrandColors.surfaceElevatedUI
     }
 
     static var textPrimaryUI: UIColor {
-        BrandColors.adaptiveUI(
-            light: BrandColors.textDarkUI,
-            dark: .white
-        )
+        BrandColors.textPrimaryUI
     }
 
-    static var accentUI: UIColor { BrandColors.accentUI }
+    static var textSecondaryUI: UIColor {
+        BrandColors.textSecondaryUI
+    }
 
-    static var tabBarSelectedUI: UIColor { BrandColors.accentUI }
+    static var accentUI: UIColor {
+        BrandColors.accentPrimaryUI
+    }
+
+    static var tabBarSelectedUI: UIColor {
+        BrandColors.accentPrimaryUI
+    }
 
     static var tabBarUnselectedUI: UIColor {
-        BrandColors.adaptiveUI(
-            light: UIColor(BrandColors.textDarkSecondary),
-            dark: UIColor.white.withAlphaComponent(0.60)
-        )
+        UIColor.white.withAlphaComponent(0.60)
     }
 
     static var tabBarBgUI: UIColor {
-        BrandColors.adaptiveUI(
-            light: BrandColors.lightSurfaceUI.withAlphaComponent(0.95),
-            dark: BrandColors.tealElevatedUI.withAlphaComponent(0.95)
-        )
+        UIColor.white.withAlphaComponent(0.10)
     }
 }
 

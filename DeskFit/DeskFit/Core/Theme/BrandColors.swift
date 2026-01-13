@@ -3,76 +3,82 @@ import UIKit
 
 // MARK: - DeskFit Brand Palette (Base Colors)
 // These are the raw color values. Use semantic tokens from AppTheme for actual UI.
-// Premium Teal Theme - Deep, sophisticated teal with bright aqua accents
+// Calm-Style Blue Gradient Theme - Premium, relaxing blue with bright cyan accents
 
 enum BrandColors {
-    // MARK: - Primary Teal Backgrounds (Dark Mode Base)
+    // MARK: - Blue Gradient Background (Calm-Style)
 
-    /// Deep teal for dark mode app background - #062B2D
-    /// Rich, premium feel without being too dark
-    static let tealDeep = Color(hex: "062B2D")
+    /// Top of the blue gradient - lighter sky blue #67B7FF
+    static let gradientTop = Color(hex: "67B7FF")
 
-    /// Card/surface teal - #0B3A3D
-    /// Slightly lighter than background for card elevation
-    static let tealSurface = Color(hex: "0B3A3D")
+    /// Bottom of the blue gradient - deeper blue-violet #5A78FF
+    static let gradientBottom = Color(hex: "5A78FF")
 
-    /// Elevated surface teal (modals/sheets) - #0F4548
-    /// Even lighter for top-level surfaces
-    static let tealElevated = Color(hex: "0F4548")
+    /// Mid-point gradient color for smooth transitions #60A0FF
+    static let gradientMid = Color(hex: "60A0FF")
 
-    /// Border teal - #2A6C70
-    /// Visible but not harsh borders
-    static let tealBorder = Color(hex: "2A6C70")
+    // MARK: - Glass/Surface Colors (White-based for blue backgrounds)
 
-    // MARK: - Light Mode Backgrounds
+    /// Glass card surface - white at 12% opacity for subtle translucency
+    static let surfaceGlass = Color.white.opacity(0.12)
 
-    /// Near-white teal tint for light mode background - #F5FEFE
-    /// Clean, premium light mode
-    static let lightBackground = Color(hex: "F5FEFE")
+    /// Strong glass surface - white at 18% opacity for emphasis
+    static let surfaceGlassStrong = Color.white.opacity(0.18)
 
-    /// Pure white for light mode surfaces - #FFFFFF
-    static let lightSurface = Color.white
+    /// Elevated surface (modals/sheets) - white at 22% opacity
+    static let surfaceElevated = Color.white.opacity(0.22)
 
-    /// Light elevated surface (modals) - #ECFBFB
-    /// Subtle teal tint
-    static let lightElevated = Color(hex: "ECFBFB")
+    /// Subtle stroke for glass cards - white at 15% opacity
+    static let strokeGlass = Color.white.opacity(0.15)
 
-    /// Light mode border - #CBECEC
-    static let lightBorder = Color(hex: "CBECEC")
+    /// Strong stroke for selected/emphasized elements - white at 35% opacity
+    static let strokeGlassStrong = Color.white.opacity(0.35)
 
-    // MARK: - Text Colors
+    // MARK: - Text Colors (White-based for blue backgrounds)
 
-    /// Deep teal for light mode text - #062B2D
-    static let textDark = Color(hex: "062B2D")
+    /// Primary text - pure white for maximum contrast
+    static let textPrimary = Color.white
 
-    /// Secondary text for light mode - #245053
-    static let textDarkSecondary = Color(hex: "245053")
+    /// Secondary text - white at 75% opacity
+    static let textSecondary = Color.white.opacity(0.75)
 
-    /// White for dark mode text
-    static let textLight = Color.white
+    /// Tertiary text - white at 55% opacity
+    static let textTertiary = Color.white.opacity(0.55)
 
-    // MARK: - Accent Colors (Same across modes)
+    /// Placeholder text - white at 40% opacity
+    static let textPlaceholder = Color.white.opacity(0.40)
 
-    /// Primary accent - bright aqua/teal - #2FE6E6
-    /// Used for CTAs, selection highlights, interactive elements
-    static let accent = Color(hex: "2FE6E6")
+    // MARK: - Accent Colors (Premium Cyan/Blue)
 
-    /// Muted accent - #1BB9B9
-    /// Secondary highlights, less prominent interactions
-    static let accentMuted = Color(hex: "1BB9B9")
+    /// Primary accent - bright cyan for CTAs #37D6E6
+    static let accentPrimary = Color(hex: "37D6E6")
 
-    // MARK: - Status Colors
+    /// Secondary accent - bright blue for selections #2BB4FF
+    static let accentSecondary = Color(hex: "2BB4FF")
 
-    /// Destructive/error - #FF4D4D
-    static let destructive = Color(hex: "FF4D4D")
+    /// Muted accent - softer cyan #1BBFCF
+    static let accentMuted = Color(hex: "1BBFCF")
 
-    /// Success (optional, use sparingly) - #2FE6B8
+    /// Soft accent for subtle highlights - cyan at 25% opacity
+    static let accentSoft = Color(hex: "37D6E6").opacity(0.25)
+
+    // MARK: - Text on Accent
+
+    /// Text on accent backgrounds (dark for contrast on cyan)
+    static let textOnAccent = Color(hex: "0A2540")
+
+    // MARK: - Status Colors (Harmonized with blue theme)
+
+    /// Success - teal-green harmonized with blue #2FE6B8
     static let success = Color(hex: "2FE6B8")
 
-    /// Warning amber - #FBBF24
+    /// Warning - warm amber #FBBF24
     static let warning = Color(hex: "FBBF24")
 
-    /// Streak flame orange - #F4A261
+    /// Destructive/error - soft red #FF6B6B
+    static let destructive = Color(hex: "FF6B6B")
+
+    /// Streak flame orange #F4A261
     static let flame = Color(hex: "F4A261")
 
     // MARK: - Pure Colors
@@ -82,33 +88,42 @@ enum BrandColors {
 
     // MARK: - UIColor Versions (for UIKit APIs)
 
-    static var tealDeepUI: UIColor { UIColor(tealDeep) }
-    static var tealSurfaceUI: UIColor { UIColor(tealSurface) }
-    static var tealElevatedUI: UIColor { UIColor(tealElevated) }
-    static var tealBorderUI: UIColor { UIColor(tealBorder) }
-    static var lightBackgroundUI: UIColor { UIColor(lightBackground) }
-    static var lightSurfaceUI: UIColor { UIColor(lightSurface) }
-    static var lightElevatedUI: UIColor { UIColor(lightElevated) }
-    static var lightBorderUI: UIColor { UIColor(lightBorder) }
-    static var textDarkUI: UIColor { UIColor(textDark) }
-    static var accentUI: UIColor { UIColor(accent) }
-    static var accentMutedUI: UIColor { UIColor(accentMuted) }
+    static var gradientTopUI: UIColor { UIColor(gradientTop) }
+    static var gradientBottomUI: UIColor { UIColor(gradientBottom) }
+    static var gradientMidUI: UIColor { UIColor(gradientMid) }
+    static var surfaceGlassUI: UIColor { UIColor(surfaceGlass) }
+    static var surfaceGlassStrongUI: UIColor { UIColor(surfaceGlassStrong) }
+    static var surfaceElevatedUI: UIColor { UIColor(surfaceElevated) }
+    static var textPrimaryUI: UIColor { UIColor(textPrimary) }
+    static var textSecondaryUI: UIColor { UIColor(textSecondary) }
+    static var textTertiaryUI: UIColor { UIColor(textTertiary) }
+    static var accentPrimaryUI: UIColor { UIColor(accentPrimary) }
+    static var accentSecondaryUI: UIColor { UIColor(accentSecondary) }
+    static var textOnAccentUI: UIColor { UIColor(textOnAccent) }
+    static var successUI: UIColor { UIColor(success) }
+    static var warningUI: UIColor { UIColor(warning) }
+    static var destructiveUI: UIColor { UIColor(destructive) }
+    static var flameUI: UIColor { UIColor(flame) }
 }
 
-// MARK: - Adaptive Color Helper
+// MARK: - Gradient Helper
 
 extension BrandColors {
-    /// Creates a color that adapts to light/dark mode
-    static func adaptive(light: Color, dark: Color) -> Color {
-        Color(UIColor { traits in
-            traits.userInterfaceStyle == .dark ? UIColor(dark) : UIColor(light)
-        })
+    /// The main app background gradient (Calm-style blue)
+    static var backgroundGradient: LinearGradient {
+        LinearGradient(
+            colors: [gradientTop, gradientMid, gradientBottom],
+            startPoint: .top,
+            endPoint: .bottom
+        )
     }
 
-    /// Creates a UIColor that adapts to light/dark mode
-    static func adaptiveUI(light: UIColor, dark: UIColor) -> UIColor {
-        UIColor { traits in
-            traits.userInterfaceStyle == .dark ? dark : light
-        }
+    /// A simpler two-color gradient for smaller elements
+    static var simpleGradient: LinearGradient {
+        LinearGradient(
+            colors: [gradientTop, gradientBottom],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
     }
 }

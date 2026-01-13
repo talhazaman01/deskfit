@@ -65,7 +65,7 @@ struct HomeView: View {
             .padding(.top, Theme.Spacing.lg)
             .padding(.bottom, Theme.Spacing.bottomArea)
         }
-        .background(Color.appBackground)
+        .deskFitScreenBackground()
         .navigationTitle("DeskFit")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
@@ -227,11 +227,7 @@ struct DynamicProBannerView: View {
                     .foregroundStyle(.textOnDark)
                     .clipShape(Capsule())
             }
-            .padding(Theme.Spacing.lg)
-            .background(
-                RoundedRectangle(cornerRadius: Theme.Radius.large)
-                    .fill(Color.cardBackground)
-            )
+            .deskFitCardStyle()
         }
         .buttonStyle(.plain)
     }

@@ -8,7 +8,7 @@ struct ProgressRing: View {
     var body: some View {
         ZStack {
             Circle()
-                .stroke(Color.cardBackground, lineWidth: lineWidth)
+                .stroke(AppTheme.progressRingTrack, lineWidth: lineWidth)
 
             Circle()
                 .trim(from: 0, to: progress)

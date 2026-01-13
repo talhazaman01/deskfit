@@ -6,27 +6,27 @@ import UIKit
 // All new code should use AppTheme directly.
 
 enum ThemeColor {
-    // MARK: - Core Colors (Now Dynamic via AppTheme)
+    // MARK: - Core Colors (From AppTheme)
 
-    /// Brand highlight color - now accent teal
+    /// Brand highlight color - now accent cyan
     static let brandCeleste = AppTheme.brandCeleste
 
-    /// App background - Deep teal (dark) / Light teal tint (light)
+    /// App background - blue gradient mid color
     static let background = AppTheme.appBackground
 
-    /// Card/surface background
+    /// Card/surface background - glass effect
     static let surface = AppTheme.cardBackground
 
     /// Elevated surface for modals/sheets
     static let surfaceElevated = AppTheme.surfaceElevated
 
-    /// Primary accent - bright teal
+    /// Primary accent - bright cyan
     static let accent = AppTheme.accent
 
     /// Muted accent
     static let accentMuted = AppTheme.accentMuted
 
-    /// Primary text color (adapts to mode)
+    /// Primary text color - white
     static let textPrimary = AppTheme.textPrimary
 
     /// Text on accent backgrounds
@@ -88,40 +88,47 @@ enum Theme {
         static let small: CGFloat = 8
         static let medium: CGFloat = 12
         static let large: CGFloat = 16
+        static let xl: CGFloat = 20
 
         /// Pill button radius
         static let pill: CGFloat = 28
     }
 
-    // MARK: - Typography
+    // MARK: - Typography (SF Pro Rounded for premium feel)
 
     enum Typography {
-        // Large title for onboarding questions
-        static let largeTitle = Font.system(size: 28, weight: .bold)
+        // Large title for onboarding questions - bold rounded
+        static let largeTitle = Font.system(size: 28, weight: .bold, design: .rounded)
 
-        // Screen titles
-        static let title = Font.system(size: 24, weight: .bold)
+        // Screen titles - bold rounded
+        static let title = Font.system(size: 24, weight: .bold, design: .rounded)
 
-        // Section headers
-        static let headline = Font.system(size: 17, weight: .semibold)
+        // Section headers - semibold rounded
+        static let headline = Font.system(size: 17, weight: .semibold, design: .rounded)
 
-        // Body text
-        static let body = Font.system(size: 17, weight: .regular)
+        // Body text - regular rounded
+        static let body = Font.system(size: 17, weight: .regular, design: .rounded)
 
-        // Subtitle/description text
-        static let subtitle = Font.system(size: 15, weight: .regular)
+        // Subtitle/description text - regular rounded
+        static let subtitle = Font.system(size: 15, weight: .regular, design: .rounded)
 
-        // Small labels
-        static let caption = Font.system(size: 13, weight: .regular)
+        // Small labels - regular rounded
+        static let caption = Font.system(size: 13, weight: .regular, design: .rounded)
 
-        // Button text
-        static let button = Font.system(size: 17, weight: .semibold)
+        // Button text - semibold rounded
+        static let button = Font.system(size: 17, weight: .semibold, design: .rounded)
 
-        // Card option text
-        static let option = Font.system(size: 17, weight: .medium)
+        // Card option text - medium rounded
+        static let option = Font.system(size: 17, weight: .medium, design: .rounded)
 
-        // Card description text
-        static let optionDescription = Font.system(size: 13, weight: .regular)
+        // Card description text - regular rounded
+        static let optionDescription = Font.system(size: 13, weight: .regular, design: .rounded)
+
+        // Extra large display numbers
+        static let display = Font.system(size: 48, weight: .bold, design: .rounded)
+
+        // Medium weight body
+        static let bodyMedium = Font.system(size: 17, weight: .medium, design: .rounded)
     }
 
     // MARK: - Shadows
@@ -157,7 +164,7 @@ extension View {
         self.padding(.horizontal, Theme.Spacing.screenHorizontal)
     }
 
-    /// Apply card style with selection state (surface background, rounded corners, border)
+    /// Apply card style with selection state (glass background, rounded corners, border)
     func cardStyle(isSelected: Bool = false) -> some View {
         self
             .padding(Theme.Spacing.lg)
@@ -190,6 +197,12 @@ struct PrimaryCTAButtonStyle: ButtonStyle {
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.pill)
                     .fill(isEnabled ? AppTheme.primaryActionBg : AppTheme.disabledBg)
+            )
+            .shadow(
+                color: isEnabled ? AppTheme.shadowColor : .clear,
+                radius: 8,
+                x: 0,
+                y: 4
             )
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .animation(.easeOut(duration: 0.15), value: configuration.isPressed)

@@ -37,7 +37,7 @@ struct SessionPlayerView: View {
 
     var body: some View {
         ZStack {
-            Color.appBackground.ignoresSafeArea()
+            AppTheme.backgroundGradient.ignoresSafeArea()
 
             if viewModel.isComplete {
                 SessionCompleteView(

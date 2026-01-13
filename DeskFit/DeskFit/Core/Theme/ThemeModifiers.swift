@@ -1,19 +1,23 @@
 import SwiftUI
 
-// MARK: - Screen Background Modifier
+// MARK: - Screen Background Modifier (Calm-Style Gradient)
 
 struct DeskFitScreenBackgroundModifier: ViewModifier {
     func body(content: Content) -> some View {
         ZStack {
-            AppTheme.appBackground
+            // Full-screen blue gradient background
+            AppTheme.backgroundGradient
                 .ignoresSafeArea()
+
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .toolbarColorScheme(.dark, for: .navigationBar)
+        .toolbarColorScheme(.dark, for: .tabBar)
     }
 }
 
-// MARK: - Card Style Modifier
+// MARK: - Glass Card Style Modifier
 
 struct DeskFitCardStyleModifier: ViewModifier {
     var padding: CGFloat = Theme.Spacing.lg
@@ -25,11 +29,28 @@ struct DeskFitCardStyleModifier: ViewModifier {
                 RoundedRectangle(cornerRadius: Theme.Radius.large)
                     .fill(AppTheme.cardBackground)
             )
-            .shadow(
-                color: AppTheme.shadowColor,
-                radius: AppTheme.shadowRadius,
-                x: 0,
-                y: AppTheme.shadowY
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.Radius.large)
+                    .strokeBorder(AppTheme.strokeSubtle, lineWidth: 1)
+            )
+    }
+}
+
+// MARK: - Strong Glass Card Style Modifier
+
+struct DeskFitCardStrongStyleModifier: ViewModifier {
+    var padding: CGFloat = Theme.Spacing.lg
+
+    func body(content: Content) -> some View {
+        content
+            .padding(padding)
+            .background(
+                RoundedRectangle(cornerRadius: Theme.Radius.large)
+                    .fill(AppTheme.cardBackgroundStrong)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.Radius.large)
+                    .strokeBorder(AppTheme.strokeSubtle, lineWidth: 1)
             )
     }
 }
@@ -62,7 +83,7 @@ struct DeskFitSelectableRowModifier: ViewModifier {
 // MARK: - View Extensions
 
 extension View {
-    /// Apply DeskFit screen background (adapts to light/dark mode)
+    /// Apply DeskFit screen background (Calm-style blue gradient)
     func deskFitScreenBackground() -> some View {
         modifier(DeskFitScreenBackgroundModifier())
     }
@@ -72,9 +93,14 @@ extension View {
         modifier(DeskFitScreenBackgroundModifier())
     }
 
-    /// Apply card container style with shadow
+    /// Apply glass card container style
     func deskFitCardStyle(padding: CGFloat = Theme.Spacing.lg) -> some View {
         modifier(DeskFitCardStyleModifier(padding: padding))
+    }
+
+    /// Apply strong glass card container style
+    func deskFitCardStrongStyle(padding: CGFloat = Theme.Spacing.lg) -> some View {
+        modifier(DeskFitCardStrongStyleModifier(padding: padding))
     }
 
     /// Legacy alias for card style
@@ -107,6 +133,12 @@ struct DeskFitPrimaryButtonStyle: ButtonStyle {
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.pill)
                     .fill(isEnabled ? AppTheme.primaryActionBg : AppTheme.disabledBg)
+            )
+            .shadow(
+                color: isEnabled ? AppTheme.shadowColor : .clear,
+                radius: 8,
+                x: 0,
+                y: 4
             )
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
@@ -150,7 +182,7 @@ struct SelectionCheckmark: View {
                 .frame(width: size, height: size)
 
             Image(systemName: "checkmark")
-                .font(.system(size: iconSize, weight: .bold))
+                .font(.system(size: iconSize, weight: .bold, design: .rounded))
                 .foregroundStyle(AppTheme.textOnAccent)
         }
     }
@@ -159,7 +191,7 @@ struct SelectionCheckmark: View {
 // MARK: - Button Style Extensions
 
 extension View {
-    /// Apply primary CTA button style (accent teal background)
+    /// Apply primary CTA button style (accent cyan background with shadow)
     func deskFitPrimaryButton(isEnabled: Bool = true) -> some View {
         self.buttonStyle(DeskFitPrimaryButtonStyle(isEnabled: isEnabled))
     }
@@ -182,7 +214,7 @@ extension View {
 
 // MARK: - Theme Preview Gallery
 
-#Preview("Theme Gallery - Dark") {
+#Preview("Theme Gallery - Calm Blue") {
     ScrollView {
         VStack(spacing: 24) {
             // Background colors
@@ -192,8 +224,8 @@ extension View {
                     .foregroundStyle(AppTheme.textPrimary)
 
                 HStack(spacing: 12) {
-                    colorSwatch("App BG", AppTheme.appBackground)
-                    colorSwatch("Card", AppTheme.cardBackground)
+                    colorSwatch("Glass Card", AppTheme.cardBackground)
+                    colorSwatch("Strong Card", AppTheme.cardBackgroundStrong)
                     colorSwatch("Elevated", AppTheme.surfaceElevated)
                 }
             }
@@ -221,9 +253,9 @@ extension View {
                     .foregroundStyle(AppTheme.textPrimary)
 
                 HStack(spacing: 12) {
-                    colorSwatch("Accent", AppTheme.accent)
+                    colorSwatch("Primary", AppTheme.accent)
+                    colorSwatch("Secondary", AppTheme.accentSecondary)
                     colorSwatch("Muted", AppTheme.accentMuted)
-                    colorSwatch("Soft", AppTheme.accentSoft)
                 }
             }
 
@@ -258,54 +290,6 @@ extension View {
         .padding()
     }
     .deskFitScreenBackground()
-    .preferredColorScheme(.dark)
-}
-
-#Preview("Theme Gallery - Light") {
-    ScrollView {
-        VStack(spacing: 24) {
-            // Background colors
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Backgrounds")
-                    .font(Theme.Typography.headline)
-                    .foregroundStyle(AppTheme.textPrimary)
-
-                HStack(spacing: 12) {
-                    colorSwatch("App BG", AppTheme.appBackground)
-                    colorSwatch("Card", AppTheme.cardBackground)
-                    colorSwatch("Elevated", AppTheme.surfaceElevated)
-                }
-            }
-
-            // Selection states
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Selection States")
-                    .font(Theme.Typography.headline)
-                    .foregroundStyle(AppTheme.textPrimary)
-
-                VStack(spacing: 12) {
-                    selectionRowPreview(isSelected: false, title: "Unselected Row")
-                    selectionRowPreview(isSelected: true, title: "Selected Row")
-                }
-            }
-
-            // Buttons
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Buttons")
-                    .font(Theme.Typography.headline)
-                    .foregroundStyle(AppTheme.textPrimary)
-
-                Button("Primary Button") {}
-                    .deskFitPrimaryButton()
-
-                Button("Secondary Button") {}
-                    .deskFitSecondaryButton()
-            }
-        }
-        .padding()
-    }
-    .deskFitScreenBackground()
-    .preferredColorScheme(.light)
 }
 
 // MARK: - Preview Helpers

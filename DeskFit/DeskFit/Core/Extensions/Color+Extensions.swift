@@ -1,18 +1,18 @@
 import SwiftUI
 
-// MARK: - DeskFit Design System (Teal Theme)
+// MARK: - DeskFit Design System (Calm Blue Theme)
 // Color extensions that bridge to AppTheme tokens for backward compatibility.
 
 extension Color {
     // MARK: - Core Palette (From AppTheme)
 
-    /// App background - adapts to light/dark mode
+    /// App background - blue gradient mid color (fallback for non-gradient usage)
     static let appBackground = AppTheme.appBackground
 
-    /// Brand highlight color - now accent teal
+    /// Brand highlight color - now accent cyan
     static let brandCeleste = AppTheme.brandCeleste
 
-    /// Primary accent color - bright teal
+    /// Primary accent color - bright cyan
     static let appTeal = AppTheme.accent
 
     /// Pure black for compatibility
@@ -26,12 +26,12 @@ extension Color {
     static let textPrimary = AppTheme.textPrimary
     static let textSecondary = AppTheme.textSecondary
     static let textTertiary = AppTheme.textTertiary
-    static let textOnDark = BrandColors.textDark
+    static let textOnDark = AppTheme.textOnAccent
     static let textOnAccent = AppTheme.textOnAccent
 
     // MARK: - Card & Surface Colors
 
-    /// Surface color for cards/panels
+    /// Surface color for cards/panels - glass effect
     static let cardBackground = AppTheme.cardBackground
 
     /// Selected state background
@@ -56,7 +56,7 @@ extension Color {
 
     // MARK: - Button Colors
 
-    /// Primary CTA - accent teal
+    /// Primary CTA - accent cyan
     static let buttonPrimary = AppTheme.primaryActionBg
 
     /// Enabled continue button

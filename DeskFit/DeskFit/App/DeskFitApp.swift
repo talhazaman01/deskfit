@@ -314,21 +314,25 @@ struct MainTabView: View {
     }
 
     private func configureTabBarAppearance() {
-        // Tab Bar Appearance - uses AppTheme tokens for premium teal theme
+        // Tab Bar Appearance - transparent/translucent to show gradient through
         let tabBarAppearance = UITabBarAppearance()
-        tabBarAppearance.configureWithOpaqueBackground()
-        tabBarAppearance.backgroundColor = AppTheme.tabBarBgUI
+        tabBarAppearance.configureWithTransparentBackground()
+        tabBarAppearance.backgroundColor = UIColor.white.withAlphaComponent(0.08)
 
-        // Configure item colors using adaptive theme tokens
-        // Selected uses accent teal for visibility, unselected uses secondary text
+        // Apply subtle blur effect for glass feel
+        tabBarAppearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterialDark)
+
+        // Configure item colors - white/cyan on blue gradient
         let normalAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: AppTheme.tabBarUnselectedUI
+            .foregroundColor: UIColor.white.withAlphaComponent(0.60),
+            .font: UIFont.systemFont(ofSize: 10, weight: .medium)
         ]
         let selectedAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: AppTheme.tabBarSelectedUI
+            .foregroundColor: AppTheme.tabBarSelectedUI,
+            .font: UIFont.systemFont(ofSize: 10, weight: .semibold)
         ]
 
-        tabBarAppearance.stackedLayoutAppearance.normal.iconColor = AppTheme.tabBarUnselectedUI
+        tabBarAppearance.stackedLayoutAppearance.normal.iconColor = UIColor.white.withAlphaComponent(0.60)
         tabBarAppearance.stackedLayoutAppearance.normal.titleTextAttributes = normalAttributes
         tabBarAppearance.stackedLayoutAppearance.selected.iconColor = AppTheme.tabBarSelectedUI
         tabBarAppearance.stackedLayoutAppearance.selected.titleTextAttributes = selectedAttributes
@@ -336,12 +340,20 @@ struct MainTabView: View {
         UITabBar.appearance().standardAppearance = tabBarAppearance
         UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
 
-        // Navigation Bar Appearance - uses AppTheme tokens for premium teal theme
+        // Navigation Bar Appearance - transparent to show gradient through
         let navBarAppearance = UINavigationBarAppearance()
-        navBarAppearance.configureWithOpaqueBackground()
-        navBarAppearance.backgroundColor = AppTheme.appBackgroundUI
-        navBarAppearance.titleTextAttributes = [.foregroundColor: AppTheme.textPrimaryUI]
-        navBarAppearance.largeTitleTextAttributes = [.foregroundColor: AppTheme.textPrimaryUI]
+        navBarAppearance.configureWithTransparentBackground()
+        navBarAppearance.backgroundColor = .clear
+
+        // White text for navigation titles on blue gradient
+        navBarAppearance.titleTextAttributes = [
+            .foregroundColor: UIColor.white,
+            .font: UIFont.systemFont(ofSize: 17, weight: .semibold)
+        ]
+        navBarAppearance.largeTitleTextAttributes = [
+            .foregroundColor: UIColor.white,
+            .font: UIFont.systemFont(ofSize: 34, weight: .bold)
+        ]
 
         UINavigationBar.appearance().standardAppearance = navBarAppearance
         UINavigationBar.appearance().scrollEdgeAppearance = navBarAppearance
