@@ -95,8 +95,8 @@ extension Color {
 
     static let secondaryBackground = AppTheme.cardBackground
 
-    /// Main accent - coral
-    static let accent = AppTheme.accent
+    // Note: `accent` removed to avoid conflict with Xcode's auto-generated AccentColor asset symbol.
+    // Use `appCoral` or `brandPrimary` instead.
 
     /// Muted accent - now coral (unified theme)
     static let accentMuted = AppTheme.accentMuted
@@ -149,7 +149,6 @@ extension ShapeStyle where Self == Color {
     static var brandPrimary: Color { Color.brandPrimary }
     static var brandSecondary: Color { Color.brandSecondary }
     static var secondaryBackground: Color { Color.secondaryBackground }
-    static var accent: Color { Color.accent }
     static var accentMuted: Color { Color.accentMuted }
 }
 
