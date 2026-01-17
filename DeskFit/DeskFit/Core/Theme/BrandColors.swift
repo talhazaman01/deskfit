@@ -3,7 +3,7 @@ import UIKit
 
 // MARK: - DeskFit Brand Palette (Base Colors)
 // These are the raw color values. Use semantic tokens from AppTheme for actual UI.
-// Premium Theme: Blue gradient background + Coral primary accent + Teal secondary accent
+// Premium Theme: Blue gradient background + Pink-Coral accent (unified)
 
 enum BrandColors {
     // MARK: - Blue Gradient Background (Calm-Style)
@@ -48,27 +48,39 @@ enum BrandColors {
     /// Placeholder text - white at 40% opacity
     static let textPlaceholder = Color.white.opacity(0.40)
 
-    // MARK: - Primary Accent (CORAL) - For CTAs, selection, key highlights
+    // MARK: - Primary Accent (PINK-CORAL) - For CTAs, selection, key highlights
+    // Calm-style pink coral that reads premium and friendly (not red)
 
-    /// Primary coral - main CTA and selection color #FF5A66
-    static let primaryCoral = Color(hex: "FF5A66")
+    /// Primary coral - main CTA and selection color #FF5A7A (pink coral)
+    static let primaryCoral = Color(hex: "FF5A7A")
 
-    /// Coral pressed/darker state #E94B57
-    static let primaryCoralPressed = Color(hex: "E94B57")
+    /// Coral pressed/darker state #E94B6C
+    static let primaryCoralPressed = Color(hex: "E94B6C")
 
     /// Coral subtle tint for selected backgrounds - coral at 18% opacity
-    static let primaryCoralTint = Color(hex: "FF5A66").opacity(0.18)
+    static let primaryCoralTint = Color(hex: "FF5A7A").opacity(0.18)
 
-    /// Coral glow/shadow color - coral at 30% opacity
-    static let primaryCoralGlow = Color(hex: "FF5A66").opacity(0.30)
+    /// Coral glow/shadow color - coral at 25% opacity (subtle)
+    static let primaryCoralGlow = Color(hex: "FF5A7A").opacity(0.25)
 
-    // MARK: - Secondary Accent (TEAL) - For secondary actions, progress, subtle icons
+    /// Coral stroke for outlines - coral at 70% opacity
+    static let primaryCoralStroke = Color(hex: "FF5A7A").opacity(0.70)
 
-    /// Secondary teal - progress rings, secondary highlights #14B8A6
-    static let secondaryTeal = Color(hex: "14B8A6")
+    // MARK: - Secondary Accent (Unified with Coral)
+    // All secondary accents now use coral for consistency
 
-    /// Teal subtle tint - teal at 20% opacity
-    static let secondaryTealTint = Color(hex: "14B8A6").opacity(0.20)
+    /// Secondary accent - now unified with coral #FF5A7A
+    static let secondaryCoral = primaryCoral
+
+    /// Secondary subtle tint - coral at 18% opacity
+    static let secondaryCoralTint = primaryCoralTint
+
+    // MARK: - Legacy Teal (Deprecated - mapped to coral)
+    /// @available(*, deprecated, message: "Use primaryCoral instead - teal accent removed")
+    static let secondaryTeal = primaryCoral
+
+    /// @available(*, deprecated, message: "Use primaryCoralTint instead - teal accent removed")
+    static let secondaryTealTint = primaryCoralTint
 
     // MARK: - Legacy Accent Colors (Deprecated - use primaryCoral/secondaryTeal)
 
@@ -94,8 +106,8 @@ enum BrandColors {
 
     // MARK: - Status Colors (Harmonized with theme)
 
-    /// Success - teal for consistency #14B8A6
-    static let success = secondaryTeal
+    /// Success - soft green #22C55E (distinct from coral accent)
+    static let success = Color(hex: "22C55E")
 
     /// Warning - warm amber #FBBF24
     static let warning = Color(hex: "FBBF24")
@@ -124,7 +136,9 @@ enum BrandColors {
     static var textTertiaryUI: UIColor { UIColor(textTertiary) }
     static var primaryCoralUI: UIColor { UIColor(primaryCoral) }
     static var primaryCoralPressedUI: UIColor { UIColor(primaryCoralPressed) }
-    static var secondaryTealUI: UIColor { UIColor(secondaryTeal) }
+    static var primaryCoralStrokeUI: UIColor { UIColor(primaryCoralStroke) }
+    /// @available(*, deprecated, message: "Use primaryCoralUI instead")
+    static var secondaryTealUI: UIColor { UIColor(primaryCoral) }
     static var textOnAccentUI: UIColor { UIColor(textOnAccent) }
     static var successUI: UIColor { UIColor(success) }
     static var warningUI: UIColor { UIColor(warning) }

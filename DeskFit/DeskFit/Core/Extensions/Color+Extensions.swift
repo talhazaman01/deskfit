@@ -1,6 +1,6 @@
 import SwiftUI
 
-// MARK: - DeskFit Design System (Premium Coral Theme)
+// MARK: - DeskFit Design System (Premium Pink-Coral Theme)
 // Color extensions that bridge to AppTheme tokens for backward compatibility.
 
 extension Color {
@@ -9,14 +9,20 @@ extension Color {
     /// App background - blue gradient mid color (fallback for non-gradient usage)
     static let appBackground = AppTheme.appBackground
 
-    /// Brand highlight color - coral primary accent
+    /// Brand highlight color - pink-coral primary accent
     static let brandCeleste = AppTheme.brandCeleste
 
-    /// Primary accent color - coral #FF5A66 (for selection, CTAs)
+    /// Primary accent color - coral #FF5A7A (for selection, CTAs, progress)
     static let appCoral = AppTheme.primaryCoral
 
-    /// Secondary accent color - teal #14B8A6 (for progress, secondary highlights)
-    static let appTeal = AppTheme.secondaryTeal
+    /// Accent stroke for outlines - coral at 70% opacity
+    static let accentStroke = AppTheme.accentStroke
+
+    /// Accent glow for shadows - coral at 25% opacity
+    static let accentGlow = AppTheme.accentGlow
+
+    /// @available(*, deprecated, message: "Use appCoral instead - teal accent removed")
+    static let appTeal = AppTheme.primaryCoral
 
     /// Pure black for compatibility
     static let appBlack = Color.black
@@ -48,7 +54,7 @@ extension Color {
     /// Default border for unselected cards - subtle
     static let borderDefault = AppTheme.strokeSubtle
 
-    /// Selected border - coral #FF5A66
+    /// Selected border - coral #FF5A7A
     static let borderSelected = AppTheme.selectionStroke
 
     /// Theme border color
@@ -56,7 +62,7 @@ extension Color {
 
     // MARK: - Button Colors
 
-    /// Primary CTA - coral #FF5A66
+    /// Primary CTA - coral #FF5A7A
     static let buttonPrimary = AppTheme.primaryActionBg
 
     /// Enabled continue button - coral
@@ -92,18 +98,25 @@ extension Color {
     /// Main accent - coral
     static let accent = AppTheme.accent
 
-    /// Muted accent - teal
+    /// Muted accent - now coral (unified theme)
     static let accentMuted = AppTheme.accentMuted
+
+    /// Soft accent - coral at 18% opacity
+    static let accentSoft = AppTheme.accentSoft
 }
 
 // MARK: - ShapeStyle Extension for foregroundStyle() support
 
 extension ShapeStyle where Self == Color {
-    static var appTeal: Color { Color.appTeal }
+    /// @available(*, deprecated, message: "Use appCoral instead - teal accent removed")
+    static var appTeal: Color { Color.appCoral }
     static var appCoral: Color { Color.appCoral }
     static var appBlack: Color { Color.appBlack }
     static var appBackground: Color { Color.appBackground }
     static var brandCeleste: Color { Color.brandCeleste }
+    static var accentStroke: Color { Color.accentStroke }
+    static var accentGlow: Color { Color.accentGlow }
+    static var accentSoft: Color { Color.accentSoft }
 
     static var textPrimary: Color { Color.textPrimary }
     static var textSecondary: Color { Color.textSecondary }

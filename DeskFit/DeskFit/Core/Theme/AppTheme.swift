@@ -3,7 +3,7 @@ import UIKit
 
 // MARK: - DeskFit Semantic Color Tokens
 // Single source of truth for all UI colors.
-// Premium Theme: Blue gradient + Coral CTAs/selection + Teal secondary accents
+// Premium Theme: Blue gradient background + Unified Pink-Coral accents
 
 enum AppTheme {
     // MARK: - Background Tokens
@@ -58,7 +58,7 @@ enum AppTheme {
 
     // MARK: - Primary Accent (CORAL) - CTAs, Selection, Key Highlights
 
-    /// Primary accent color - coral #FF5A66
+    /// Primary accent color - coral #FF5A7A
     static let accent = BrandColors.primaryCoral
 
     /// Primary coral for CTAs
@@ -70,32 +70,40 @@ enum AppTheme {
     /// Coral subtle tint for backgrounds
     static let primaryCoralTint = BrandColors.primaryCoralTint
 
-    // MARK: - Secondary Accent (TEAL) - Progress, Icons, Secondary Actions
+    // MARK: - Secondary Accent (Unified with Coral)
+    // All accents now use the same pink-coral for consistency
 
-    /// Secondary accent - teal #14B8A6
-    static let accentSecondary = BrandColors.secondaryTeal
+    /// Secondary accent - now coral (unified theme)
+    static let accentSecondary = BrandColors.primaryCoral
 
-    /// Secondary teal
-    static let secondaryTeal = BrandColors.secondaryTeal
+    /// Coral stroke for outlines (70% opacity)
+    static let accentStroke = BrandColors.primaryCoralStroke
 
-    /// Teal subtle tint
-    static let secondaryTealTint = BrandColors.secondaryTealTint
+    /// Muted accent for subtle highlights (coral)
+    static let accentMuted = BrandColors.primaryCoral
 
-    /// Muted accent for subtle highlights (teal)
-    static let accentMuted = BrandColors.secondaryTeal
-
-    /// Soft accent for subtle highlights (coral tint)
+    /// Soft accent for subtle highlights (coral tint at 18%)
     static let accentSoft = BrandColors.primaryCoralTint
 
-    /// Brand highlight (legacy - now coral)
+    /// Accent glow for shadows (coral at 25%)
+    static let accentGlow = BrandColors.primaryCoralGlow
+
+    /// Brand highlight - coral
     static let brandCeleste = BrandColors.primaryCoral
+
+    // MARK: - Legacy Teal (Deprecated - mapped to coral)
+    /// @available(*, deprecated, message: "Use primaryCoral instead")
+    static let secondaryTeal = BrandColors.primaryCoral
+
+    /// @available(*, deprecated, message: "Use primaryCoralTint instead")
+    static let secondaryTealTint = BrandColors.primaryCoralTint
 
     // MARK: - Action Button Tokens
 
-    /// Primary CTA background - coral #FF5A66
+    /// Primary CTA background - coral #FF5A7A
     static let primaryActionBg = BrandColors.primaryCoral
 
-    /// Primary CTA pressed background - darker coral #E94B57
+    /// Primary CTA pressed background - darker coral #E94B6C
     static let primaryActionBgPressed = BrandColors.primaryCoralPressed
 
     /// Primary CTA text - white for contrast
@@ -138,7 +146,7 @@ enum AppTheme {
     /// Selectable card selected fill - coral at 18% opacity
     static let selectionFill = BrandColors.primaryCoralTint
 
-    /// Selectable card selected stroke - coral #FF5A66
+    /// Selectable card selected stroke - coral #FF5A7A
     static let selectionStroke = BrandColors.primaryCoral
 
     /// Selection checkmark/indicator color - coral
@@ -155,13 +163,13 @@ enum AppTheme {
     /// Tab bar unselected icon/text - white at 60%
     static let tabBarUnselected = Color.white.opacity(0.60)
 
-    // MARK: - Progress Ring Tokens (TEAL)
+    // MARK: - Progress Ring Tokens (CORAL)
 
     /// Progress ring track (background) - white at 15%
     static let progressRingTrack = Color.white.opacity(0.15)
 
-    /// Progress ring fill (foreground) - teal #14B8A6
-    static let progressRingFill = BrandColors.secondaryTeal
+    /// Progress ring fill (foreground) - coral #FF5A7A
+    static let progressRingFill = BrandColors.primaryCoral
 
     // MARK: - Status Tokens
 
@@ -218,8 +226,9 @@ enum AppTheme {
         BrandColors.primaryCoralUI
     }
 
+    /// @available(*, deprecated, message: "Use primaryCoralUI instead")
     static var secondaryTealUI: UIColor {
-        BrandColors.secondaryTealUI
+        BrandColors.primaryCoralUI
     }
 
     static var tabBarSelectedUI: UIColor {

@@ -13,7 +13,7 @@ struct ProgressRing: View {
             Circle()
                 .trim(from: 0, to: progress)
                 .stroke(
-                    Color.appTeal,
+                    AppTheme.progressRingFill,
                     style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
                 )
                 .rotationEffect(.degrees(-90))
