@@ -337,7 +337,7 @@ struct DayCard: View {
             .frame(width: 70, height: 90)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                    .fill(isToday ? Color.appTeal : Color.cardBackground)
+                    .fill(isToday ? Color.appCoral : Color.cardBackground)
             )
         }
         .buttonStyle(.plain)

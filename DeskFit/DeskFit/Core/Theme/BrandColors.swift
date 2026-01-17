@@ -3,7 +3,7 @@ import UIKit
 
 // MARK: - DeskFit Brand Palette (Base Colors)
 // These are the raw color values. Use semantic tokens from AppTheme for actual UI.
-// Calm-Style Blue Gradient Theme - Premium, relaxing blue with bright cyan accents
+// Premium Theme: Blue gradient background + Coral primary accent + Teal secondary accent
 
 enum BrandColors {
     // MARK: - Blue Gradient Background (Calm-Style)
@@ -48,29 +48,54 @@ enum BrandColors {
     /// Placeholder text - white at 40% opacity
     static let textPlaceholder = Color.white.opacity(0.40)
 
-    // MARK: - Accent Colors (Premium Cyan/Blue)
+    // MARK: - Primary Accent (CORAL) - For CTAs, selection, key highlights
 
-    /// Primary accent - bright cyan for CTAs #37D6E6
-    static let accentPrimary = Color(hex: "37D6E6")
+    /// Primary coral - main CTA and selection color #FF5A66
+    static let primaryCoral = Color(hex: "FF5A66")
 
-    /// Secondary accent - bright blue for selections #2BB4FF
-    static let accentSecondary = Color(hex: "2BB4FF")
+    /// Coral pressed/darker state #E94B57
+    static let primaryCoralPressed = Color(hex: "E94B57")
 
-    /// Muted accent - softer cyan #1BBFCF
-    static let accentMuted = Color(hex: "1BBFCF")
+    /// Coral subtle tint for selected backgrounds - coral at 18% opacity
+    static let primaryCoralTint = Color(hex: "FF5A66").opacity(0.18)
 
-    /// Soft accent for subtle highlights - cyan at 25% opacity
-    static let accentSoft = Color(hex: "37D6E6").opacity(0.25)
+    /// Coral glow/shadow color - coral at 30% opacity
+    static let primaryCoralGlow = Color(hex: "FF5A66").opacity(0.30)
+
+    // MARK: - Secondary Accent (TEAL) - For secondary actions, progress, subtle icons
+
+    /// Secondary teal - progress rings, secondary highlights #14B8A6
+    static let secondaryTeal = Color(hex: "14B8A6")
+
+    /// Teal subtle tint - teal at 20% opacity
+    static let secondaryTealTint = Color(hex: "14B8A6").opacity(0.20)
+
+    // MARK: - Legacy Accent Colors (Deprecated - use primaryCoral/secondaryTeal)
+
+    /// @available(*, deprecated, message: "Use primaryCoral instead")
+    static let accentPrimary = primaryCoral
+
+    /// @available(*, deprecated, message: "Use primaryCoral instead")
+    static let accentSecondary = primaryCoral
+
+    /// @available(*, deprecated, message: "Use secondaryTeal instead")
+    static let accentMuted = secondaryTeal
+
+    /// @available(*, deprecated, message: "Use primaryCoralTint instead")
+    static let accentSoft = primaryCoralTint
 
     // MARK: - Text on Accent
 
-    /// Text on accent backgrounds (dark for contrast on cyan)
-    static let textOnAccent = Color(hex: "0A2540")
+    /// Text on coral accent backgrounds (white for contrast)
+    static let textOnAccent = Color.white
 
-    // MARK: - Status Colors (Harmonized with blue theme)
+    /// Text on dark backgrounds (legacy - same as textOnAccent)
+    static let textOnDark = Color.white
 
-    /// Success - teal-green harmonized with blue #2FE6B8
-    static let success = Color(hex: "2FE6B8")
+    // MARK: - Status Colors (Harmonized with theme)
+
+    /// Success - teal for consistency #14B8A6
+    static let success = secondaryTeal
 
     /// Warning - warm amber #FBBF24
     static let warning = Color(hex: "FBBF24")
@@ -97,13 +122,18 @@ enum BrandColors {
     static var textPrimaryUI: UIColor { UIColor(textPrimary) }
     static var textSecondaryUI: UIColor { UIColor(textSecondary) }
     static var textTertiaryUI: UIColor { UIColor(textTertiary) }
-    static var accentPrimaryUI: UIColor { UIColor(accentPrimary) }
-    static var accentSecondaryUI: UIColor { UIColor(accentSecondary) }
+    static var primaryCoralUI: UIColor { UIColor(primaryCoral) }
+    static var primaryCoralPressedUI: UIColor { UIColor(primaryCoralPressed) }
+    static var secondaryTealUI: UIColor { UIColor(secondaryTeal) }
     static var textOnAccentUI: UIColor { UIColor(textOnAccent) }
     static var successUI: UIColor { UIColor(success) }
     static var warningUI: UIColor { UIColor(warning) }
     static var destructiveUI: UIColor { UIColor(destructive) }
     static var flameUI: UIColor { UIColor(flame) }
+
+    // Legacy UIColor versions
+    static var accentPrimaryUI: UIColor { primaryCoralUI }
+    static var accentSecondaryUI: UIColor { primaryCoralUI }
 }
 
 // MARK: - Gradient Helper

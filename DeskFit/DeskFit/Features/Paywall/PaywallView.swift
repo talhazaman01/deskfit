@@ -473,7 +473,7 @@ struct PlanCard: View {
                                 .fontWeight(.bold)
                                 .padding(.horizontal, Theme.Spacing.sm)
                                 .padding(.vertical, 2)
-                                .background(isBestValue ? Color.appTeal : Color.textTertiary.opacity(0.3))
+                                .background(isBestValue ? Color.appCoral : Color.textTertiary.opacity(0.3))
                                 .foregroundStyle(isBestValue ? .textOnDark : .textSecondary)
                                 .clipShape(Capsule())
                         }
@@ -516,7 +516,7 @@ struct PlanCard: View {
                         }
 
                         Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                            .foregroundStyle(isSelected ? .appTeal : .textSecondary)
+                            .foregroundStyle(isSelected ? .appCoral : .textSecondary)
                             .font(.title2)
                     }
                 }
@@ -533,7 +533,7 @@ struct PlanCard: View {
                     .fill(Color.cardBackground)
                     .overlay(
                         RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                            .strokeBorder(isSelected ? Color.appTeal : Color.clear, lineWidth: 2)
+                            .strokeBorder(isSelected ? Color.appCoral : Color.clear, lineWidth: 2)
                     )
             )
         }
@@ -640,10 +640,10 @@ struct StoreUnavailableView: View {
                 Button(action: onTryAgain) {
                     Text("Try again")
                         .font(Theme.Typography.button)
-                        .foregroundStyle(.textOnDark)
+                        .foregroundStyle(.textOnAccent)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, Theme.Spacing.md)
-                        .background(Color.appTeal)
+                        .background(Color.appCoral)
                         .cornerRadius(Theme.Radius.medium)
                 }
 

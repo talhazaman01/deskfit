@@ -85,11 +85,11 @@ struct TimeCard: View {
                         )
                 )
 
-                // Selection indicator at top
+                // Selection indicator at top (CORAL)
                 if isSelected {
                     ZStack {
                         Circle()
-                            .fill(Color.appTeal)
+                            .fill(Color.appCoral)
                             .frame(width: 22, height: 22)
 
                         Image(systemName: "checkmark")

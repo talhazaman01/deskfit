@@ -119,7 +119,7 @@ extension View {
     }
 }
 
-// MARK: - Primary Button Style
+// MARK: - Primary Button Style (CORAL)
 
 struct DeskFitPrimaryButtonStyle: ButtonStyle {
     var isEnabled: Bool = true
@@ -132,11 +132,13 @@ struct DeskFitPrimaryButtonStyle: ButtonStyle {
             .frame(height: Theme.Height.primaryButton)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.pill)
-                    .fill(isEnabled ? AppTheme.primaryActionBg : AppTheme.disabledBg)
+                    .fill(isEnabled
+                        ? (configuration.isPressed ? AppTheme.primaryActionBgPressed : AppTheme.primaryActionBg)
+                        : AppTheme.disabledBg)
             )
             .shadow(
-                color: isEnabled ? AppTheme.shadowColor : .clear,
-                radius: 8,
+                color: isEnabled ? AppTheme.primaryButtonShadow : .clear,
+                radius: 10,
                 x: 0,
                 y: 4
             )
@@ -169,7 +171,7 @@ struct DeskFitSecondaryButtonStyle: ButtonStyle {
 /// Legacy alias
 typealias CelesteSecondaryButtonStyle = DeskFitSecondaryButtonStyle
 
-// MARK: - Selection Checkmark Component
+// MARK: - Selection Checkmark Component (CORAL)
 
 struct SelectionCheckmark: View {
     var size: CGFloat = 24
@@ -191,7 +193,7 @@ struct SelectionCheckmark: View {
 // MARK: - Button Style Extensions
 
 extension View {
-    /// Apply primary CTA button style (accent cyan background with shadow)
+    /// Apply primary CTA button style (coral background with glow shadow)
     func deskFitPrimaryButton(isEnabled: Bool = true) -> some View {
         self.buttonStyle(DeskFitPrimaryButtonStyle(isEnabled: isEnabled))
     }

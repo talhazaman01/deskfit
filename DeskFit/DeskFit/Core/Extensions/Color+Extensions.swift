@@ -1,6 +1,6 @@
 import SwiftUI
 
-// MARK: - DeskFit Design System (Calm Blue Theme)
+// MARK: - DeskFit Design System (Premium Coral Theme)
 // Color extensions that bridge to AppTheme tokens for backward compatibility.
 
 extension Color {
@@ -9,17 +9,17 @@ extension Color {
     /// App background - blue gradient mid color (fallback for non-gradient usage)
     static let appBackground = AppTheme.appBackground
 
-    /// Brand highlight color - now accent cyan
+    /// Brand highlight color - coral primary accent
     static let brandCeleste = AppTheme.brandCeleste
 
-    /// Primary accent color - bright cyan
-    static let appTeal = AppTheme.accent
+    /// Primary accent color - coral #FF5A66 (for selection, CTAs)
+    static let appCoral = AppTheme.primaryCoral
+
+    /// Secondary accent color - teal #14B8A6 (for progress, secondary highlights)
+    static let appTeal = AppTheme.secondaryTeal
 
     /// Pure black for compatibility
     static let appBlack = Color.black
-
-    /// Warm coral for accents, streaks, celebrations
-    static let appCoral = BrandColors.flame
 
     // MARK: - Text Colors
 
@@ -34,10 +34,10 @@ extension Color {
     /// Surface color for cards/panels - glass effect
     static let cardBackground = AppTheme.cardBackground
 
-    /// Selected state background
+    /// Selected state background - coral tint
     static let cardSelected = AppTheme.selectionFill
 
-    /// Selected state with higher visibility (for chips/badges)
+    /// Selected state with higher visibility (for chips/badges) - coral tint
     static let cardSelectedStrong = AppTheme.accentSoft
 
     /// Elevated surface for modals/sheets
@@ -48,7 +48,7 @@ extension Color {
     /// Default border for unselected cards - subtle
     static let borderDefault = AppTheme.strokeSubtle
 
-    /// Selected border - prominent
+    /// Selected border - coral #FF5A66
     static let borderSelected = AppTheme.selectionStroke
 
     /// Theme border color
@@ -56,10 +56,10 @@ extension Color {
 
     // MARK: - Button Colors
 
-    /// Primary CTA - accent cyan
+    /// Primary CTA - coral #FF5A66
     static let buttonPrimary = AppTheme.primaryActionBg
 
-    /// Enabled continue button
+    /// Enabled continue button - coral
     static let buttonEnabled = AppTheme.primaryActionBg
 
     /// Disabled button state
@@ -81,10 +81,18 @@ extension Color {
 
     // MARK: - Legacy Compatibility
 
+    /// Primary brand color - coral (formerly cyan)
     static let brandPrimary = AppTheme.accent
+
+    /// Secondary brand color - coral
     static let brandSecondary = appCoral
+
     static let secondaryBackground = AppTheme.cardBackground
+
+    /// Main accent - coral
     static let accent = AppTheme.accent
+
+    /// Muted accent - teal
     static let accentMuted = AppTheme.accentMuted
 }
 

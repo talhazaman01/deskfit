@@ -32,7 +32,7 @@ struct SelectableCard<Content: View>: View {
     }
 }
 
-/// Row-style selectable item with icon and checkmark indicator
+/// Row-style selectable item with icon and checkmark indicator (CORAL selection)
 struct SelectableRow: View {
     let title: String
     let subtitle: String?
@@ -60,7 +60,7 @@ struct SelectableRow: View {
                 if let icon = icon {
                     Image(systemName: icon)
                         .font(.title2)
-                        .foregroundStyle(isSelected ? .appTeal : .textSecondary)
+                        .foregroundStyle(isSelected ? .appCoral : .textSecondary)
                         .frame(width: 32)
                 }
 
@@ -78,11 +78,11 @@ struct SelectableRow: View {
 
                 Spacer()
 
-                // Checkmark indicator
+                // Checkmark indicator (CORAL)
                 if isSelected {
                     ZStack {
                         Circle()
-                            .fill(Color.appTeal)
+                            .fill(Color.appCoral)
                             .frame(width: 24, height: 24)
 
                         Image(systemName: "checkmark")
@@ -95,7 +95,7 @@ struct SelectableRow: View {
     }
 }
 
-/// Multi-select row with checkbox-style indicator
+/// Multi-select row with checkbox-style indicator (CORAL selection)
 struct MultiSelectableRow: View {
     let title: String
     let icon: String?
@@ -111,7 +111,7 @@ struct MultiSelectableRow: View {
                 if let icon = icon {
                     Image(systemName: icon)
                         .font(.title3)
-                        .foregroundStyle(isSelected ? .appTeal : .textSecondary)
+                        .foregroundStyle(isSelected ? .appCoral : .textSecondary)
                         .frame(width: 28)
                 }
 
@@ -121,14 +121,14 @@ struct MultiSelectableRow: View {
 
                 Spacer()
 
-                // Checkbox indicator
+                // Checkbox indicator (CORAL)
                 ZStack {
                     RoundedRectangle(cornerRadius: 4)
-                        .strokeBorder(isSelected ? Color.appTeal : Color.borderDefault, lineWidth: isSelected ? 0 : 1.5)
+                        .strokeBorder(isSelected ? Color.appCoral : Color.borderDefault, lineWidth: isSelected ? 0 : 1.5)
                         .frame(width: 22, height: 22)
                         .background(
                             RoundedRectangle(cornerRadius: 4)
-                                .fill(isSelected ? Color.appTeal : Color.clear)
+                                .fill(isSelected ? Color.appCoral : Color.clear)
                         )
 
                     if isSelected {

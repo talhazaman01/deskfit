@@ -82,8 +82,8 @@ struct SessionCardView: View {
                             .fontWeight(.bold)
                             .padding(.horizontal, Theme.Spacing.sm)
                             .padding(.vertical, Theme.Spacing.xs)
-                            .background(Color.appTeal)
-                            .foregroundStyle(.textOnDark)
+                            .background(Color.appCoral)
+                            .foregroundStyle(.textOnAccent)
                             .clipShape(Capsule())
                     } else if !session.isCompleted {
                         Image(systemName: "chevron.right")

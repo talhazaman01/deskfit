@@ -54,21 +54,21 @@ struct StiffnessTimeCard: View {
     let isSelected: Bool
     let onTap: () -> Void
 
-    /// Computed styling based on selection state
+    /// Computed styling based on selection state (CORAL for selection)
     private var iconBackgroundColor: Color {
-        isSelected ? Color.appTeal.opacity(0.2) : Color.cardBackground
+        isSelected ? Color.appCoral.opacity(0.2) : Color.cardBackground
     }
 
     private var iconForegroundColor: Color {
-        isSelected ? .appTeal : .textSecondary
+        isSelected ? .appCoral : .textSecondary
     }
 
     private var borderColor: Color {
-        isSelected ? Color.appTeal : Color.borderDefault
+        isSelected ? Color.appCoral : Color.borderDefault
     }
 
     private var checkmarkColor: Color {
-        isSelected ? .appTeal : .textSecondary
+        isSelected ? .appCoral : .textSecondary
     }
 
     var body: some View {

@@ -232,7 +232,7 @@ private struct MeasurementInputField: View {
                 .fill(Color.cardBackground)
                 .overlay(
                     RoundedRectangle(cornerRadius: Theme.Radius.medium)
-                        .strokeBorder(isFocused ? Color.appTeal : Color.clear, lineWidth: 2)
+                        .strokeBorder(isFocused ? Color.appCoral : Color.clear, lineWidth: 2)
                 )
         )
     }

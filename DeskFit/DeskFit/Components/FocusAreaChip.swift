@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Focus area selection chip for onboarding (2-column grid)
-/// Features: border, background tint, and checkmark badge when selected
+/// Features: coral border, background tint, and checkmark badge when selected
 struct FocusAreaChip: View {
     let area: FocusArea
     let isSelected: Bool
@@ -16,7 +16,7 @@ struct FocusAreaChip: View {
                 VStack(spacing: Theme.Spacing.sm) {
                     Image(systemName: area.icon)
                         .font(.system(size: 28))
-                        .foregroundStyle(isSelected ? .appTeal : .appTeal.opacity(0.7))
+                        .foregroundStyle(isSelected ? .appCoral : .appTeal.opacity(0.7))
 
                     Text(area.displayName)
                         .font(Theme.Typography.option)
@@ -36,11 +36,11 @@ struct FocusAreaChip: View {
                         )
                 )
 
-                // Selection checkmark badge
+                // Selection checkmark badge (CORAL)
                 if isSelected {
                     ZStack {
                         Circle()
-                            .fill(Color.appTeal)
+                            .fill(Color.appCoral)
                             .frame(width: 22, height: 22)
 
                         Image(systemName: "checkmark")

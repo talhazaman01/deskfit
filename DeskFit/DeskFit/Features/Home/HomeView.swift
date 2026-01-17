@@ -223,8 +223,8 @@ struct DynamicProBannerView: View {
                     .font(Theme.Typography.button)
                     .padding(.horizontal, Theme.Spacing.lg)
                     .padding(.vertical, Theme.Spacing.sm)
-                    .background(Color.appTeal)
-                    .foregroundStyle(.textOnDark)
+                    .background(Color.appCoral)
+                    .foregroundStyle(.textOnAccent)
                     .clipShape(Capsule())
             }
             .deskFitCardStyle()
@@ -278,12 +278,12 @@ struct LockedCTAView: View {
                 Text("Unlock \(sessionTitle)")
                     .font(Theme.Typography.button)
             }
-            .foregroundStyle(.textOnDark)
+            .foregroundStyle(.textOnAccent)
             .frame(maxWidth: .infinity)
             .frame(height: Theme.Height.primaryButton)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.pill)
-                    .fill(Color.appTeal)
+                    .fill(Color.appCoral)
             )
         }
         .buttonStyle(.plain)

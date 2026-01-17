@@ -319,7 +319,7 @@ struct ReminderFrequencyEditView: View {
                         Spacer()
                         if profile.reminderFrequency == frequency.rawValue {
                             Image(systemName: "checkmark")
-                                .foregroundStyle(.appTeal)
+                                .foregroundStyle(.appCoral)
                         }
                     }
                 }
@@ -359,7 +359,7 @@ struct FocusAreasEditView: View {
                         Spacer()
                         if selectedAreas.contains(area.rawValue) {
                             Image(systemName: "checkmark")
-                                .foregroundStyle(.appTeal)
+                                .foregroundStyle(.appCoral)
                         }
                     }
                 }

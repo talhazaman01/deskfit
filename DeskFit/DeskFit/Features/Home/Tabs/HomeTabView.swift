@@ -346,8 +346,8 @@ struct HomeTabView: View {
                     .font(Theme.Typography.button)
                     .padding(.horizontal, Theme.Spacing.lg)
                     .padding(.vertical, Theme.Spacing.sm)
-                    .background(Color.appTeal)
-                    .foregroundStyle(.textOnDark)
+                    .background(Color.appCoral)
+                    .foregroundStyle(.textOnAccent)
                     .clipShape(Capsule())
             }
             .padding(Theme.Spacing.lg)
@@ -461,7 +461,7 @@ struct NextSessionCard: View {
                 .frame(height: Theme.Height.primaryButton)
                 .background(
                     RoundedRectangle(cornerRadius: Theme.Radius.pill)
-                        .fill(isLocked ? Color.textSecondary : Color.appTeal)
+                        .fill(isLocked ? Color.textSecondary : Color.appCoral)
                 )
             }
             .buttonStyle(.plain)
